@@ -1,0 +1,10 @@
+git:
+  overrideGpg: true
+gui:
+  authorColors:
+    "*": magenta
+  showNumstatInFilesView: true
+  skipRewordInEditorWarning: true
+keybinding:
+  files:
+    viewResetOptions: <disabled>

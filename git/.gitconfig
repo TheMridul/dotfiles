@@ -1,0 +1,101 @@
+[core]
+  excludesfile = ~/.gitignore
+  editor = nvim
+  ignorecase = false
+
+[push]
+  default = simple
+
+[color]
+  ui = auto
+
+[alias]
+  # Interactive add using fzf
+  a = "!f() { \
+    changes=$(git status --short); \
+    [ -z \"$changes\" ] && echo \"No changes to add.\" && return; \
+    echo \"$changes\" | fzf -m | awk '{print $2}' | xargs -r git add; \
+  }; f"
+
+  # Push/pull current branch
+  ps = "!git push origin $(git rev-parse --abbrev-ref HEAD)"
+  pl = "!git pull origin $(git rev-parse --abbrev-ref HEAD)"
+  st = status
+
+  # Interactive diff using fzf
+  df = "!f() { \
+    commits=$(git log --pretty=format:\"%h %s\"); \
+    [ -z \"$commits\" ] && echo \"No commits found.\" && return; \
+    selected=$(echo \"$commits\" | fzf -m --ansi --preview 'git show --color=always --stat $(echo {} | awk \"{print \\$1}\")'); \
+    echo \"$selected\" | awk '{print $1}' | xargs -r -I {} git show --color=always {}; \
+  }; f"
+
+  # Pretty logs (non-interactive)
+  llog = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+  # Sync with upstream
+  up = fetch upstream main && merge upstream/main
+  upr = fetch upstream main && rebase upstream/main
+
+  # Search & diff commits interactively
+  find = "!f() { \
+    if [ $# -eq 0 ]; then \
+      commits=$(git log --pretty=format:\"%h %cd [%cn] %s%d\" --date=relative); \
+    else \
+      commits=$(git log --pretty=format:\"%h %cd [%cn] %s%d\" --date=relative -S\"$*\"); \
+    fi; \
+    [ -z \"$commits\" ] && echo \"No matching commits.\" && return; \
+    echo \"$commits\" | fzf -m | awk '{print $1}' | xargs -r -I {} git show --color=always {}; \
+  }; f"
+
+[merge]
+  tool = nvimdiff
+
+[diff]
+  tool = nvimdiff
+
+[difftool "nvimdiff"]
+  cmd = nvim -d \"$LOCAL\" \"$REMOTE\"
+
+[mergetool "nvimdiff"]
+  cmd = nvim -d \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+  trustExitCode = true
+
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  required = true
+  process = git-lfs filter-process
+
+[log]
+  decorate = true
+  date = relative
+
+[user]
+  email = sheikhlimon404@gmail.com
+  name = sheikhlimon
+  signingkey = /home/limon/.ssh/id_ed25519
+
+[format]
+  signoff = true
+
+[gpg]
+  format = ssh
+
+[commit]
+  gpgsign = true
+
+[credential]
+	helper = store
+
+[init]
+  defaultBranch = main
+
+[sendemail]
+	smtpserver = smtp.gmail.com
+	smtpuser = sheikhlimon404@gmail.com
+	smtpserverport = 587
+	smtpencryption = tls
+
+[include]
+  path = ~/.gitconfig.local

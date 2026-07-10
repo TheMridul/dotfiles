@@ -1,0 +1,300 @@
+# Editor
+alias vim='nvim'
+alias py='python'
+
+# File System
+alias cd='z'
+alias l='eza -lh --icons=auto --group-directories-first'
+alias ll='eza -lhag --icons=auto --sort=name --group-directories-first'
+alias ls='eza -a --grid --icons=auto --sort=name --group-directories-first'
+alias lsa='eza -lha --icons=auto --sort=name --group-directories-first'
+alias lt='eza -l --tree --level=2 --group-directories-first --icons=auto --git --git-ignore'
+alias lta='lt -a'
+
+# Tools
+alias g='git'
+alias d='docker'
+alias screenrec='gpu-screen-recorder -w screen -c mp4 -f 30 -s 1280x720 -o ~/Videos/recording-$(date +%Y%m%d-%H%M%S).mp4'
+
+# Podman Desktop
+alias podman-kill='pkill -f electron && pkill -f "watch.mjs" && pkill -f "pnpm.*watch" && pkill -f "vite.*build"'
+alias podman-ps='ps aux | grep -E "(electron.*podman|watch.mjs|vite.*podman)" | grep -v grep'
+
+# Git
+alias gcm='git commit'
+alias gcam='git commit -a'
+alias gcd='git commit --amend'
+alias gcad='git commit -a --amend'
+
+# Search command line history
+alias h="history | grep "
+
+# Alias's to show disk space and space used in a folder
+alias diskspace="du -S | sort -n -r |more"
+alias folders='du -h --max-depth=1'
+
+# Count all files (recursively) in the current folder
+alias countfiles="find . -type f | wc -l && echo 'files'; find . -type l | wc -l && echo 'links'; find . -type d | wc -l && echo 'directories'"
+
+# Misc
+alias c='clear'
+alias q='exit'
+alias grep='grep --color=auto'
+alias cat='bat --paging=never'
+alias less='bat'
+alias multitail='multitail --no-repeat -c' 
+alias mkdir='mkdir -p'
+alias mv='mv -i'
+alias rm='trash -v'
+alias wget="wget -c"
+alias killp='killprocess'
+alias help="bat ~/.zshrc-personal"
+
+# TMUX continuum-aware auto-attach
+# if [[ ! $VSCODE_PID && $(ps -o comm= -p $PPID 1>/dev/null) != code* ]]; then
+#   if command -v tmux &>/dev/null && [[ -z $TMUX ]]; then
+#     # Just start tmux - continuum will auto-restore if configured
+#     if tmux list-sessions &>/dev/null; then
+#       # Sessions exist, attach to most recent
+#       tmux attach
+#     else
+#       # No sessions, start new one (continuum will restore if data exists)
+#       tmux new -s main
+#     fi
+#   fi
+# fi
+
+# Attach to existing tmux session or create new one
+t() {
+  [[ -n $TMUX ]] && echo "Already in tmux" && return
+  tmux list-sessions &>/dev/null && tmux attach || tmux new -s main
+}
+
+#zd
+zd() {
+  if [ $# -eq 0 ]; then
+    builtin cd ~ && return
+  elif [ -d "$1" ]; then
+    builtin cd "$1"
+  else
+    z "$@" && printf " \U000F17A9 " && pwd || echo "Error: Directory not found"
+  fi
+}
+
+# open anything in their respective app
+open() {
+  xdg-open "$@" >/dev/null 2>&1 &
+}
+
+# ripgrep->fzf->vim [QUERY]
+rgf() (
+  RELOAD='reload:rg --column --color=always --smart-case {q} || :'
+  OPENER='if [[ $FZF_SELECT_COUNT -eq 0 ]]; then
+            nvim {1} +{2}
+          else
+            nvim +cw -q {+f}
+          fi'
+
+  fzf --disabled --ansi --multi \
+      --bind "start:$RELOAD" --bind "change:$RELOAD" \
+      --bind "enter:become:$OPENER" \
+      --bind "ctrl-o:execute:$OPENER" \
+      --bind 'alt-a:select-all,alt-d:deselect-all,ctrl-/:toggle-preview' \
+      --delimiter : \
+      --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
+      --preview-window '~4,+{2}+4/3,<80(up)' \
+      --query "$*"
+)
+
+#yazi
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
+# compile and run cpp 
+function cpp() {
+  filename=$1
+  re="^\#include \""
+  while read line
+  do
+    if [[ $line =~ $re ]]; then
+      temp=${line:9}
+      temp1=${temp#\"}
+      temp2=${temp1%\.*\"}
+      g++ -std=c++17 -c $temp2.cpp
+    fi
+  done < $filename.cpp
+  g++ -std=c++17 -c $filename.cpp
+  g++ -o $filename *.o
+  ./$filename
+  rm -f *.o
+}
+
+# Copy and go to the directory
+cpg() {
+	if [ -d "$2" ]; then
+		cp "$1" "$2" && cd "$2"
+	else
+		cp "$1" "$2"
+	fi
+}
+
+# Move and go to the directory
+mvg() {
+	if [ -d "$2" ]; then
+		mv "$1" "$2" && cd "$2"
+	else
+		mv "$1" "$2"
+	fi
+}
+
+# Create and go to the directory
+mkdirg() {
+	mkdir -p "$1"
+	cd "$1"
+}
+
+# Write iso file to sd card
+iso2sd() {
+  if [ $# -ne 2 ]; then
+    echo "Usage: iso2sd <input_file> <output_device>"
+    echo "Example: iso2sd ~/Downloads/ubuntu-25.04-desktop-amd64.iso /dev/sdb"
+    echo -e "\nAvailable SD cards:"
+    lsblk -d -o NAME | grep -E '^sd[a-z]' | awk '{print "/dev/"$1}'
+  else
+    sudo dd bs=4M status=progress oflag=sync if="$1" of="$2"
+    sudo eject $2
+  fi
+}
+
+# Transcode any image to JPG image that's great for shrinking wallpapers
+img2jpg() {
+  magick $1 -quality 95 -strip ${1%.*}.jpg
+}
+
+# Transcode any image to JPG image that's great for sharing online without being too big
+img2jpg-small() {
+  magick $1 -resize 1080x\> -quality 95 -strip ${1%.*}.jpg
+}
+
+# Transcode any image to compressed-but-lossless PNG
+img2png() {
+  magick "$1" -strip -define png:compression-filter=5 \
+    -define png:compression-level=9 \
+    -define png:compression-strategy=1 \
+    -define png:exclude-chunk=all \
+    "${1%.*}.png"
+}
+
+# Transcode a video to a good-balance 1080p that's great for sharing online
+transcode-video-1080p() {
+  ffmpeg -i $1 -vf scale=1920:1080 -c:v libx264 -preset fast -crf 23 -c:a copy ${1%.*}-1080p.mp4
+}
+
+# Speed up a video (default 2x). Usage: speedup-video input.mp4 [speed]
+# Example: speedup-video clip.mp4      -> 2x speed
+# Example: speedup-video clip.mp4 1.5  -> 1.5x speed
+speedup-video() {
+  local speed="${2:-2}"
+  local input="$1"
+  local vfilter="setpts=PTS/${speed}"
+  # atempo only supports 0.5–2.0, chain multiple for higher speeds
+  local atempo
+  if (( $(echo "$speed <= 2.0" | bc -l) )); then
+    atempo="atempo=${speed}"
+  else
+    local remaining="$speed"
+    atempo=""
+    while (( $(echo "$remaining > 2.0" | bc -l) )); do
+      atempo="${atempo}atempo=2.0,"
+      remaining=$(echo "$remaining / 2.0" | bc -l)
+    done
+    atempo="${atempo}atempo=${remaining}"
+  fi
+  # Check if video has audio
+  if ffmpeg -i "$input" 2>&1 | grep -q "Audio:"; then
+    ffmpeg -i "$input" -filter_complex "[0:v]${vfilter}[v];[0:a]${atempo}[a]" \
+      -map "[v]" -map "[a]" -c:v libx264 -preset fast -crf 23 "${input%.*}-${speed}x.mp4"
+  else
+    ffmpeg -i "$input" -filter_complex "[0:v]${vfilter}[v]" \
+      -map "[v]" -c:v libx264 -preset fast -crf 23 "${input%.*}-${speed}x.mp4"
+  fi
+}
+
+# Vi mode + cursor setup
+bindkey -v                       # enable vi mode
+
+# Change cursor shape depending on mode
+function zle-keymap-select {
+  case $KEYMAP in
+    vicmd) echo -ne '\e[1 q' ;;       # block cursor in normal mode
+    viins|main|'') echo -ne '\e[5 q' ;; # beam cursor in insert mode
+  esac
+}
+zle -N zle-keymap-select
+
+# Initialize line in insert mode with beam cursor
+# This wraps any existing zle-line-init widget (like from deferred loading)
+function _zshrc-personal-line-init {
+  # Call any existing widget first (for deferred loading compatibility)
+  if zle -l zle-line-init-original; then
+    zle zle-line-init-original
+  fi
+
+  # Then set cursor shape
+  zle -K viins
+  echo -ne '\e[5 q'
+}
+
+# Save existing widget if it exists, then create new one
+if zle -l zle-line-init; then
+  zle -A zle-line-init zle-line-init-original
+fi
+zle -N zle-line-init _zshrc-personal-line-init
+
+preexec() { echo -ne '\e[5 q'; }
+
+# jj escape
+typeset -g VI_JJ_TIMEOUT=${VI_JJ_TIMEOUT:-500}  # ms
+typeset -g vi_jj_last_time=0
+
+function vi-jj-escape() {
+  local current_time=$(date +%s%3N)
+  local time_diff=$((current_time - vi_jj_last_time))
+
+  if [[ $LBUFFER == *j && $time_diff -lt $VI_JJ_TIMEOUT ]]; then
+    LBUFFER=${LBUFFER%j}
+    zle vi-cmd-mode
+    vi_jj_last_time=0
+  else
+    LBUFFER+=$KEYS
+    vi_jj_last_time=$current_time
+  fi
+}
+zle -N vi-jj-escape
+bindkey -M viins 'j' vi-jj-escape
+
+# Select quoted text objects
+autoload -U select-quoted select-bracketed
+zle -N select-quoted
+
+for m in visual viopp; do
+  for c in 'a"' 'i"' "a'" "i'" 'a`' 'i`'; do
+    bindkey -M $m $c select-quoted
+  done
+done
+
+# Tab completion key bindings
+bindkey '^I' menu-select
+bindkey -M menuselect '^I' menu-complete
+bindkey -M menuselect '^M' .accept-line
+
+# Vim-style keys in tab completion menu
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
