@@ -13,7 +13,7 @@ import of that base, with my own changes on top.
 
 - 🖥️ Hyprland window manager (native Lua config, Omarchy 4.0 "Quattro")
 - 🍭 Waybar themed to match OMARCHY
-- ⚡ LazyVim-based Neovim, theme-synced to the active Omarchy theme
+- ⚡ Neovim via the official [`omarchy-nvim`](https://github.com/LazyVim/LazyVim) package (pacman-managed, theme-synced automatically — not tracked here; run `sudo pacman -Syu` then `omarchy-nvim-refresh` to update)
 - 🧩 Zsh + Starship prompt with Oh My Zsh plugins
 - 📝 Kitty & Ghostty terminal configurations
 - 🗂️ Yazi with custom theme
@@ -37,7 +37,6 @@ cd ~/.dotfiles
 ```bash
 stow hypr
 stow zsh
-stow nvim
 stow kitty
 ```
 
