@@ -72,9 +72,8 @@
   date = relative
 
 [user]
-  email = sheikhlimon404@gmail.com
-  name = sheikhlimon
-  signingkey = /home/limon/.ssh/id_ed25519
+  email = mridul@dhanly.in
+  name = TheMridul
 
 [format]
   signoff = true
@@ -82,20 +81,22 @@
 [gpg]
   format = ssh
 
+# Commit signing is off until an SSH signing key exists on this machine.
+# Generate one (ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519), add it as a
+# "Signing Key" on GitHub, then set [user] signingkey and gpgsign = true.
 [commit]
-  gpgsign = true
-
-[credential]
-	helper = store
+  gpgsign = false
 
 [init]
   defaultBranch = main
 
-[sendemail]
-	smtpserver = smtp.gmail.com
-	smtpuser = sheikhlimon404@gmail.com
-	smtpserverport = 587
-	smtpencryption = tls
+# GitHub auth is handled by `gh` (see below), not a generic store helper.
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
 
 [include]
   path = ~/.gitconfig.local
