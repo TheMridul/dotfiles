@@ -1,14 +1,19 @@
 # Dotfiles — OMARCHY Setup
 
-This repository contains my personal dotfiles, designed around [OMARCHY](https://omarchy.org).
+My personal dotfiles, designed around [OMARCHY](https://omarchy.org).
+
+Based on [sheikhlimon/dotfiles](https://github.com/sheikhlimon/dotfiles), an
+excellent Omarchy dotfiles template — per its own philosophy: *"Take anything
+and make it your own."* This repo's history starts with a single squashed
+import of that base, with my own changes on top.
 
 > 💡 **OMARCHY Philosophy**: Take anything and make it your own. These configs are a starting point - feel free to take, modify, and customize to fit your workflow.
 
 ## Features
 
-- 🖥️ Hyprland window manager with OMARCHY-aligned tweaks
+- 🖥️ Hyprland window manager (native Lua config, Omarchy 4.0 "Quattro")
 - 🍭 Waybar themed to match OMARCHY
-- ⚡ Fully customized Neovim with blazingly fast setup
+- ⚡ LazyVim-based Neovim, theme-synced to the active Omarchy theme
 - 🧩 Zsh + Starship prompt with Oh My Zsh plugins
 - 📝 Kitty & Ghostty terminal configurations
 - 🗂️ Yazi with custom theme
@@ -23,7 +28,7 @@ This repository contains my personal dotfiles, designed around [OMARCHY](https:/
 **Clone the repository:**
 
 ```bash
-git clone https://github.com/sheikhlimon/dotfiles ~/.dotfiles
+git clone https://github.com/TheMridul/dotfiles ~/.dotfiles
 cd ~/.dotfiles
 ```
 
