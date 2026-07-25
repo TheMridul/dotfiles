@@ -2,9 +2,11 @@
 -- List current monitors and supported resolutions with: hyprctl monitors all
 
 -- Lenovo LOQ 15IRX9 internal panel (BOE): 1920x1080, up to 144Hz.
--- GDK_SCALE=1 keeps GTK apps crisp; the compositor handles the fractional scale.
-local omarchy_gdk_scale = 1.6
-local omarchy_monitor_scale = 1.6
+-- GDK_SCALE must be an integer (GTK doesn't support fractional values here);
+-- keep it at 1 and let Wayland's fractional-scale protocol handle the 1.25x
+-- panel scale below, so GTK apps stay crisp instead of being pre-scaled twice.
+local omarchy_gdk_scale = 1
+local omarchy_monitor_scale = "auto"
 
 hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 
