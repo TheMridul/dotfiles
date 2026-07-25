@@ -14,7 +14,7 @@
   "includeCoAuthoredBy": false,
   "statusLine": {
     "type": "command",
-    "command": "/home/limon/.claude/statusline-command.sh"
+    "command": "/home/mridul/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
