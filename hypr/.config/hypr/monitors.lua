@@ -5,8 +5,8 @@
 -- GDK_SCALE must be an integer (GTK doesn't support fractional values here);
 -- keep it at 1 and let Wayland's fractional-scale protocol handle the 1.25x
 -- panel scale below, so GTK apps stay crisp instead of being pre-scaled twice.
-local omarchy_gdk_scale = 1
-local omarchy_monitor_scale = "auto"
+local omarchy_gdk_scale = 1.25
+local omarchy_monitor_scale = 1.25
 
 hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 
