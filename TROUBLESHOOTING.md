@@ -29,13 +29,30 @@ echo QtVersion=6 | sudo tee -a /usr/share/sddm/themes/omarchy/metadata.desktop
 sudo systemctl restart sddm.service
 ```
 
-Also patched at the source so `omarchy refresh sddm` / `omarchy plymouth reset`
-carry the fix forward automatically:
-`~/.local/share/omarchy/default/sddm/omarchy/metadata.desktop` now includes
-`QtVersion=6`, `MainScript=Main.qml`, `ConfigFile=theme.conf`. Since
-`OMARCHY_PATH` is a git clone, an `omarchy update` that touches this exact
-upstream file could produce a merge conflict here — if so, keep those three
-lines when resolving.
+**Self-healing:** `~/.config/omarchy/hooks/post-update.d/reassert-sddm-qtversion.sh`
+re-checks the live `metadata.desktop` after every `omarchy update` and
+re-appends `QtVersion=6` if it's missing. Installed via
+`omarchy hook install post-update <file>`, so it lives outside
+`$OMARCHY_PATH` and survives `git pull`/package updates untouched.
+
+Deliberately **not** patched at the source
+(`~/.local/share/omarchy/default/sddm/omarchy/metadata.desktop`) — that file
+is under active upstream development (login-screen styling commits landed
+there recently), so keeping a local edit there causes `omarchy update`'s
+`git pull --ff-only` to fail and silently block *all* updates the moment
+upstream touches the same file. This already happened once and stalled
+several unrelated commits. The live file is the only one that actually
+matters for boot, and it's not synced from source by anything automatic.
+
+**Caveat:** if you ever manually run `omarchy refresh sddm`,
+`omarchy reinstall-configs`, or `omarchy plymouth reset`, those copy the
+*unpatched* source over the live file and bypass the post-update hook (they
+aren't part of the update pipeline). Re-apply immediately:
+
+```bash
+echo QtVersion=6 | sudo tee -a /usr/share/sddm/themes/omarchy/metadata.desktop
+sudo systemctl restart sddm.service
+```
 
 **Do NOT** set `DisplayServer=wayland` in `/etc/sddm.conf.d/10-wayland.conf`
 on this system — it routes through a different SDDM code path that (separately
