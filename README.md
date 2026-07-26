@@ -15,6 +15,7 @@ import of that base, with my own changes on top.
 - 🍭 Waybar themed to match OMARCHY
 - ⚡ Neovim via the official [`omarchy-nvim`](https://github.com/LazyVim/LazyVim) package (pacman-managed, theme-synced automatically — not tracked here; run `sudo pacman -Syu` then `omarchy-nvim-refresh` to update)
 - 🧩 Zsh + Starship prompt with Oh My Zsh plugins
+- 🐟 Fish shell config (CachyOS fish preset + Omarchy `OMARCHY_PATH`/starship setup) — daily-driver shell
 - 📝 Kitty & Ghostty terminal configurations
 - 🗂️ Yazi with custom theme
 - 📦 Lazygit and Lazydocker configs
