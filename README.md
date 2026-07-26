@@ -53,3 +53,10 @@ stow */
 CachyOS-specific gotchas (SDDM theme Qt5/Qt6 crash, `omarchy update` wiping
 pacman repos, locale/btop, keybind conflicts) are written up in
 [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+## Branding
+
+Custom "hushOS" branding (boot splash, login screen, terminal banner) built
+on the Hackerman theme's palette — see [BRANDING.md](BRANDING.md) for the
+assets, the commands to reapply it, and why the lock screen is deliberately
+left unbranded.
