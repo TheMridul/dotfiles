@@ -47,3 +47,9 @@ stow */
 ```
 
 > Make sure to remove or back up existing config files before stowing.
+
+## Troubleshooting
+
+CachyOS-specific gotchas (SDDM theme Qt5/Qt6 crash, `omarchy update` wiping
+pacman repos, locale/btop, keybind conflicts) are written up in
+[TROUBLESHOOTING.md](TROUBLESHOOTING.md).
