@@ -1,0 +1,10 @@
+# VSCode Local History extension
+.history/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store

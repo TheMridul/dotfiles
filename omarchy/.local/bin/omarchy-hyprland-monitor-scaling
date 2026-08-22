@@ -86,11 +86,14 @@ set_scale() {
   hyprctl eval "hl.monitor({ output = \"$active_monitor\", mode = \"${width}x${height}@${refresh_rate}\", position = \"auto\", scale = $new_scale })" >/dev/null
   audit_scale_change "$requested" "$active_monitor" "$current_scale" "$new_scale"
 
-  # Persist to monitors.lua if the user still has Omarchy's generic catch-all
-  # defaults, so the scale survives reboots.
-  if [[ -f $monitor_lua ]] && grep -q '^local omarchy_monitor_scale = ' "$monitor_lua"; then
+  # Persist to monitors.lua so the scale survives reboots. Rewrite the
+  # literal scale on the matching `output = "$active_monitor"` line directly
+  # (not via a variable) -- the stock omarchy-hyprland-monitor-clamshell
+  # script text-parses that exact line at every startup and expects a
+  # literal number there, falling back to scale 2 if it sees anything else.
+  if [[ -f $monitor_lua ]] && grep -Eq "output = \"${active_monitor}\"" "$monitor_lua"; then
     sed -i -E \
-      -e "s|^local omarchy_monitor_scale = .*|local omarchy_monitor_scale = ${new_scale}|" \
+      -e "s|(output = \"${active_monitor}\".*scale = )[^, }]+|\1${new_scale}|" \
       -e "s|^local omarchy_gdk_scale = .*|local omarchy_gdk_scale = ${new_scale}|" \
       "$monitor_lua"
   elif [[ -f $monitor_lua ]] && grep -Eq '^hl\.monitor\(\{ output = "", mode = "preferred", position = "auto", scale = ("auto"|[0-9.]+) \}\)' "$monitor_lua"; then

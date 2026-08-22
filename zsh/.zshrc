@@ -193,3 +193,5 @@ export PATH="$HOME/.opencode/bin:$PATH"
 
 # Electron Wayland/X11 hint (single export)
 export ELECTRON_OZONE_PLATFORM_HINT=x11
+
+. "$HOME/.local/share/../bin/env"

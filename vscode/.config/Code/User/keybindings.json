@@ -61,5 +61,18 @@
     "command": "vscode-neovim.send",
     "key": "ctrl+c",
     "when": "editorTextFocus && neovim.mode == 'visual'"
+  },
+  {
+    "key": "shift+enter",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "\u001b\r"
+    },
+    "when": "terminalFocus"
+  },
+  // Code Runner — Copilot key (Right Ctrl) + Enter
+  {
+    "command": "code-runner.run",
+    "key": "ctrl+enter"
   }
 ]
