@@ -33,5 +33,27 @@
   "alwaysThinkingEnabled": true,
   "awaySummaryEnabled": false,
   "theme": "light",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/load-agent-context.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/load-agent-context.sh"
+          }
+        ]
+      }
+    ]
+  },
   "preferredNotifChannel": "notifications_disabled"
 }

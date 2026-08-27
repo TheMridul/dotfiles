@@ -5,7 +5,7 @@ description: Use when starting a brand new project from scratch and needing proj
 
 # New Project Setup
 
-Scaffolds CLAUDE.md, AGENTS.md, docs/design.md, and docs/plan.md for a new project.
+Scaffolds AGENTS.md, .agents/, docs/design.md, and docs/plan.md for a new project.
 
 ## Required Inputs
 
@@ -16,27 +16,9 @@ Ask the user for:
 
 ## Files to Create
 
-### 1. CLAUDE.md (project root, auto-read by Claude Code)
+### 1. AGENTS.md (project root)
 
-Project context file. Keep under 80 lines.
-
-Must include:
-- Project description and current state
-- Tech stack summary
-- Commands (dev, test, build, lint)
-- `@AGENTS.md` — import for all coding conventions
-- Before starting any session: read plan, follow AGENTS.md rules
-- Design aesthetic (ask user, or use defaults below)
-
-Default aesthetic if unspecified:
-- CSS variables/tokens, no arbitrary colors
-- cn() for conditional class merging
-- Avoid: generic blue/indigo, same radius everywhere, gradient backgrounds, template nav bars
-- Prefer: asymmetric layouts, mixed border radii, dark mode, micro-interactions
-
-### 2. AGENTS.md (project root, imported by CLAUDE.md)
-
-All coding conventions. No overlap with CLAUDE.md. Keep under 100 lines.
+The canonical context for every coding agent. Keep under 100 lines.
 
 Must include:
 - Working rules (explain first, one logical unit per response, commit after each feature, answer questions, DRY)
@@ -46,6 +28,18 @@ Must include:
 - Git conventions (conventional commits, one change per commit)
 - Anti-patterns (generic blue/indigo, same radius everywhere, gradients, template nav)
 - Preferences (asymmetric layouts, mixed radii, dark mode, micro-interactions)
+- A statement that `.agents/` holds shared reusable resources
+
+### 2. .agents/README.md
+
+Create a short index for shared agent resources:
+
+- `skills/<name>/SKILL.md` for reusable workflows
+- `references/` for task-specific supporting material
+- `templates/` for reusable output assets
+
+Only create additional resources when the project needs them. Do not create
+`CLAUDE.md`, `codex.md`, or provider-specific duplicate instructions.
 
 ### 3. docs/design.md
 
@@ -62,7 +56,8 @@ Phased implementation with checkboxes. Commit sequence: one commit per checkbox.
 
 ## Rules
 
-- CLAUDE.md = project context + imports. AGENTS.md = coding rules. No overlap.
+- AGENTS.md is the single source of project context and rules for every agent.
+- `.agents/` contains optional shared resources; do not duplicate them in agent-specific directories.
 - Adapt testing, file org, and commands to the actual tech stack — don't assume React/Express
 - No fluff, no filler paragraphs
 - Keep both files concise

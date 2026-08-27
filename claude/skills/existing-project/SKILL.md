@@ -1,11 +1,11 @@
 ---
 name: existing-project
-description: Use when adding project structure and rules to an existing codebase that has no CLAUDE.md or AGENTS.md
+description: Use when adding shared project context and rules to an existing codebase that has no AGENTS.md
 ---
 
 # Existing Project Setup
 
-Audits an existing codebase and scaffolds CLAUDE.md, AGENTS.md, and docs/plan.md.
+Audits an existing codebase and scaffolds AGENTS.md, .agents/, and docs/plan.md.
 
 ## Process
 
@@ -28,20 +28,9 @@ Confirm with the user:
 
 ### Step 3: Create Files
 
-#### CLAUDE.md (project root, auto-read by Claude Code)
+#### AGENTS.md (project root)
 
-Based on audit, not guessing. Keep under 80 lines.
-
-Must include:
-- What the project does (from audit)
-- Current state (from audit — what works, what doesn't)
-- Tech stack and commands (from package.json)
-- `@AGENTS.md` — import for all coding conventions
-- Before starting any session: read plan, follow AGENTS.md rules
-
-#### AGENTS.md (project root, imported by CLAUDE.md)
-
-Conventions based on patterns found in the codebase. Keep under 100 lines.
+The canonical project context and conventions, based on patterns found in the codebase. Keep under 100 lines.
 
 Must include:
 - Working rules (explain first, one logical unit per response, commit after each feature, answer questions, DRY)
@@ -50,6 +39,11 @@ Must include:
 - File organization (map what actually exists)
 - Git conventions (from commit history patterns)
 - Anti-patterns and preferences
+
+#### .agents/README.md
+
+Create a short index for shared agent skills, references, and templates. Do not
+create `CLAUDE.md`, `codex.md`, or provider-specific duplicate instructions.
 
 #### docs/plan.md
 
@@ -60,6 +54,7 @@ Must include:
 ## Rules
 
 - Audit first, write second. Never guess.
-- CLAUDE.md = project context + imports. AGENTS.md = coding rules. No overlap.
+- AGENTS.md is the single source of project context and rules for every agent.
+- Use `.agents/` only for reusable shared resources.
 - Respect existing conventions — don't force new patterns on an established codebase
 - No fluff

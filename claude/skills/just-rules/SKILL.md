@@ -1,26 +1,17 @@
 ---
 name: just-rules
-description: Use when wanting minimal project rules without design docs or implementation plans — just CLAUDE.md and AGENTS.md
+description: Use when wanting minimal shared project rules without design docs or implementation plans
 ---
 
 # Just Rules
 
-Creates CLAUDE.md and AGENTS.md only. No docs/, no plans, no design specs.
+Creates AGENTS.md and .agents/README.md only. No docs/, no plans, no design specs.
 
 ## Files to Create
 
-### 1. CLAUDE.md (project root)
+### 1. AGENTS.md (project root)
 
-Project context file. Keep under 60 lines.
-
-Must include:
-- Project description (ask user)
-- Tech stack and commands (ask user)
-- `@AGENTS.md` — import for all coding conventions
-
-### 2. AGENTS.md (project root)
-
-All coding rules. Keep under 80 lines.
+The canonical context and rules for every coding agent. Keep under 80 lines.
 
 Must include:
 
@@ -59,8 +50,15 @@ Must include:
 - Personality over templates
 ```
 
+### 2. .agents/README.md
+
+Create a short index for optional shared `skills/`, `references/`, and
+`templates/`. Do not create `CLAUDE.md`, `codex.md`, or provider-specific
+duplicate instructions.
+
 ## Rules
 
-- CLAUDE.md = project context + imports. AGENTS.md = coding rules. No overlap.
+- AGENTS.md is the single source of project context and rules for every agent.
+- `.agents/` holds reusable shared resources.
 - Adapt to user's actual stack — don't assume anything
 - No fluff

@@ -23,6 +23,7 @@ import of that base, with my own changes on top.
 - 🛠️ Tmux configuration with plugins and custom keybindings
 - 📋 Git configuration
 - 🚀 Automated scripts for app installation and database setup
+- 🤖 Shared AI-agent context with `AGENTS.md` and `.agents/`
 
 ## Installation
 
@@ -48,6 +49,30 @@ stow */
 ```
 
 > Make sure to remove or back up existing config files before stowing.
+
+## Shared agent context
+
+Projects use one agent-neutral layout:
+
+- `AGENTS.md` at the project root holds the shared project context and rules.
+- `.agents/` holds reusable project skills, references, and templates.
+- Cursor reads `AGENTS.md` directly. Claude Code uses a small local hook that
+  points its main session and subagents at the same files.
+
+After cloning this dotfiles repository on a new machine, install the bridge:
+
+```bash
+./scripts/install-agent-context.sh
+```
+
+The script links the hook and project-scaffolding skills into `~/.claude`,
+adds the required hook entries without replacing other Claude settings, and
+links the shared `~/.agents/README.md`. It requires `jq` and stops if a target
+file already exists rather than overwriting it.
+
+Use the `new-project`, `existing-project`, or `just-rules` Claude skills to
+create the same `AGENTS.md` and `.agents/` layout in future repositories. No
+project-level `CLAUDE.md`, `.cursorrules`, or `.cursor/rules` is needed.
 
 ## Troubleshooting
 
