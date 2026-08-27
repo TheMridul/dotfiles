@@ -35,3 +35,10 @@ hl.config({
 -- Enable touchpad gestures for moving focus (helpful on scrolling layout).
 -- hl.gesture({ fingers = 3, direction = "left", action = function() hl.dispatch(hl.dsp.focus({ direction = "l" })) end })
 -- hl.gesture({ fingers = 3, direction = "right", action = function() hl.dispatch(hl.dsp.focus({ direction = "r" })) end })
+
+-- Stage plugin: 3-finger swipe up toggles the workspace overview, swipe down hides it.
+hl.gesture({ fingers = 3, direction = "up", action = function() hl.exec_cmd("omarchy-shell shell toggle zzwong.stage") end })
+hl.gesture({ fingers = 3, direction = "down", action = function() hl.exec_cmd("omarchy-shell shell hide zzwong.stage") end })
+
+-- 3-finger horizontal swipe: 1:1 workspace switch (left = prev, right = next).
+hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })

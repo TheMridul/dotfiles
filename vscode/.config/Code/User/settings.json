@@ -1,4 +1,4 @@
-{ "workbench.colorTheme": "Omarchy", 
+{ "workbench.colorTheme": "Tokyo Night", 
 "update.mode": "none",
 "chat.instructionsFilesLocations": {
     ".github/instructions": true,
@@ -31,5 +31,6 @@
     "plaintext": false,
     "markdown": false,
     "scminput": false
-}
+},
+"terminal.integrated.stickyScroll.enabled": false
 }

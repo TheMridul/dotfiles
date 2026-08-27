@@ -72,3 +72,6 @@ o.bind("ALT + SPACE", "Rofi (trial)", "rofi -show drun")
 
 -- Google Maps webapp removed; free its bind.
 hl.unbind("SUPER + SHIFT + S")
+
+-- Stage: workspace overview ("Mission Control") plugin, toggle on SUPER + GRAVE.
+o.bind("SUPER + GRAVE", "Stage", "omarchy-shell shell toggle zzwong.stage")
