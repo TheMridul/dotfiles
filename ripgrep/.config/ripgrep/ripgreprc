@@ -1,0 +1,29 @@
+# ripgrep configuration.
+#
+# Read by EVERY rg invocation that inherits RIPGREP_CONFIG_PATH, including the
+# ones coding agents make. So this file is limited to search *scope* and case
+# behaviour. Flags that change output *shape* must never go here:
+#
+#   --no-heading  --context/-A/-B/-C  --max-columns  --json  --sort  --replace
+#
+# Those silently corrupt output that another program is parsing. Pass them per
+# invocation instead.
+
+# Case-insensitive until the pattern itself contains an uppercase character.
+--smart-case
+
+# Search dotfiles. On this machine that is most of what there is to search.
+--hidden
+
+# ...but never the object store, and never generated trees. These are never the
+# answer and they dominate the timings when they are walked.
+--glob=!.git/
+--glob=!node_modules/
+--glob=!target/
+--glob=!.venv/
+--glob=!__pycache__/
+
+# Follow symlinks. ~/.config is stow symlinks into ~/.dotfiles, so without this
+# `rg foo ~/.config` silently skips every stowed package. The cost is that a
+# search rooted at ~ can report the same file twice, once by each path.
+--follow
