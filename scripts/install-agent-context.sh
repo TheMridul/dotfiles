@@ -26,6 +26,7 @@ link_if_missing() {
 }
 
 mkdir -p "$claude_home/hooks" "$claude_home/skills" "$shared_agents_home"
+mkdir -p "$shared_agents_home/memory"
 chmod +x "$hook_source"
 
 link_if_missing "$hook_source" "$hook_target"
@@ -33,6 +34,13 @@ link_if_missing "$dotfiles_root/claude/skills/new-project" "$claude_home/skills/
 link_if_missing "$dotfiles_root/claude/skills/existing-project" "$claude_home/skills/existing-project"
 link_if_missing "$dotfiles_root/claude/skills/just-rules" "$claude_home/skills/just-rules"
 link_if_missing "$dotfiles_root/agents/.agents/README.md" "$shared_agents_home/README.md"
+link_if_missing "$dotfiles_root/agents/AGENTS.md" "$HOME/AGENTS.md"
+
+# Codex reads ~/.codex/AGENTS.md as its global instructions. Point it at the
+# same file rather than keeping a second copy of the rules.
+if [[ -d $HOME/.codex ]]; then
+  link_if_missing "$HOME/AGENTS.md" "$HOME/.codex/AGENTS.md"
+fi
 
 settings_path="$claude_home/settings.json"
 if [[ -e $settings_path ]]; then
@@ -55,3 +63,4 @@ jq --arg hook '$HOME/.claude/hooks/load-agent-context.sh' '
 mv "$temporary_settings" "$settings_path"
 
 printf 'Shared agent context installed. Projects use AGENTS.md and .agents/.\n'
+printf 'Machine-wide memories live in %s/memory/ and are deliberately untracked.\n' "$shared_agents_home"

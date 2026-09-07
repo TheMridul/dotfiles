@@ -52,12 +52,24 @@ stow */
 
 ## Shared agent context
 
-Projects use one agent-neutral layout:
+One agent-neutral layout, in two layers:
 
-- `AGENTS.md` at the project root holds the shared project context and rules.
-- `.agents/` holds reusable project skills, references, and templates.
-- Cursor reads `AGENTS.md` directly. Claude Code uses a small local hook that
-  points its main session and subagents at the same files.
+- `~/AGENTS.md` (symlinked from `agents/AGENTS.md` here) holds machine- and
+  user-wide rules. `~/.agents/` holds user-level skills and the machine-wide
+  memory store.
+- `AGENTS.md` at a project root holds that project's context and rules, and
+  wins wherever it disagrees with the user-wide file. `.agents/` holds that
+  project's skills, references, templates, and memories.
+- Cursor reads `AGENTS.md` directly. Codex reads `~/.codex/AGENTS.md`, which is
+  a symlink to `~/AGENTS.md` rather than a second copy. Claude Code uses a small
+  local hook that points its main session and subagents at both layers.
+
+**Memories are not stored in an agent's private directory.** A project fact goes
+in that project's `.agents/memory/`; a machine or user fact goes in
+`~/.agents/memory/`. Both are plain Markdown with a `MEMORY.md` index, so every
+tool can read them. `~/.agents/memory/` is deliberately **not** tracked here —
+this repository is public and memories carry hostnames, key fingerprints, and
+hardware details. Back it up separately.
 
 After cloning this dotfiles repository on a new machine, install the bridge:
 
@@ -66,9 +78,10 @@ After cloning this dotfiles repository on a new machine, install the bridge:
 ```
 
 The script links the hook and project-scaffolding skills into `~/.claude`,
-adds the required hook entries without replacing other Claude settings, and
-links the shared `~/.agents/README.md`. It requires `jq` and stops if a target
-file already exists rather than overwriting it.
+adds the required hook entries without replacing other Claude settings, links
+`~/AGENTS.md` and the shared `~/.agents/README.md`, points `~/.codex/AGENTS.md`
+at the same file, and creates an empty `~/.agents/memory/`. It requires `jq` and
+stops if a target file already exists rather than overwriting it.
 
 Use the `new-project`, `existing-project`, or `just-rules` Claude skills to
 create the same `AGENTS.md` and `.agents/` layout in future repositories. No
