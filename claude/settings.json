@@ -1,38 +1,5 @@
 {
-  "env": {
-    "API_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
-    "ANTHROPIC_MODEL": "opusplan",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "512000"
-  },
-  "includeCoAuthoredBy": false,
-  "statusLine": {
-    "type": "command",
-    "command": "/home/mridul/.claude/statusline-command.sh"
-  },
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": false,
-    "superpowers@claude-plugins-official": true,
-    "vercel@claude-plugins-official": false
-  },
-  "extraKnownMarketplaces": {
-    "chrome-devtools-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "ChromeDevTools/chrome-devtools-mcp"
-      }
-    },
-    "claude-plugins-official": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/claude-plugins-official"
-      }
-    }
-  },
-  "alwaysThinkingEnabled": true,
-  "awaySummaryEnabled": false,
-  "theme": "light",
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -55,5 +22,46 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "/home/mridul/.claude/statusline.sh",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "medium",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "auto",
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "env": {
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "512000"
+  },
+  "includeCoAuthoredBy": false,
+  "extraKnownMarketplaces": {
+    "chrome-devtools-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "ChromeDevTools/chrome-devtools-mcp"
+      }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true,
+  "awaySummaryEnabled": false,
   "preferredNotifChannel": "notifications_disabled"
 }
