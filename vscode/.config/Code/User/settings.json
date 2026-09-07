@@ -1,4 +1,4 @@
-{ "workbench.colorTheme": "Noctokai", 
+{ "workbench.colorTheme": "Tokyo Night", 
 "update.mode": "none",
 "chat.instructionsFilesLocations": {
     ".github/instructions": true,
@@ -25,7 +25,6 @@
 "workbench.startupEditor": "none",
 "github.copilot.nextEditSuggestions.eagerness": "low",
 "github.copilot.nextEditSuggestions.enabled": false,
-"chat.titleBar.openInAgentsWindow.enabled": false,
 "github.copilot.enable": {
     "*": false,
     "plaintext": false,
@@ -33,5 +32,7 @@
     "scminput": false
 },
 "terminal.integrated.stickyScroll.enabled": false,
-"git.autofetch": true
+"git.autofetch": true,
+"workbench.browser.showInTitleBar": false,
+"chat.titleBar.openInAgentsWindow.enabled": false
 }
