@@ -28,3 +28,11 @@ require("default.hypr.toggles")
 
 -- Add any other personal Hyprland configuration below.
 -- o.window("qemu", { workspace = "5" })
+
+-- BEGIN io.github.niraj-envision.fleet window rule
+-- Fleet's SSH terminals must remain fully opaque inside its Chromium webapp.
+local FLEET = { class = "^chrome-.*$", title = "^Fleet$" }
+o.window(FLEET, { tag = "-chromium-based-browser" })
+o.window(FLEET, { tag = "-default-opacity" })
+o.window(FLEET, { opacity = "1.0 1.0" })
+-- END io.github.niraj-envision.fleet window rule

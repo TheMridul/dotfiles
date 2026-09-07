@@ -75,3 +75,8 @@ hl.unbind("SUPER + SHIFT + S")
 
 -- Stage: workspace overview ("Mission Control") plugin, toggle on SUPER + GRAVE.
 o.bind("SUPER + GRAVE", "Stage", "omarchy-shell shell toggle zzwong.stage")
+
+-- BEGIN io.github.niraj-envision.fleet binding
+-- Fleet starts the server on first run and focuses its existing window later.
+o.bind("SUPER + SHIFT + V", "Fleet (VPS manager)", os.getenv("HOME") .. "/.local/bin/fleet")
+-- END io.github.niraj-envision.fleet binding
