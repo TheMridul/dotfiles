@@ -77,7 +77,7 @@ After cloning this dotfiles repository on a new machine, install the bridge:
 ./scripts/install-agent-context.sh
 ```
 
-The script links the hook and project-scaffolding skills into `~/.claude`,
+The script links the hook, the statusline and all six skills into `~/.claude`,
 adds the required hook entries without replacing other Claude settings, links
 `~/AGENTS.md` and the shared `~/.agents/README.md`, points `~/.codex/AGENTS.md`
 at the same file, and creates an empty `~/.agents/memory/`. It requires `jq` and
@@ -85,7 +85,9 @@ stops if a target file already exists rather than overwriting it.
 
 Use the `new-project`, `existing-project`, or `just-rules` Claude skills to
 create the same `AGENTS.md` and `.agents/` layout in future repositories. No
-project-level `CLAUDE.md`, `.cursorrules`, or `.cursor/rules` is needed.
+project-level `CLAUDE.md`, `.cursorrules`, or `.cursor/rules` is needed. The
+remaining skills — `collaborator-tone`, `explain-code`, `mentor-mode` — shape
+how an agent writes and explains rather than what it scaffolds.
 
 ## Troubleshooting
 

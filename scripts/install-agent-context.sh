@@ -35,6 +35,9 @@ link_if_missing "$dotfiles_root/claude/statusline.sh" "$claude_home/statusline.s
 link_if_missing "$dotfiles_root/claude/skills/new-project" "$claude_home/skills/new-project"
 link_if_missing "$dotfiles_root/claude/skills/existing-project" "$claude_home/skills/existing-project"
 link_if_missing "$dotfiles_root/claude/skills/just-rules" "$claude_home/skills/just-rules"
+link_if_missing "$dotfiles_root/claude/skills/collaborator-tone" "$claude_home/skills/collaborator-tone"
+link_if_missing "$dotfiles_root/claude/skills/explain-code" "$claude_home/skills/explain-code"
+link_if_missing "$dotfiles_root/claude/skills/mentor-mode" "$claude_home/skills/mentor-mode"
 link_if_missing "$dotfiles_root/agents/.agents/README.md" "$shared_agents_home/README.md"
 link_if_missing "$dotfiles_root/agents/AGENTS.md" "$HOME/AGENTS.md"
 
