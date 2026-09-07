@@ -28,8 +28,10 @@ link_if_missing() {
 mkdir -p "$claude_home/hooks" "$claude_home/skills" "$shared_agents_home"
 mkdir -p "$shared_agents_home/memory"
 chmod +x "$hook_source"
+chmod +x "$dotfiles_root/claude/statusline.sh"
 
 link_if_missing "$hook_source" "$hook_target"
+link_if_missing "$dotfiles_root/claude/statusline.sh" "$claude_home/statusline.sh"
 link_if_missing "$dotfiles_root/claude/skills/new-project" "$claude_home/skills/new-project"
 link_if_missing "$dotfiles_root/claude/skills/existing-project" "$claude_home/skills/existing-project"
 link_if_missing "$dotfiles_root/claude/skills/just-rules" "$claude_home/skills/just-rules"
