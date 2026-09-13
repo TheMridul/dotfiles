@@ -51,7 +51,6 @@ install_arch() {
         tree
         duf
         multitail
-        yazi
         ffmpeg
         imagemagick
         bc
@@ -97,7 +96,6 @@ install_fedora() {
         tree
         duf
         multitail
-        yazi
         ffmpeg
         ImageMagick
         bc
