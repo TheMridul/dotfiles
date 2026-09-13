@@ -12,18 +12,22 @@ import of that base, with my own changes on top.
 ## Features
 
 - 🖥️ Hyprland window manager (native Lua config, Omarchy 4.0 "Quattro")
-- 🍭 Waybar themed to match OMARCHY
+- 🐚 Omarchy shell: bar layout, custom branding, and a cloned monitor panel
 - ⚡ Neovim via the official [`omarchy-nvim`](https://github.com/LazyVim/LazyVim) package (pacman-managed, theme-synced automatically — not tracked here; run `sudo pacman -Syu` then `omarchy-nvim-refresh` to update)
-- 🧩 Zsh + Starship prompt with Oh My Zsh plugins
-- 🐟 Fish shell config (CachyOS fish preset + Omarchy `OMARCHY_PATH`/starship setup) — daily-driver shell
-- 📝 Kitty & Ghostty terminal configurations
-- 🗂️ Yazi with custom theme
-- 📦 Lazygit and Lazydocker configs
-- 🔤 Fontconfig (Victor Mono Nerd Font)
+- 🐟 Fish shell config (CachyOS fish preset + Omarchy `OMARCHY_PATH`/starship setup) — the login shell
+- ✨ Starship prompt
+- 📊 btop and fastfetch
+- 📦 Lazygit config
+- 🔎 Ripgrep config
+- 🔤 Fontconfig (JetBrainsMono Nerd Font)
 - 🛠️ Tmux configuration with plugins and custom keybindings
 - 📋 Git configuration
+- 💻 VS Code settings and keybindings
 - 🚀 Automated scripts for app installation and database setup
 - 🤖 Shared AI-agent context with `AGENTS.md` and `.agents/`
+
+The terminal is [foot](https://codeberg.org/dnkl/foot), configured through
+Omarchy rather than tracked here.
 
 ## Installation
 
@@ -37,18 +41,25 @@ cd ~/.dotfiles
 **Install specific configs (example):**
 
 ```bash
-stow hypr
-stow zsh
-stow kitty
+stow --no-folding hypr
+stow --no-folding fish
+stow --no-folding starship
 ```
 
 **Install everything:**
 
 ```bash
-stow */
+stow --no-folding */
 ```
 
 > Make sure to remove or back up existing config files before stowing.
+
+**Always pass `--no-folding`.** Without it, stow replaces a whole config
+directory with one symlink pointing into this repo. Any file the program then
+writes — fish's `fish_variables`, btop's runtime `btop.conf`, Omarchy's
+downloaded themes and installed plugins — lands *inside* the repository and
+shows up as untracked noise. `--no-folding` keeps the real directories in place
+and symlinks only the tracked files.
 
 ## Shared agent context
 
