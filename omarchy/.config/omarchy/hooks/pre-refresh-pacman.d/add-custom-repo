@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Re-apply the CachyOS setup after Omarchy rewrites /etc/pacman.conf.
+#
+# `omarchy refresh pacman` (which `omarchy channel set` calls) overwrites
+# /etc/pacman.conf wholesale with Omarchy's vanilla-Arch template. That wiped
+# the CachyOS repos on 2026-08-13 and orphaned 32 packages -- including the
+# linux-cachyos kernels, which then had no source for security updates.
+#
+# Two things have to be restored, and both are needed for the repos to work:
+#
+#   1. The repo definitions, kept in $SNIPPET.
+#   2. The x86_64_v3 architecture. CachyOS's v3 packages are built as
+#      x86_64_v3, and pacman refuses any package whose architecture is not in
+#      its Architecture list ("does not have a valid architecture"). Omarchy's
+#      template sets "Architecture = auto", which on Arch's pacman resolves to
+#      x86_64 alone -- so without this the repos are configured but every v3
+#      package is rejected.
+
+CONF=/etc/pacman.conf
+SNIPPET=/etc/pacman.d/custom-repos.conf
+MARKER="Include = $SNIPPET"
+
+[[ -r $SNIPPET ]] || exit 0
+
+# 1. Architecture: accept plain x86_64 and CachyOS's v3 builds.
+if ! grep -qE '^Architecture[[:space:]]*=.*x86_64_v3' "$CONF"; then
+  sudo sed -i 's|^Architecture[[:space:]]*=.*|Architecture = x86_64 x86_64_v3|' "$CONF"
+fi
+
+# 2. Repos, inserted above [core] so the v3 builds take precedence, which is
+#    the ordering CachyOS itself ships.
+if ! grep -qxF "$MARKER" "$CONF"; then
+  sudo sed -i "0,/^\[core\]/s||$MARKER\n\n[core]|" "$CONF"
+fi
+
+exit 0

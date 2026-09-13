@@ -1,0 +1,116 @@
+{
+  "bar": {
+    "centerAnchor": "omarchy.clock",
+    "layout": {
+      "center": [
+        {
+          "id": "omarchy.indicators"
+        },
+        {
+          "id": "omarchy.clock",
+          "format": "dddd h:mm AP",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "verticalFormat": "HH\n—\nmm",
+          "birthYear": 0,
+          "lifeExpectancy": 75
+        },
+        {
+          "id": "omarchy.system-update"
+        },
+        {
+          "id": "omarchy.weather"
+        },
+        {
+          "id": "io.github.selenophilezh.aqi"
+        }
+      ],
+      "left": [
+        {
+          "id": "omarchy.menu"
+        },
+        {
+          "id": "omarchy.workspaces"
+        },
+        {
+          "id": "bitr0t.system-monitor",
+          "chipMode": "instrument",
+          "monitors": [
+            "cpu",
+            "memory",
+            "network"
+          ]
+        },
+        {
+          "id": "com.leafbox.f1"
+        }
+      ],
+      "right": [
+        {
+          "id": "omarchy.tray",
+          "pinned": [
+            "Fcitx"
+          ],
+          "hidden": []
+        },
+        {
+          "id": "io.github.niraj-envision.fleet"
+        },
+        {
+          "id": "io.github.mtolhuys.disk-lens"
+        },
+        {
+          "id": "tedwester.legion",
+          "monochromeBarIcon": false
+        },
+        {
+          "id": "omarchy.agents"
+        },
+        {
+          "id": "omarchy.tailscale"
+        },
+        {
+          "id": "omarchy.media"
+        },
+        {
+          "id": "omarchy.microphone"
+        },
+        {
+          "id": "omarchy.bluetooth"
+        },
+        {
+          "id": "omarchy.network"
+        },
+        {
+          "id": "omarchy.audio"
+        },
+        {
+          "id": "mridul.monitor"
+        },
+        {
+          "id": "omarchy.power"
+        }
+      ]
+    },
+    "position": "top",
+    "transparent": true
+  },
+  "idle": {
+    "lock": 300,
+    "screensaver": 150
+  },
+  "plugins": [
+    {
+      "id": "shmall.lock"
+    },
+    {
+      "id": "zzwong.stage"
+    }
+  ],
+  "version": 1,
+  "disabledPlugins": [
+    "omarchy.lock"
+  ],
+  "cloneSourceRestores": [
+    "shmall.lock"
+  ]
+}
