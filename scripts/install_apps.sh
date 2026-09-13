@@ -34,7 +34,6 @@ install_apps() {
 install_arch() {
     # Official packages
     local arch_official=(
-        kitty
         mpv
         okular
         neovim
@@ -42,7 +41,6 @@ install_arch() {
         git
         curl
         wget
-        zsh
         tmux
         eza
         fd
@@ -67,7 +65,6 @@ install_arch() {
         visual-studio-code-bin
         mongodb-compass-bin
         foliate
-        ghostty
         zen-browser-bin
         telegram-desktop-bin
         ttf-jetbrains-mono-nerd
@@ -85,13 +82,11 @@ install_arch() {
 install_fedora() {
     # DNF packages
     local fedora_pkgs=(
-        kitty
         mpv
         neovim
         git
         curl
         wget
-        zsh
         tmux
         eza
         fd-find
@@ -138,7 +133,7 @@ install_fedora() {
     fi
 
     # fd-find provides `fd` as `fd` on Fedora? No - it provides `fd-find`.
-    # Create compatibility symlink so `fd` works (used by fzf/zsh).
+    # Create compatibility symlink so `fd` works (used by fzf).
     if command_exists fd-find && ! command_exists fd; then
         log_info "Creating 'fd' symlink to 'fd-find'..."
         sudo ln -sf "$(which fd-find)" /usr/local/bin/fd

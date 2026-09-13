@@ -206,37 +206,6 @@ install_tpm() {
     fi
 }
 
-# Install Oh My Zsh and plugins
-install_oh_my_zsh() {
-    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-        log "Installing Oh My Zsh..."
-        RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    else
-        log "Oh My Zsh already installed"
-    fi
-
-    # Install plugins
-    local plugins_dir="$HOME/.oh-my-zsh/custom/plugins"
-    mkdir -p "$plugins_dir"
-
-    local plugins=(
-        "https://github.com/zsh-users/zsh-autosuggestions"
-        "https://github.com/zsh-users/zsh-syntax-highlighting"
-    )
-
-    for plugin_url in "${plugins[@]}"; do
-        local plugin_name=$(basename "$plugin_url")
-        local plugin_path="$plugins_dir/$plugin_name"
-
-        if [[ ! -d "$plugin_path" ]]; then
-            log "Installing zsh plugin: $plugin_name"
-            git clone "$plugin_url" "$plugin_path"
-        else
-            log "zsh plugin $plugin_name already installed"
-        fi
-    done
-}
-
 # Ask user and run script
 ask_and_run() {
     local description="$1"

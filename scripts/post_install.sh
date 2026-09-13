@@ -15,17 +15,17 @@ OS_TYPE=$(detect_os)
 show_next_steps() {
     header "🚀 Next Steps"
 
-    echo -e "1. ${BOLD}Set Zsh as default shell:${NC}"
-    echo -e "   ${BLUE}chsh -s \$(which zsh)${NC}"
+    echo -e "1. ${BOLD}Set fish as default shell:${NC}"
+    echo -e "   ${BLUE}chsh -s \$(which fish)${NC}"
 
     echo -e "\n2. ${BOLD}Restart your shell${NC} or run:"
-    echo -e "   ${BLUE}source ~/.zshrc${NC}"
+    echo -e "   ${BLUE}exec fish${NC}"
 
     echo -e "\n3. ${BOLD}In tmux, install plugins:${NC}"
     echo -e "   ${BLUE}prefix + I${NC}"
 
     echo -e "\n4. ${BOLD}Stow your dotfiles:${NC}"
-    echo -e "   ${BLUE}cd ~/.dotfiles && stow */${NC}"
+    echo -e "   ${BLUE}cd ~/.dotfiles && stow --no-folding */${NC}"
 
     echo -e "\n5. ${BOLD}Customize for your workflow:${NC}"
     echo -e "   ${BLUE}Edit configs to match your workflow${NC}"
@@ -44,15 +44,12 @@ main() {
     echo -e "${BLUE}ℹ Available setup modules:${NC}"
     echo "  📦 Development apps (VS Code, browsers, tools)"
     echo "  🗄️  Databases (MongoDB + PostgreSQL)"
-    echo "  🐚 Shell setup (Oh My Zsh + plugins)"
     echo "  🔧 Optional desktop entries"
 
     # Run setup modules
     ask_and_run "Install development apps?" "install_apps.sh"
     ask_and_run "Setup MongoDB and PostgreSQL databases?" "setup_databases.sh"
 
-    # Install Oh My Zsh and plugins
-    ask_and_run "Install Oh My Zsh and plugins?" bash -c "source '$SCRIPT_DIR/utils.sh' && install_oh_my_zsh || { echo 'OMZ install failed'; exit 1; }"
     ask_and_run "Install Tmux Plugin Manager?" bash -c "source '$SCRIPT_DIR/utils.sh' && install_tpm || { echo 'TPM install failed'; exit 1; }"
 
     # Setup MongoDB Compass desktop entry if installed
