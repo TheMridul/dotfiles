@@ -63,13 +63,6 @@ o.bind("SUPER + SHIFT + ESCAPE", "System monitor (btop)", { tui = "btop", focus 
 -- (SUPER + SHIFT + N is Omarchy's default Editor bind — left alone.)
 o.bind("SUPER + SHIFT + H", "Network (nmtui)", { tui = "nmtui", focus = true })
 
--- Send VS Code to workspace 3.
-o.window("[Cc]ode", { workspace = "3" })
-
--- Trial: rofi launcher on ALT + SPACE (Walker stays on its existing
--- binds so both can be compared side by side).
-o.bind("ALT + SPACE", "Rofi (trial)", "rofi -show drun")
-
 -- Google Maps webapp removed; free its bind.
 hl.unbind("SUPER + SHIFT + S")
 
