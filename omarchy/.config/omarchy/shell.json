@@ -26,6 +26,9 @@
       ],
       "left": [
         {
+          "id": "io.github.ferc10110.save-them-all"
+        },
+        {
           "id": "omarchy.menu"
         },
         {
@@ -92,7 +95,7 @@
       ]
     },
     "position": "top",
-    "transparent": true
+    "transparent": false
   },
   "idle": {
     "lock": 300,
