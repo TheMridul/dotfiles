@@ -27,48 +27,25 @@
 -- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
 -- o.bind("SUPER + PERIOD", nil, "omarchy-shell shell toggle omarchy.emojis")
 
--- ---------------------------------------------------------------------------
--- Personal overrides
--- ---------------------------------------------------------------------------
-
--- Editor: VS Code on SUPER + C (replaces Omarchy's "Universal copy" default).
+-- Personal application bindings.
 hl.unbind("SUPER + C")
 o.bind("SUPER + C", "VS Code", { launch = "code", focus = "^([Cc]ode)$" })
 
--- AI: Claude on SUPER + A, Claude Code (CLI) in a terminal on SUPER + SHIFT + A
--- (replaces the default ChatGPT binding).
 o.bind("SUPER + A", "Claude", { webapp = "https://claude.ai" })
 hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + A", "Claude Code", { tui = "claude", focus = true })
 
--- Music: YouTube Music webapp on SUPER + SHIFT + M (replaces the default
--- Spotify bind, which just launches Spotify's installer since it isn't
--- installed here).
 hl.unbind("SUPER + SHIFT + M")
 o.bind("SUPER + SHIFT + M", "Music (YouTube Music)", { webapp = "https://music.youtube.com", focus = true })
 
--- Passwords: Bitwarden desktop on SUPER + SHIFT + SLASH (replaces 1Password default).
 hl.unbind("SUPER + SHIFT + SLASH")
 o.bind("SUPER + SHIFT + SLASH", "Passwords (Bitwarden)", { launch = "bitwarden-desktop", focus = "^([Bb]itwarden)$" })
 
--- System monitor: btop in a floating TUI on SUPER + SHIFT + ESCAPE
--- (SUPER + ESCAPE is Omarchy's default System menu bind — left alone).
 o.bind("SUPER + SHIFT + ESCAPE", "System monitor (btop)", { tui = "btop", focus = true })
-
--- Network TUI (nmtui) on SUPER + SHIFT + H. The bar's network widget only
--- documents a right-click -> nmtui shortcut for hidden-SSID connections;
--- that interaction isn't actually wired up in the current omarchy-shell
--- code (upstream doc/implementation mismatch), so this is a direct path.
--- (SUPER + SHIFT + N is Omarchy's default Editor bind — left alone.)
 o.bind("SUPER + SHIFT + H", "Network (nmtui)", { tui = "nmtui", focus = true })
 
 -- Google Maps webapp removed; free its bind.
 hl.unbind("SUPER + SHIFT + S")
 
--- Stage: workspace overview ("Mission Control") plugin, toggle on SUPER + GRAVE.
 o.bind("SUPER + GRAVE", "Stage", "omarchy-shell shell toggle zzwong.stage")
-
--- BEGIN io.github.niraj-envision.fleet binding
--- Fleet starts the server on first run and focuses its existing window later.
 o.bind("SUPER + SHIFT + V", "Fleet (VPS manager)", os.getenv("HOME") .. "/.local/bin/fleet")
--- END io.github.niraj-envision.fleet binding

@@ -21,7 +21,6 @@ require("hypr.input")
 require("hypr.bindings")
 require("hypr.looknfeel")
 require("hypr.autostart")
-require("hypr.envs")
 
 -- Toggle config flags dynamically.
 require("default.hypr.toggles")
@@ -29,10 +28,17 @@ require("default.hypr.toggles")
 -- Add any other personal Hyprland configuration below.
 -- o.window("qemu", { workspace = "5" })
 
--- BEGIN io.github.niraj-envision.fleet window rule
--- Fleet's SSH terminals must remain fully opaque inside its Chromium webapp.
+-- VA-API decodes on the Intel iGPU, not the dGPU. Omarchy's nvidia.lua sets
+-- LIBVA_DRIVER_NAME=nvidia whenever a GSP-capable card is present, but the
+-- panel hangs off 00:02.0, so the compositor and every GPU process render on
+-- Intel. Chromium then loads nvidia_drv_video.so against /dev/dri/renderD129
+-- (Intel), which hangs instead of failing cleanly: garbled frames, black video
+-- with sound, and a CPU-decode fallback. Reproduced with ffmpeg on both nodes.
+-- Revisit if an external display ever moves the compositor onto the dGPU.
+hl.env("LIBVA_DRIVER_NAME", "iHD")
+
+-- Fleet's SSH terminals remain opaque inside its Chromium webapp.
 local FLEET = { class = "^chrome-.*$", title = "^Fleet$" }
 o.window(FLEET, { tag = "-chromium-based-browser" })
 o.window(FLEET, { tag = "-default-opacity" })
 o.window(FLEET, { opacity = "1.0 1.0" })
--- END io.github.niraj-envision.fleet window rule

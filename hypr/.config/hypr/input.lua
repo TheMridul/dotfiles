@@ -77,7 +77,7 @@ hl.config({
 -- hl.gesture({ fingers = 3, direction = "left", action = function() hl.dispatch(hl.dsp.focus({ direction = "l" })) end })
 -- hl.gesture({ fingers = 3, direction = "right", action = function() hl.dispatch(hl.dsp.focus({ direction = "r" })) end })
 
--- Stage plugin: 3-finger swipe up toggles the workspace overview, swipe down hides it.
+-- Stage plugin: swipe up opens the overview; swipe down hides it.
 hl.gesture({ fingers = 3, direction = "up", action = function() hl.exec_cmd("omarchy-shell shell toggle zzwong.stage") end })
 hl.gesture({ fingers = 3, direction = "down", action = function() hl.exec_cmd("omarchy-shell shell hide zzwong.stage") end })
 
