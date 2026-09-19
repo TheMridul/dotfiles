@@ -1,4 +1,9 @@
 {
+  "env": {
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "512000"
+  },
+  "includeCoAuthoredBy": false,
   "model": "opus",
   "hooks": {
     "SessionStart": [
@@ -29,24 +34,9 @@
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
   },
-  "effortLevel": "medium",
-  "modelSettings": {
-    "claude-opus-5": {
-      "effortLevel": "high"
-    }
-  },
-  "skipDangerousModePermissionPrompt": true,
-  "theme": "auto",
-  "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "env": {
-    "API_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "512000"
-  },
-  "includeCoAuthoredBy": false,
   "extraKnownMarketplaces": {
     "chrome-devtools-plugins": {
       "source": {
@@ -62,6 +52,17 @@
     }
   },
   "alwaysThinkingEnabled": true,
+  "effortLevel": "medium",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  },
   "awaySummaryEnabled": false,
-  "preferredNotifChannel": "notifications_disabled"
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "auto",
+  "preferredNotifChannel": "notifications_disabled",
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true
 }
