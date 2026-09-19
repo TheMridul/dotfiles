@@ -4,6 +4,25 @@ Rules for any coding agent working as Mridul. A project's own `AGENTS.md` is
 more specific and wins wherever the two disagree. This file covers everything
 outside a project, and everything a project does not say.
 
+## Context discovery
+
+Every agent working on this system must use the same context discovery rules.
+
+- Always use `~/AGENTS.md` for user- and machine-wide rules and `~/.agents/`
+  for user- and machine-wide resources.
+- Starting at the current working directory, walk upward toward `~` and use
+  every `AGENTS.md` and `.agents/` directory found on that ancestor path.
+  Discover the two independently: an applicable `.agents/` directory does not
+  need a sibling `AGENTS.md`, and an `AGENTS.md` does not need a sibling
+  `.agents/` directory.
+- Apply broader rules first. A deeper `AGENTS.md` overrides only conflicting
+  rules from broader files; the rest still applies.
+- Do not scan sibling directories, unrelated projects, or every project under
+  `~`. Project context comes only from the current working directory's ancestor
+  path.
+- Resolve relative references such as `../.agents/` from the file or working
+  context that contains them.
+
 ## Memory
 
 Durable facts go where every agent can read them, never in one tool's private
