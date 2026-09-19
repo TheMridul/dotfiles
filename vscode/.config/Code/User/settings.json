@@ -12,7 +12,7 @@
     "/tmp/postman-http-request-post-response.instructions.md": true,
     "/tmp/postman-http-request-pre-request.instructions.md": true
 },
-"workbench.iconTheme": "material-icon-theme",
+"workbench.iconTheme": "vira-icons-teal",
 "files.autoSave": "afterDelay",
 "code-runner.clearPreviousOutput": true,
 "code-runner.fileDirectoryAsCwd": true,
@@ -34,5 +34,8 @@
 "terminal.integrated.stickyScroll.enabled": false,
 "git.autofetch": true,
 "workbench.browser.showInTitleBar": false,
-"chat.titleBar.openInAgentsWindow.enabled": false
+"chat.titleBar.openInAgentsWindow.enabled": false,
+"window.density.layout": "compact",
+"workbench.productIconTheme": "viraUIIcons",
+"viraTheme.accent": ""
 }
