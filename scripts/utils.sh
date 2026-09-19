@@ -113,7 +113,7 @@ install_arch_packages() {
 
     if [[ ${#to_install[@]} -gt 0 ]]; then
         log_info "Installing Arch packages: ${to_install[*]}"
-        sudo pacman -S --needed "${to_install[@]}"
+        omarchy pkg add "${to_install[@]}"
     fi
 }
 
@@ -136,10 +136,10 @@ install_fedora_packages() {
     fi
 }
 
-# Install AUR packages with yay (Arch only)
+# Install AUR packages through Omarchy (Arch only)
 install_aur_packages() {
-    if ! command_exists yay; then
-        warn "yay not installed, skipping AUR packages"
+    if ! command_exists omarchy; then
+        warn "omarchy not installed, skipping AUR packages"
         return 0
     fi
 
@@ -148,7 +148,7 @@ install_aur_packages() {
     for pkg in "${pkgs[@]}"; do
         if ! is_arch_pkg_installed "$pkg"; then
             log_info "Installing AUR package: $pkg"
-            yay -S --needed "$pkg"
+            omarchy pkg aur add "$pkg"
         else
             log "AUR package $pkg already installed"
         fi

@@ -1,10 +1,3 @@
-source /usr/share/cachyos-fish-config/cachyos-config.fish
-
-# OMARCHY_PATH is no longer set here. Omarchy is a package now (omarchy-dev), so
-# /etc/omarchy.conf resolves it to /usr/share/omarchy and /usr/bin/omarchy-* is
-# already on PATH. Setting it here pinned interactive shells to the old
-# ~/.local/share/omarchy checkout, which is frozen and no longer updated.
-
 # overwrite greeting
 # potentially disabling fastfetch
 #function fish_greeting

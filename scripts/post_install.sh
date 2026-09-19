@@ -24,8 +24,9 @@ show_next_steps() {
     echo -e "\n3. ${BOLD}In tmux, install plugins:${NC}"
     echo -e "   ${BLUE}prefix + I${NC}"
 
-    echo -e "\n4. ${BOLD}Stow your dotfiles:${NC}"
-    echo -e "   ${BLUE}cd ~/.dotfiles && stow --no-folding */${NC}"
+    echo -e "\n4. ${BOLD}Stow the portable dotfile packages:${NC}"
+    echo -e "   ${BLUE}cd ~/.dotfiles && stow --no-folding agents git cargo ripgrep starship lazygit btop fastfetch fontconfig tmux vscode${NC}"
+    echo -e "   Merge fish, hypr and omarchy against current defaults before stowing them."
 
     echo -e "\n5. ${BOLD}Customize for your workflow:${NC}"
     echo -e "   ${BLUE}Edit configs to match your workflow${NC}"

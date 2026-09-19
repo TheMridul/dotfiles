@@ -70,8 +70,8 @@ install_arch() {
         bibata-cursor-theme-bin
     )
 
-    # Update system
-    sudo pacman -Syu --needed
+    # Update through Omarchy so migrations, snapshots and boot hooks run.
+    omarchy update
 
     # Install packages
     install_arch_packages "${arch_official[@]}"

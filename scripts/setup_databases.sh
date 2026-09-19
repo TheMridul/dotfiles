@@ -23,7 +23,7 @@ setup_mongodb() {
             local svc="mongodb"
             if ! is_arch_pkg_installed "$pkg"; then
                 log_info "Installing MongoDB..."
-                yay -S --needed "$pkg"
+                omarchy pkg aur add "$pkg"
             else
                 log "MongoDB already installed"
             fi
@@ -81,7 +81,7 @@ setup_postgresql() {
             pg_user="postgres"
             if ! is_arch_pkg_installed "$pg_pkg"; then
                 log_info "Installing PostgreSQL..."
-                sudo pacman -S --needed "$pg_pkg"
+                omarchy pkg add "$pg_pkg"
             else
                 log "PostgreSQL already installed"
             fi

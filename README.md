@@ -13,8 +13,8 @@ import of that base, with my own changes on top.
 
 - 🖥️ Hyprland window manager (native Lua config, Omarchy 4.0 "Quattro")
 - 🐚 Omarchy shell: bar layout, custom branding, and a cloned monitor panel
-- ⚡ Neovim via the official [`omarchy-nvim`](https://github.com/LazyVim/LazyVim) package (pacman-managed, theme-synced automatically — not tracked here; run `sudo pacman -Syu` then `omarchy-nvim-refresh` to update)
-- 🐟 Fish shell config (CachyOS fish preset + Omarchy `OMARCHY_PATH`/starship setup) — the login shell
+- ⚡ Neovim via the official [`omarchy-nvim`](https://github.com/LazyVim/LazyVim) package (package-managed, theme-synced automatically; run `omarchy update` then `omarchy-nvim-refresh` to update)
+- 🐟 Fish shell config with Starship setup and personal aliases
 - ✨ Starship prompt
 - 📊 btop and fastfetch
 - 📦 Lazygit config
@@ -46,11 +46,9 @@ stow --no-folding fish
 stow --no-folding starship
 ```
 
-**Install everything:**
-
-```bash
-stow --no-folding */
-```
+Install packages selectively. Do not stow `claude` or `scripts`, and merge the
+`hypr` and `omarchy` packages against the current Omarchy defaults before
+stowing them.
 
 > Make sure to remove or back up existing config files before stowing.
 
@@ -102,6 +100,6 @@ how an agent writes and explains rather than what it scaffolds.
 
 ## Troubleshooting
 
-CachyOS-specific gotchas (SDDM theme Qt5/Qt6 crash, `omarchy update` wiping
-pacman repos, locale/btop, keybind conflicts) are written up in
-[TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+`TROUBLESHOOTING.md` is retained as history for the retired CachyOS-based
+installation. Do not apply its repository, kernel, SDDM, or boot fixes to a
+standard Omarchy install.
