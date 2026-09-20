@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude Collaboration"
+  short_description: "Divide work across Claude agents and synthesize it"
+  default_prompt: "Use $claude-collab to divide this task among Claude agents and synthesize the strongest result."
