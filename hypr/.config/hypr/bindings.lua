@@ -49,3 +49,4 @@ hl.unbind("SUPER + SHIFT + S")
 
 o.bind("SUPER + GRAVE", "Stage", "omarchy-shell shell toggle zzwong.stage")
 o.bind("SUPER + SHIFT + V", "Fleet (VPS manager)", os.getenv("HOME") .. "/.local/bin/fleet")
+o.bind("SUPER + SHIFT + ALT + RETURN", "Browser (private)", { omarchy = "browser --private" })
