@@ -64,8 +64,8 @@ and symlinks only the tracked files.
 One agent-neutral layout, in two layers:
 
 - `~/AGENTS.md` (symlinked from `agents/AGENTS.md` here) holds machine- and
-  user-wide rules. `~/.agents/` holds user-level skills and the machine-wide
-  memory store.
+  user-wide rules. `~/.agents/skills` points at the shared skills tracked here,
+  while `~/.agents/memory` is the local machine-wide memory store.
 - `AGENTS.md` at a project root holds that project's context and rules, and
   wins wherever it disagrees with the user-wide file. `.agents/` holds that
   project's skills, references, templates, and memories.
@@ -88,9 +88,10 @@ After cloning this dotfiles repository on a new machine, install the bridge:
 
 The script links the hook, the statusline and all six skills into `~/.claude`,
 adds the required hook entries without replacing other Claude settings, links
-`~/AGENTS.md` and the shared `~/.agents/README.md`, points `~/.codex/AGENTS.md`
-at the same file, and creates an empty `~/.agents/memory/`. It requires `jq` and
-stops if a target file already exists rather than overwriting it.
+`~/AGENTS.md`, `~/.agents/README.md`, and `~/.agents/skills`, points
+`~/.codex/AGENTS.md` at the same rules file, and creates an empty
+`~/.agents/memory/`. It requires `jq` and stops if a target file already exists
+rather than overwriting it.
 
 Use the `new-project`, `existing-project`, or `just-rules` Claude skills to
 create the same `AGENTS.md` and `.agents/` layout in future repositories. No

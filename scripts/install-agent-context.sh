@@ -39,6 +39,7 @@ link_if_missing "$dotfiles_root/claude/skills/collaborator-tone" "$claude_home/s
 link_if_missing "$dotfiles_root/claude/skills/explain-code" "$claude_home/skills/explain-code"
 link_if_missing "$dotfiles_root/claude/skills/mentor-mode" "$claude_home/skills/mentor-mode"
 link_if_missing "$dotfiles_root/agents/.agents/README.md" "$shared_agents_home/README.md"
+link_if_missing "$dotfiles_root/agents/.agents/skills" "$shared_agents_home/skills"
 link_if_missing "$dotfiles_root/agents/AGENTS.md" "$HOME/AGENTS.md"
 
 # Codex reads ~/.codex/AGENTS.md as its global instructions. Point it at the

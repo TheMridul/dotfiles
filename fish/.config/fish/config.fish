@@ -1,8 +1,8 @@
-# overwrite greeting
-# potentially disabling fastfetch
-#function fish_greeting
-#    # smth smth
-#end
+function fish_greeting
+    if command -q fastfetch
+        fastfetch
+    end
+end
 
 # Prompt (hushOS-themed, ~/.config/starship.toml)
 if command -q starship
