@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "$HOME/.local/share/kokoro/venv/bin/python" "$HOME/.local/share/kokoro/kokoro-say.py" "$@"

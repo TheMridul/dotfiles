@@ -23,7 +23,7 @@ import of that base, with my own changes on top.
 - 🛠️ Tmux configuration with plugins and custom keybindings
 - 📋 Git configuration
 - 💻 VS Code settings and keybindings
-- 🔊 `read-aloud`, speaks the current selection with piper-tts
+- 🔊 `read-aloud`, speaks the current selection with Kokoro-82M on CPU
 - 🚀 Automated scripts for app installation and database setup
 - 🤖 Shared AI-agent context with `AGENTS.md` and `.agents/`
 
@@ -52,15 +52,28 @@ Install packages selectively. Do not stow `claude` or `scripts`, and merge the
 stowing them.
 
 The `bin` package installs `read-aloud`, bound to `SUPER + ALT + R` in the
-`hypr` package. It needs `piper-tts-bin` from the AUR plus a voice model, which
-is too large to track here:
+`hypr` package. It speaks whatever is in the primary selection. The models are
+far too large to track here, so set them up once:
 
 ```bash
+# Kokoro-82M, the default engine. Use the fp32 model: the int8 one is 4.6x
+# slower on CPU (RTF 0.99 vs 0.21) because ConvInteger has no fast kernel.
+mkdir -p ~/.local/share/kokoro && cd ~/.local/share/kokoro
+python3 -m venv venv
+venv/bin/pip install --ignore-requires-python kokoro-onnx
+K=https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0
+curl -fsSLO "$K/kokoro-v1.0.onnx" -O "$K/voices-v1.0.bin"
+
+# piper, the fallback, used when the venv is missing or READ_ALOUD_ENGINE=piper
 yay -S piper-tts-bin
 mkdir -p ~/.local/share/piper-voices && cd ~/.local/share/piper-voices
 B=https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/high
 curl -fsSLO "$B/en_US-lessac-high.onnx" -O "$B/en_US-lessac-high.onnx.json"
 ```
+
+`--ignore-requires-python` is needed because `kokoro-onnx` caps at Python
+`<3.14` while both of its dependencies are `py3-none-any`, so the cap is an
+untested upper bound rather than a real incompatibility.
 
 > Make sure to remove or back up existing config files before stowing.
 

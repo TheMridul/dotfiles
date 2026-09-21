@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
-# Read the current selection aloud with piper. Press again to stop.
+# Read the current selection aloud. Press again to stop.
 #
 # Reads PRIMARY (whatever you last selected with the mouse) and falls back to
 # the clipboard. No key injection, so this works in native Wayland windows,
 # which is where parrot-tts fell over.
+#
+# Engine is Kokoro-82M on CPU, with piper as a fallback when the Kokoro venv
+# or its model files are missing. Force one with READ_ALOUD_ENGINE=piper.
 
 set -uo pipefail
 
-VOICE="$HOME/.local/share/piper-voices/en_US-lessac-high.onnx"
+# Hyprland's exec environment does not include ~/.local/bin, so kokoro-say is
+# not on PATH when this runs from a keybind.
+PATH="$HOME/.local/bin:$PATH"
+
+PIPER_VOICE="$HOME/.local/share/piper-voices/en_US-lessac-high.onnx"
+KOKORO_DIR="$HOME/.local/share/kokoro"
 STATE="${XDG_RUNTIME_DIR:-/tmp}/read-aloud.pid"
 
 # Second press stops the read this script started. Killing every aplay on the
@@ -38,13 +46,25 @@ if [ -z "$text" ]; then
   exit 0
 fi
 
-rate=$(jq -r '.audio.sample_rate // 22050' "$VOICE.json" 2>/dev/null || echo 22050)
+engine=${READ_ALOUD_ENGINE:-kokoro}
+if [ "$engine" = kokoro ] && [ ! -x "$KOKORO_DIR/venv/bin/python" ]; then
+  engine=piper
+fi
+
+if [ "$engine" = kokoro ]; then
+  synth=("$HOME/.local/bin/kokoro-say")
+  rate=24000
+else
+  synth=(piper-tts --model "$PIPER_VOICE" --output_raw)
+  rate=$(jq -r '.audio.sample_rate // 22050' "$PIPER_VOICE.json" 2>/dev/null || echo 22050)
+fi
 
 printf '%s' "$text" \
-  | piper-tts --model "$VOICE" --output_raw 2>/dev/null \
+  | "${synth[@]}" 2>/dev/null \
   | aplay -q -r "$rate" -f S16_LE -t raw - 2>/dev/null &
 
-# $! is the last process in the pipeline, ie aplay. Killing it SIGPIPEs piper.
+# $! is the last process in the pipeline, ie aplay. Killing it SIGPIPEs the
+# synthesiser.
 player=$!
 echo "$player" > "$STATE"
 wait "$player"
