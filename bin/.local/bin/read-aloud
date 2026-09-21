@@ -52,10 +52,10 @@ if [ "$engine" = kokoro ] && [ ! -x "$KOKORO_DIR/venv/bin/python" ]; then
 fi
 
 if [ "$engine" = kokoro ]; then
-  synth=("$HOME/.local/bin/kokoro-say")
+  synth=(nice -n 10 "$HOME/.local/bin/kokoro-say")
   rate=24000
 else
-  synth=(piper-tts --model "$PIPER_VOICE" --output_raw)
+  synth=(nice -n 10 piper-tts --model "$PIPER_VOICE" --output_raw)
   rate=$(jq -r '.audio.sample_rate // 22050' "$PIPER_VOICE.json" 2>/dev/null || echo 22050)
 fi
 

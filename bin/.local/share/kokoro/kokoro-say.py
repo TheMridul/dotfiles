@@ -20,8 +20,10 @@ HERE = os.path.expanduser("~/.local/share/kokoro")
 MODEL = os.environ.get("KOKORO_MODEL", os.path.join(HERE, "kokoro-v1.0.onnx"))
 VOICE = os.environ.get("KOKORO_VOICE", "af_heart")
 SPEED = float(os.environ.get("KOKORO_SPEED", "1.0"))
-# 8 beats both 4 and 16 here; 16 oversubscribes and doubles the time.
-THREADS = int(os.environ.get("KOKORO_THREADS", "8"))
+# 4 threads starts speaking as fast as 8 (1327ms vs 1355ms end to end) on
+# half the cores. Past 4 the extra threads land on E-cores and hyperthreads
+# and mostly burn CPU: 8 threads cost 1.56 cpu-seconds per second of speech.
+THREADS = int(os.environ.get("KOKORO_THREADS", "4"))
 MAX_CHUNK = 350
 
 text = sys.stdin.read().strip()
@@ -56,6 +58,9 @@ options = ort.SessionOptions()
 options.intra_op_num_threads = THREADS
 options.inter_op_num_threads = 1
 options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+# Idle workers busy-wait between ops by default. Off costs ~2% wall time and
+# saves ~18% CPU (0.94 -> 0.77 cpu-s per audio-s at 4 threads).
+options.add_session_config_entry("session.intra_op.allow_spinning", "0")
 session = ort.InferenceSession(MODEL, options, providers=["CPUExecutionProvider"])
 kokoro = Kokoro.from_session(session, os.path.join(HERE, "voices-v1.0.bin"))
 
