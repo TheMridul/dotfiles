@@ -23,6 +23,7 @@ import of that base, with my own changes on top.
 - 🛠️ Tmux configuration with plugins and custom keybindings
 - 📋 Git configuration
 - 💻 VS Code settings and keybindings
+- 🔊 `read-aloud`, speaks the current selection with piper-tts
 - 🚀 Automated scripts for app installation and database setup
 - 🤖 Shared AI-agent context with `AGENTS.md` and `.agents/`
 
@@ -49,6 +50,17 @@ stow --no-folding starship
 Install packages selectively. Do not stow `claude` or `scripts`, and merge the
 `hypr` and `omarchy` packages against the current Omarchy defaults before
 stowing them.
+
+The `bin` package installs `read-aloud`, bound to `SUPER + ALT + R` in the
+`hypr` package. It needs `piper-tts-bin` from the AUR plus a voice model, which
+is too large to track here:
+
+```bash
+yay -S piper-tts-bin
+mkdir -p ~/.local/share/piper-voices && cd ~/.local/share/piper-voices
+B=https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/high
+curl -fsSLO "$B/en_US-lessac-high.onnx" -O "$B/en_US-lessac-high.onnx.json"
+```
 
 > Make sure to remove or back up existing config files before stowing.
 

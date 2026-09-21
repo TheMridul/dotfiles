@@ -50,3 +50,7 @@ hl.unbind("SUPER + SHIFT + S")
 o.bind("SUPER + GRAVE", "Stage", "omarchy-shell shell toggle zzwong.stage")
 o.bind("SUPER + SHIFT + V", "Fleet (VPS manager)", os.getenv("HOME") .. "/.local/bin/fleet")
 o.bind("SUPER + SHIFT + ALT + RETURN", "Browser (private)", { omarchy = "browser --private" })
+
+-- Read the selection aloud (piper-tts). Reads PRIMARY via wl-paste rather than
+-- faking Ctrl+C, so it works in native Wayland windows. Press again to stop.
+o.bind("SUPER + ALT + R", "Read aloud", os.getenv("HOME") .. "/.local/bin/read-aloud")

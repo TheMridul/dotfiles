@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Read the current selection aloud with piper. Press again to stop.
+#
+# Reads PRIMARY (whatever you last selected with the mouse) and falls back to
+# the clipboard. No key injection, so this works in native Wayland windows,
+# which is where parrot-tts fell over.
+
+set -uo pipefail
+
+VOICE="$HOME/.local/share/piper-voices/en_US-lessac-high.onnx"
+STATE="${XDG_RUNTIME_DIR:-/tmp}/read-aloud.pid"
+
+# Second press stops the read this script started. Killing every aplay on the
+# system would also silence anything else using it.
+if [ -r "$STATE" ]; then
+  old=$(cat "$STATE" 2>/dev/null)
+  rm -f "$STATE"
+  if [ -n "$old" ] && kill "$old" 2>/dev/null; then
+    exit 0
+  fi
+fi
+
+# A Wayland selection is served by whichever client owns it, and ownership
+# transfers asynchronously. A read issued immediately after a copy can come
+# back empty even though text is on its way. Retry for ~400ms before believing
+# the selection is really empty.
+text=""
+for attempt in 1 2 3 4 5; do
+  text=$(wl-paste --primary --no-newline 2>/dev/null)
+  [ -n "$text" ] && break
+  text=$(wl-paste --no-newline 2>/dev/null)
+  [ -n "$text" ] && break
+  sleep 0.08
+done
+
+if [ -z "$text" ]; then
+  notify-send -a "Read aloud" "Nothing selected"
+  exit 0
+fi
+
+rate=$(jq -r '.audio.sample_rate // 22050' "$VOICE.json" 2>/dev/null || echo 22050)
+
+printf '%s' "$text" \
+  | piper-tts --model "$VOICE" --output_raw 2>/dev/null \
+  | aplay -q -r "$rate" -f S16_LE -t raw - 2>/dev/null &
+
+# $! is the last process in the pipeline, ie aplay. Killing it SIGPIPEs piper.
+player=$!
+echo "$player" > "$STATE"
+wait "$player"
+rm -f "$STATE"
