@@ -1,6 +1,6 @@
 ---
 name: arena
-description: "Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for /arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape."
+description: "Compare independent candidates for the same substantial artifact, then synthesize and verify the best result. Use for /arena or an explicit request for competing approaches."
 ---
 
 # Arena
@@ -9,7 +9,7 @@ Fan out N parallel attempts at the same task. Read every candidate end to end. P
 
 ## Start
 
-Open a todolist with one entry per phase before launching anything. The arena runs autonomously and the list keeps phases from silently disappearing.
+Track phases when the task is long enough to need it.
 
 1. Frame
 2. Fan out
@@ -29,7 +29,7 @@ The N candidates will receive the same prompt, so the prompt is the contract. Ge
 
 ## Phase B: Fan out
 
-Spawn all N subagents in one message, each a fresh, non-fork subagent (`subagent_type: general-purpose`), running in the background where supported, each with the task, the path to the shared grounding, its own output path, and instructions to produce both the artifact and a short rationale.
+Launch independent workers with the agent mechanism available in the current environment. Give each the task, shared grounding, its own output path, and instructions to produce the artifact and a short rationale. Keep concurrent writes isolated.
 
 The rationale is mandatory. Without it, you cannot tell whether a candidate's structure is principled or accidental, which makes Phase E grafting unreliable. Each rationale names the alternatives the candidate considered and what it rejected.
 
@@ -37,17 +37,17 @@ If a candidate fails to produce output, proceed with N-1 and note the dropout in
 
 ## Phase C: Cross-judge
 
-After all Phase B candidates complete, spawn one read-only judge subagent to give an independent second opinion. Use a different model or agent setup from the one you're running as, if one is available to you. It sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with your own reading in Phase D, not with the candidates themselves. Spawning while candidates are still writing means the judge sees partial or empty outputs and reports them as dropouts.
+After all candidates complete, use an independent judge when the choice is consequential or close. Give it the rubric and complete candidates, and ask it to recommend a base with reasons. Do not judge partial outputs.
 
 ## Phase D: Pick a base
 
 Read every candidate end to end before picking. Skimming N candidates surfaces only the candidate whose surface looks most familiar.
 
-Score each candidate against the rubric criterion by criterion, not on holistic feel. Compare against the cross-judge. Agreement on the base confirms the pick. Disagreement means one of you is biased or the rubric was ambiguous. Read both rationales before deciding.
+Score each candidate against the rubric criterion by criterion. If an independent judge disagrees, inspect the evidence and decide; agreement alone does not prove correctness.
 
 Pick the base on which candidate a future maintainer can extend most easily without breaking invariants. Prefer the cleaner boundary or smaller surface area when two feel tied.
 
-Record the pick and the reason in a short synthesis note alongside the base artifact, including the cross-judge's verdict.
+Record the pick and the reason in a short synthesis note alongside the artifact, including any judge's verdict.
 
 ## Phase E: Graft
 

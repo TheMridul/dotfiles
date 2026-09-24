@@ -1,11 +1,11 @@
 ---
 name: interrogate
-description: "Use for \"interrogate\", \"adversarial review\", \"multi-model review\", \"challenge this\", \"stress test this code\", \"find blind spots\", or \"tear this apart\". Multiple independent reviewers challenge changes from different angles."
+description: "Adversarially review a specified change with independent reviewers. Use for /interrogate, 'multi-model review', or an explicit request to challenge the change."
 ---
 
 # Interrogate
 
-Spawn several independent reviewers to adversarially review code changes. Each reviewer gets the same prompt and rubric. The adversarial signal comes from perspective diversity, not assigned personas. If more than one model or reasoning-effort tier is available to you, spread reviewers across them; different setups have different blind spots, priors, and reasoning patterns. Agreement across reviewers is high-confidence signal; lone-reviewer findings are worth reading but lower confidence.
+Use independent reviewers to challenge a code change when the requested review benefits from separate perspectives. Give them the same intent, diff, and rubric. Different models may expose different blind spots, but agreement is a lead to verify, not proof; a lone finding can still be the most serious one.
 
 The deliverable is a synthesized verdict. Do NOT auto-apply changes.
 
@@ -28,13 +28,13 @@ Before spawning reviewers, state the intent explicitly. What is this code trying
 - PR description if one exists
 - The code itself
 
-Write one clear paragraph. Reviewers challenge whether the work achieves the intent well, not whether the intent itself is correct. If you're unsure about the intent, ask the user before proceeding.
+Write one clear paragraph. Reviewers challenge whether the work achieves the intent well. If intent is unclear, state a reasonable assumption and continue; ask only when the answer would change what should be reviewed.
 
 ## Step 3, Spawn Reviewers
 
-Launch all reviewers in a single message. Default to 3-4 reviewers, labeled Reviewer A, B, C, D. If you have more than one model or agent setup available, assign a different one to each reviewer; otherwise run each as an independent fresh subagent with the same setup.
+Choose the smallest useful set, usually two reviewers for a focused change and more only when the change has distinct risk areas. Use the agent mechanism and model choices available in the current environment. Separate context matters more than filling a fixed roster.
 
-For each reviewer, spawn a fresh, non-fork, read-only-intent subagent (`subagent_type: general-purpose`, told explicitly not to edit files).
+Give each reviewer read-only scope and tell it not to edit files.
 
 Read [`reviewer-prompt.md`](reviewer-prompt.md) and fill in the template with:
 1. The stated intent
@@ -51,8 +51,8 @@ Each reviewer produces structured findings as described in the prompt template.
 As results come back, build a unified picture:
 
 1. **Parse all findings** from the reviewers
-2. **Identify consensus**. Findings raised by 2+ reviewers independently are highest signal.
-3. **Identify lone-reviewer findings**. Still worth reading, but weight accordingly.
+2. **Check repeated findings** against the actual code. Repetition can help prioritize investigation, but does not establish correctness.
+3. **Check lone findings** on their merits, especially for security and correctness.
 4. **Deduplicate**. Different reviewers may describe the same issue differently. Merge these and note which reviewers raised it.
 5. **Note disagreements**. If one reviewer flags something and another explicitly says the opposite, that's useful context for the verdict.
 

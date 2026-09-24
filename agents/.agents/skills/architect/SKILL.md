@@ -1,63 +1,49 @@
 ---
 name: architect
-description: "Sketch types, signatures, and module structure before writing code, then stay in the loop while implementation fills in. Use for /architect, 'architect this', 'design this', or any non-trivial work where jumping straight to code would lock in the wrong shape."
+description: "Design a substantial change's interfaces and module boundaries before implementation. Use for /architect, 'architect this', or an explicit design request."
 ---
 
 # Architect
 
-Design before implementing. Sketch types, function signatures, class shapes, and module boundaries with `not implemented` bodies and pseudocode. Synthesize across multiple independent design attempts, then fill in code against the chosen sketch. If implementation proves the sketch wrong, throw it out and redesign.
+Sketch the public types, signatures, caller usage, and module boundaries before implementing a substantial change. Use the sketch to expose awkward dependencies early; revise it when implementation provides contrary evidence.
 
 ## Start
 
-Open a todolist with one entry per phase before starting. Working through this autonomously without checkpoints needs the list to show phase position and keep phases from silently disappearing.
-
-1. Ground
-2. Sketch
-3. Agree
-4. Implement
-5. Scrap
+Track phases when the work is long enough to need it. Keep the design proportional to the change; a small interface may need only a few signatures in the discussion.
 
 ## Phase A: Ground the problem
 
-Build a real mental model of every system the new code touches. Run the **how** skill over the relevant subsystems. Use its critique mode if existing structure is the constraint or the design must push back on it.
-
-Naming a file isn't grounding. Produce the traced model `how` prescribes. If the design redefines ownership or layering, also run the **why** skill on the existing shape so the rationale becomes a constraint, not a guess.
-
-Skip Phase A only when the work is genuinely greenfield with no surrounding system to integrate.
+Read the callers, contracts, and adjacent implementation that constrain the design. Use **how** when a subsystem needs a full walkthrough. Use **why** when a historical decision affects a proposed boundary. Do not invoke either just to satisfy this phase.
 
 ## Phase B: Sketch
 
-Run the **arena** skill with the design-sketch task and the Phase A grounding artifacts. Pass [`runner-prompt.md`](runner-prompt.md) as each runner's prompt. Each candidate produces a design package shaped per [`rationale-template.md`](rationale-template.md): the caller's usage written first, then the type sketch, function signatures, module map, and prose rationale derived from it.
+Write the caller's usage first, then the smallest type and module sketch that makes it work. Compare a second structural approach when ownership, state, or compatibility could reasonably go either way. Use **arena** only when independent candidates would change the choice; compare simple alternatives in one pass.
 
-Run each candidate as an independent subagent. If more than one model is available to you (a different model family, a different reasoning-effort tier, or another agent you can call out to), spread candidates across them; diversity of perspective is the point, not a specific roster of named models.
-
-Design it twice. Require at least two structurally distinct candidates before synthesis, even when the first looks sufficient. Exhaust the design space: produce whole-shape alternatives, not point fixes inside one shape.
-
-Screen every candidate against [`design-red-flags.md`](design-red-flags.md) before synthesis. Reject or revise shallow modules, information leakage, temporal decomposition, and pass-through methods.
+When the design adds an abstraction or changes ownership, check for shallow modules, information leakage, temporal decomposition, and pass-through methods.
 
 Compare viable candidates on interface depth. Prefer the design that hides more complexity behind a smaller, simpler public surface. A rich interface can keep call chains short by concentrating capability instead of scattering it across layers.
 
-Arena returns one synthesized design package. The synthesis decision populates the rationale's "Synthesis decision" section.
+Record the chosen shape and the reason for any meaningful tradeoff. A separate rationale file is useful for a large design; it is not required for a small edit.
 
 ## Phase C: Agree (opt-in)
 
-Default: proceed directly to implementation with the synthesized design. No human checkpoint.
+Default: proceed directly to implementation with the chosen design. No human checkpoint.
 
-Opt in to a checkpoint when the invoker explicitly asks: "/architect with checkpoint," "stop and show me before implementing," or similar. Then surface the synthesized design and pause for sign-off.
+Opt in to a checkpoint when the invoker explicitly asks: "/architect with checkpoint," "stop and show me before implementing," or similar. Then surface the design and pause for sign-off.
 
-The synthesis can ship as its own commit either way, a stable scaffold that subsequent commits fill bodies in against. Planned and scoped breakage during fill-in is fine as long as it's intentional and tracked. For adversarial pressure on the design before implementing, run the **interrogate** skill on the synthesized sketch.
+Use **interrogate** only when the user asks for adversarial review or the design has a concrete unresolved risk.
 
-If the human pushes back on the shape (in a checkpoint or after the fact), treat that as Phase A evidence. Re-ground and re-run Phase B before writing more code.
+If the human pushes back on the shape (in a checkpoint or after the fact), treat that as new evidence. Re-ground and revise the sketch before writing more code.
 
 ## Phase D: Implement against the sketch
 
-Replace `not implemented` bodies with code, pseudocode with logic. The synthesized sketch is the contract.
+Implement the chosen design. The sketch is a working hypothesis, not a binding contract.
 
-Deviations from the sketch are signal worth surfacing, not friction to absorb silently. If a function needs a parameter the sketch didn't anticipate, ask whether the sketch was wrong, the requirement was missed, or the implementation is overreaching. Surface it; don't bolt it on.
+When code needs a different shape, check whether the sketch missed a constraint and update it. Tell the user about deviations that change the public contract or tradeoff.
 
 ## Phase E: Scrap when the architecture is wrong
 
-If implementation keeps producing friction the sketch can't absorb, throw the sketch out. Don't bolt fixes onto a wrong design; redesign from first principles instead, and fix root causes rather than symptoms.
+If implementation repeatedly needs the same workaround, revisit the boundary rather than accumulating exceptions.
 
 The signal is a *pattern*, not single instances. Tells:
 
@@ -70,13 +56,8 @@ The signal is a *pattern*, not single instances. Tells:
 
 Use judgment. A few edge cases don't condemn an architecture. Some problems are legitimately complex; complexity in the data is not complexity in the design. The rewrite signal is repeated friction of the same shape, not single hard cases.
 
-When you scrap:
-
-1. Re-run the **how** skill over what's been built. The implementation lessons enter the new design as inputs, not vibes.
-2. Redesign as if the new constraints had been day-one assumptions.
-3. Subtract before adding. The new sketch should be smaller than the old one before it grows.
-4. Return to Phase B and re-run arena.
+When revising, use what the implementation taught you, simplify the sketch, and test the revised interface against its callers. Run another arena only if independent designs would resolve the remaining uncertainty.
 
 ## Outputs
 
-The caller's usage is written first and the type sketch derived from it. One file with new types and signatures for small changes; module map plus type definitions for larger work. The rationale ships alongside, shaped per [`rationale-template.md`](rationale-template.md), including the usage sketch and the synthesis decision.
+Show caller usage and the resulting interface. For larger work, include a module map, the decision that mattered, and how implementation validated or changed the sketch.

@@ -1,6 +1,6 @@
 # Source playbooks
 
-The why skill spawns one investigator per available evidence category, each reading a single source-specific playbook below. The playbooks are concrete examples for common tools; adapt them for a different tool in the same category.
+Use a playbook when that source is relevant to the question or a lead points to it. These are examples for common tools; adapt them for another tool in the same category. Do not search every category by default.
 
 | Category | Playbook | Example tool it documents |
 |---|---|---|
@@ -14,4 +14,4 @@ The why skill spawns one investigator per available evidence category, each read
 
 Cross-cutting:
 
-- [`incident-postmortem.md`](sources/incident-postmortem.md). Add this if the target code looks defensive (null checks, retry, timeout, rate limit, feature flag, egress guard, OOM handler).
+- [`incident-postmortem.md`](sources/incident-postmortem.md). Use when an incident or defensive code is relevant to the question.

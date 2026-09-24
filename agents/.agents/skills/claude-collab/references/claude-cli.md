@@ -7,7 +7,7 @@ Use prompt files so multi-line briefs do not depend on shell quoting or Bash her
 Run from the project root or the directory the worker should inspect:
 
 ```text
-claude -p --name <unique-name> --model <sonnet-or-opus> --permission-mode plan --tools Read,Glob,Grep --strict-mcp-config --output-format json < /tmp/<task>/brief.md
+claude -p --name <unique-name> --permission-mode plan --tools Read,Glob,Grep --strict-mcp-config --output-format json < /tmp/<task>/brief.md
 ```
 
 The tool allowlist is an enforcement boundary. `--strict-mcp-config` prevents inherited MCP servers from reopening external or mutating capabilities. Adding Bash or a write-capable tool changes this from read-only mode.
@@ -17,7 +17,7 @@ The tool allowlist is an enforcement boundary. `--strict-mcp-config` prevents in
 Codex first verifies that the relevant baseline is clean and creates a dedicated branch and worktree under a task-specific `/tmp` directory. Run the worker with that worktree as its working directory:
 
 ```text
-claude -p --name <unique-name> --model <sonnet-or-opus> --permission-mode acceptEdits --tools Read,Glob,Grep,Edit,Write,Bash --output-format json < /tmp/<task>/brief.md
+claude -p --name <unique-name> --permission-mode acceptEdits --tools Read,Glob,Grep,Edit,Write,Bash --output-format json < /tmp/<task>/brief.md
 ```
 
 The brief must forbid edits outside the assigned paths. Bash is permitted only because the worker is isolated; never add permission bypass flags. Ask the worker to leave an uncommitted diff and a concise report containing files changed, checks run, and known limitations.
@@ -36,7 +36,15 @@ These commands intentionally use the normal installed Claude Code session and it
 
 ## Model mix
 
-Default to `--model sonnet` for workers that inspect files, implement bounded changes, run tests, or review a defined slice. Spend Opus quota where its judgment can change the outcome: `--model opus` for one architect, difficult investigator, adversarial reviewer, or final judge. For a three-agent task, a sensible default is two Sonnet workers and one Opus judge; adjust the roles to the work rather than enforcing a fixed ratio.
+Use the session's configured model by default. If a deliberate split helps, check the installed CLI and current official Claude Code model guidance, then pass `--model <supported-alias-or-id>` for that worker. Prefer a faster available model for bounded extraction and a stronger one for genuinely difficult synthesis or judgment. Model names, defaults, and account availability change; the skill should not freeze a roster. Keep effort proportional to the task.
+
+When choosing a specific current model, adjust the worker brief only for a behavior that matters to this task:
+
+- [Claude Sonnet 5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-sonnet-5) already uses tools and verifies more readily. Skip boilerplate that forces repeated self-checks or status updates; specify the actual completion check instead. Raise effort for hard reasoning before adding elaborate thinking prompts.
+- [Claude Opus 5.5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5) defaults to medium effort. Do not carry a high-effort default from an older Opus model into every worker; increase it only where the role justifies the extra latency.
+- [Claude Fable 5.1](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1) can underuse search at low effort. For evidence-heavy work, use an effort level or an explicit source-verification instruction that reliably gets the needed retrieval. Give long-running workers a clear done condition so they do not stop after a first pass.
+
+Recheck these pages when changing the model roster. They describe current behavior, not permanent rules for every Claude model.
 
 ## Parallel execution and deadlines
 

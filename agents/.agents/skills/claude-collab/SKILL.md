@@ -15,12 +15,12 @@ Before launching agents:
 
 1. Read the applicable user and project `AGENTS.md` files and inspect the current worktree.
 2. State a concrete done condition and split the work into independent slices. If several solutions are plausible, assign competing approaches instead.
-3. Choose the smallest useful team, normally two to four Claude agents. Use the installed Claude Code CLI with its existing Claude.ai subscription login, and account for latency and subscription quota. Do not switch to API-key billing unless the user explicitly requests it.
-4. Use Sonnet for routine investigation, implementation, testing, and straightforward review. Use Opus selectively for the role where deeper judgment matters most, such as architecture, an unusually difficult bug, adversarial review, or choosing between strong candidates. A typical team uses mostly Sonnet workers and at most one Opus worker or judge. Do not use Opus for every request unless the user asks for it or the task clearly needs it.
+3. Choose the smallest useful team, usually two or three workers. Use the installed Claude Code CLI with its existing Claude.ai subscription login, and account for latency and subscription quota. Do not switch to API-key billing unless the user explicitly requests it.
+4. Check the installed CLI and current official model guidance before overriding a model. Use the session default when the task does not need a deliberate split. A fast model can handle bounded extraction or routine edits; reserve a stronger available model for difficult reasoning or judgment when it can change the result. Do not hard-code a Sonnet/Opus ratio or assume an alias names a particular version forever.
 5. Tell the user the team size, role split, and model assignment in a commentary update before launch. Ask first only when the run would consume substantially more quota than a normal invocation.
 6. Give every agent a self-contained brief with the goal, its exact scope, allowed paths, forbidden scope, relevant user and project rules, required evidence, and the report format. Tell the worker to read the source `AGENTS.md` files as well, when accessible; the brief still carries the rules because Claude sessions do not inherit Codex context.
 
-Use Codex or one Claude agent as an independent judge when candidate selection involves meaningful judgment.
+Use Codex or an independent Claude judge when candidate selection involves meaningful judgment and the lead cannot settle it from the artifacts and checks.
 
 ## Choose an isolation mode
 
@@ -42,7 +42,7 @@ Use `--permission-mode acceptEdits` only inside an isolated writable workspace a
 
 ## Launch and drain
 
-Run independent agents concurrently using separate shell-tool calls rather than shell job-control syntax. Use JSON noninteractive output so Codex captures both the result and session ID. Give sessions descriptive names and pass the selected `--model sonnet` or `--model opus` explicitly so the intended mix is reproducible. Match effort to the role instead of defaulting every worker to maximum effort.
+Run independent agents concurrently using separate shell-tool calls rather than shell job-control syntax. Use JSON noninteractive output so Codex captures both the result and session ID. Give sessions descriptive names. Pass `--model` only when a model choice is intentional, and record the selected model for reproducibility. Match effort to the role instead of defaulting every worker to maximum effort.
 
 Declare a task-appropriate deadline before launch and monitor long-running calls. Stop a worker that passes the deadline. If an agent needs a follow-up, resume that session with its captured session ID rather than starting over. Wait for all useful workers before synthesis. A failed or timed-out worker is a dropout; continue when the remaining coverage is sufficient, otherwise retry once with a narrower brief.
 

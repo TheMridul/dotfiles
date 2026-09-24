@@ -2,7 +2,7 @@
 # Page-accurate access to a lecture deck. Poppler only, no Python deps.
 #   probe  <pdf>                    per-page text/image census + a verdict
 #   text   <pdf> [first] [last]     text with === page N === markers
-#   render <pdf> [first] [last] [dpi]  PNGs under /tmp/slides/<deck>/, prints paths
+#   render <pdf> [first] [last] [dpi]  PNGs under /tmp/slides/<deck>/<range>/, prints paths
 #   find   <pdf> <pattern>          which pages mention it, with context
 set -euo pipefail
 
@@ -12,7 +12,11 @@ cmd=$1; pdf=$2; shift 2
 [ -f "$pdf" ] || { echo "no such file: $pdf" >&2; exit 1; }
 
 pages() { pdfinfo "$pdf" | awk '/^Pages:/{print $2}'; }
-deck() { basename "$pdf" .pdf | tr -c 'A-Za-z0-9._-' '-'; }
+deck() {
+  name=$(basename "$pdf" .pdf | tr -c 'A-Za-z0-9._-' '-')
+  id=$(realpath "$pdf" | sha256sum | cut -c1-10)
+  printf '%s-%s' "$name" "$id"
+}
 
 case $cmd in
 probe)
@@ -38,9 +42,9 @@ text)
   ;;
 render)
   f=${1:-1}; l=${2:-$(pages)}; dpi=${3:-110}
-  out=/tmp/slides/$(deck); mkdir -p "$out"
+  out=/tmp/slides/$(deck)/${f}-${l}-${dpi}; mkdir -p "$out"
   pdftoppm -png -r "$dpi" -f "$f" -l "$l" "$pdf" "$out/p"
-  ls -1 "$out"/p*.png
+  ls -1 "$out"/p-*.png
   ;;
 find)
   pat=${1:?pattern required}
