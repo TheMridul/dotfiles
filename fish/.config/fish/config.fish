@@ -1,3 +1,6 @@
+function fish_greeting
+end
+
 # Prompt (hushOS-themed, ~/.config/starship.toml)
 if command -q starship
     starship init fish | source
