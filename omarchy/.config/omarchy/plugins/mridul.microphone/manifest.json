@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.microphone",
+  "name": "My Microphone",
+  "version": "1.0.0",
+  "author": "Omarchy",
+  "description": "Mic input state and mute toggle",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Microphone.qml"
+  },
+  "barWidget": {
+    "displayName": "My Microphone",
+    "description": "Mic input state and mute toggle",
+    "category": "Audio",
+    "allowMultiple": false
+  },
+  "omarchy": {
+    "clonedFrom": "omarchy.microphone"
+  }
+}

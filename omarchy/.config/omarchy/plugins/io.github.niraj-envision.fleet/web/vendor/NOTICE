@@ -1,0 +1,25 @@
+Vendored third-party assets
+===========================
+
+xterm.js and its addons, Copyright (c) 2017-present The xterm.js authors,
+Copyright (c) 2014-2016 SourceLair Private Company,
+Copyright (c) 2012-2013 Christopher Jeffrey. MIT licensed.
+
+    @xterm/xterm 6.0.0
+      https://registry.npmjs.org/@xterm/xterm/-/xterm-6.0.0.tgz
+    @xterm/addon-fit 0.11.0
+      https://registry.npmjs.org/@xterm/addon-fit/-/addon-fit-0.11.0.tgz
+    @xterm/addon-search 0.16.0
+      https://registry.npmjs.org/@xterm/addon-search/-/addon-search-0.16.0.tgz
+    @xterm/addon-web-links 0.12.0
+      https://registry.npmjs.org/@xterm/addon-web-links/-/addon-web-links-0.12.0.tgz
+
+They are vendored rather than fetched from a CDN because Fleet has to work on
+a machine with no internet, and because a VPS manager should not load code it
+did not ship. Refresh them with:
+
+    npm pack @xterm/xterm@6.0.0 @xterm/addon-fit@0.11.0 \
+      @xterm/addon-search@0.16.0 @xterm/addon-web-links@0.12.0
+
+After extracting the listed `lib/*.js` and `css/xterm.css` files, verify them
+against SHA256SUMS in this directory before committing an update.

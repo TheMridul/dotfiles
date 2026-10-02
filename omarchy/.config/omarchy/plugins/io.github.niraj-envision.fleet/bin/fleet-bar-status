@@ -1,0 +1,95 @@
+#!/usr/bin/python3
+"""Return a small, validated Fleet bar payload with hard process bounds."""
+import json
+import os
+import selectors
+import signal
+import subprocess
+import sys
+import time
+
+MAX_OUTPUT = 64 * 1024
+ALLOWED_STATES = {"ok", "warn", "down", "stopped", "error", "empty", "setup"}
+
+
+def small(value, limit):
+    return str(value or "").replace("\x00", "")[:limit]
+
+
+def run_fleet(path):
+    p = subprocess.Popen([path, "bar", "--json"], stdout=subprocess.PIPE,
+                         stderr=subprocess.DEVNULL, start_new_session=True)
+    os.set_blocking(p.stdout.fileno(), False)
+    sel = selectors.DefaultSelector()
+    sel.register(p.stdout, selectors.EVENT_READ)
+    data = bytearray()
+    deadline = time.monotonic() + 4
+    oversized = False
+    while sel.get_map():
+        if time.monotonic() >= deadline:
+            os.killpg(p.pid, signal.SIGKILL)
+            raise RuntimeError("Fleet status timed out")
+        for key, _ in sel.select(0.1):
+            chunk = os.read(key.fileobj.fileno(), 8192)
+            if not chunk:
+                sel.unregister(key.fileobj)
+                continue
+            if len(data) + len(chunk) > MAX_OUTPUT:
+                oversized = True
+            else:
+                data.extend(chunk)
+    rc = p.wait()
+    p.stdout.close()
+    sel.close()
+    if rc or oversized:
+        raise RuntimeError("Fleet status failed or exceeded 64 KiB")
+    return json.loads(data)
+
+
+def validate(data):
+    if not isinstance(data, dict):
+        raise ValueError("status must be an object")
+    state = small(data.get("state", "empty"), 16)
+    if state not in ALLOWED_STATES:
+        state = "error"
+    hosts = []
+    raw_hosts = data.get("hosts")
+    if isinstance(raw_hosts, list):
+        for item in raw_hosts[:32]:
+            if not isinstance(item, dict):
+                continue
+            hosts.append({
+                "name": small(item.get("name", "Host"), 80),
+                "detail": small(item.get("detail", item.get("status", "")), 160),
+                "status": small(item.get("status", "idle"), 24),
+            })
+    return {
+        "text": small(data.get("text"), 80),
+        "tooltip": small(data.get("tooltip"), 512),
+        "state": state,
+        "down": max(0, min(int(data.get("down") or 0), 100000)),
+        "worstDisk": max(0, min(int(data.get("worstDisk") or 0), 100)),
+        "hosts": hosts,
+    }
+
+
+def main():
+    fleet = os.path.join(os.environ.get("HOME", ""), ".local", "bin", "fleet")
+    if not os.path.isfile(fleet) or not os.access(fleet, os.X_OK):
+        out = {"text": "install", "state": "setup",
+               "tooltip": "Fleet is not installed yet - click to run its installer",
+               "hosts": []}
+    else:
+        try:
+            out = validate(run_fleet(fleet))
+        except Exception:
+            out = {"text": "error", "state": "error",
+                   "tooltip": "Fleet status is unavailable", "hosts": []}
+    encoded = json.dumps(out, ensure_ascii=False, separators=(",", ":"))
+    if len(encoded.encode()) > MAX_OUTPUT:
+        raise SystemExit("validated output exceeded limit")
+    print(encoded)
+
+
+if __name__ == "__main__":
+    main()

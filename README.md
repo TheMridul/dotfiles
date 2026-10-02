@@ -27,8 +27,8 @@ import of that base, with my own changes on top.
 - 🚀 Automated scripts for app installation and database setup
 - 🤖 Shared AI-agent context with `AGENTS.md` and `.agents/`
 
-The terminal is [foot](https://codeberg.org/dnkl/foot), configured through
-Omarchy rather than tracked here.
+The terminal is [foot](https://codeberg.org/dnkl/foot). Its current configuration
+is tracked in the `foot` package and includes the active Omarchy theme at runtime.
 
 ## Installation
 
@@ -129,3 +129,43 @@ how an agent writes and explains rather than what it scaffolds.
 `TROUBLESHOOTING.md` is retained as history for the retired CachyOS-based
 installation. Do not apply its repository, kernel, SDDM, or boot fixes to a
 standard Omarchy install.
+
+## Config recovery copies
+
+The desktop configuration was refreshed from the live Omarchy setup on
+2026-10-03, before testing a Ryoku conversion. Added packages cover:
+
+- `foot` and `ghostty`: terminal settings. The default Alacritty, Kitty, and
+  Neovim configs are not included.
+- `desktop`: environment overrides, screenshot directory, GTK bookmarks,
+  file associations, browser flags, user directories, and volume preferences.
+- `systemd` and `wireplumber`: custom user services and Bluetooth audio rules.
+- `apps`: selected settings for Fcitx5, imv, mpv, mise, micro, OpenCode, Herdr,
+  Sunshine, and OBS. Credentials and application runtime state are excluded.
+- `omarchy`: the current shell and menu settings, active hooks, installed
+  plugin sources, downloaded themes, and personal backgrounds. Sources are
+  retained so local plugin edits survive removal or upstream changes.
+
+The root Git ignore file and the active XDG Git and tmux configs are also
+included. The older `~/.tmux.conf` remains available alongside the active
+`~/.config/tmux/tmux.conf`; choose the applicable config when restoring.
+
+These additions are copies of the live files; existing live files have not
+been replaced with symlinks. Refresh the copies before relying on this repo
+for a later migration. GitHub contains them only after committing and pushing.
+When restoring, compare against the installed Omarchy version and stow only
+selected packages with `--no-folding`. Preserve existing files before resolving
+stow conflicts. Do not apply Omarchy services or hooks to a Ryoku session.
+
+Restore custom service activation separately when needed:
+
+```fish
+systemctl --user enable slay50-battery.service
+systemctl --user enable sunshine.service
+```
+
+The `bin` package includes the installed `slay50-battery` executable required
+by its user service. The other Omarchy/PipeWire service activation links are
+managed by their packages and are not copied here. Browser profiles, API keys,
+Sunshine credentials, AI-agent private settings, and shared agent memories
+remain outside this public repository.

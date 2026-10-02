@@ -15,11 +15,14 @@ fish/.config/fish/fish_variables
 fish/.config/fish/conf.d/uv.env.fish
 fish/.config/fish/conf.d/rustup.fish
 
-# Omarchy writes downloaded themes, installed third-party plugins and runtime
-# state (legion_*.json) into ~/.config/omarchy. Only the authored files are
-# tracked, and `stow --no-folding omarchy` keeps that directory real, so these
-# are a guard in case it is ever folded into the repo.
-omarchy/.config/omarchy/themes/
-omarchy/.config/omarchy/plugins/*
-!omarchy/.config/omarchy/plugins/mridul.monitor/
+# Keep the current desktop's themes and installed plugin sources as recovery
+# copies. Runtime state and credentials stay local.
 omarchy/.config/omarchy/legion_*.json
+omarchy/.config/omarchy/**/.git/
+omarchy/.config/omarchy/**/__pycache__/
+omarchy/.config/omarchy/**/*.pyc
+omarchy/.config/omarchy/**/*.log
+omarchy/.config/omarchy/**/*.sock
+omarchy/.config/omarchy/**/*.bak
+apps/**/credentials/
+apps/**/sunshine_state.json

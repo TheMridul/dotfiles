@@ -1,21 +1,22 @@
 {
   "bar": {
     "centerAnchor": "omarchy.clock",
+    "id": "mridul.bar",
     "layout": {
       "center": [
+        {
+          "id": "omarchy.system-update"
+        },
         {
           "id": "omarchy.indicators"
         },
         {
-          "id": "omarchy.clock",
-          "format": "dddd h:mm AP",
-          "formatAlt": "d MMMM 'W'ww yyyy",
-          "verticalFormat": "HH\n—\nmm",
           "birthYear": 0,
-          "lifeExpectancy": 75
-        },
-        {
-          "id": "omarchy.system-update"
+          "format": "HH:mm",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "id": "omarchy.clock",
+          "lifeExpectancy": 75,
+          "verticalFormat": "HH\n—\nmm"
         },
         {
           "id": "omarchy.weather"
@@ -26,17 +27,14 @@
       ],
       "left": [
         {
-          "id": "io.github.ferc10110.save-them-all"
-        },
-        {
           "id": "omarchy.menu"
         },
         {
           "id": "omarchy.workspaces"
         },
         {
-          "id": "bitr0t.system-monitor",
           "chipMode": "instrument",
+          "id": "bitr0t.system-monitor",
           "monitors": [
             "cpu",
             "memory",
@@ -49,24 +47,17 @@
       ],
       "right": [
         {
+          "hidden": [],
           "id": "omarchy.tray",
           "pinned": [
             "Fcitx"
-          ],
-          "hidden": []
+          ]
+        },
+        {
+          "id": "io.github.mridul.slay50-battery"
         },
         {
           "id": "io.github.niraj-envision.fleet"
-        },
-        {
-          "id": "io.github.mtolhuys.disk-lens"
-        },
-        {
-          "id": "tedwester.legion",
-          "monochromeBarIcon": false
-        },
-        {
-          "id": "omarchy.agents"
         },
         {
           "id": "omarchy.tailscale"
@@ -75,16 +66,19 @@
           "id": "omarchy.media"
         },
         {
+          "id": "omarchy.agents"
+        },
+        {
           "id": "omarchy.microphone"
+        },
+        {
+          "id": "omarchy.audio"
         },
         {
           "id": "omarchy.bluetooth"
         },
         {
           "id": "omarchy.network"
-        },
-        {
-          "id": "omarchy.audio"
         },
         {
           "id": "mridul.monitor"
@@ -95,8 +89,14 @@
       ]
     },
     "position": "top",
-    "transparent": false
+    "transparent": true
   },
+  "cloneSourceRestores": [
+    "shmall.lock"
+  ],
+  "disabledPlugins": [
+    "omarchy.lock"
+  ],
   "idle": {
     "lock": 300,
     "screensaver": 150
@@ -109,11 +109,5 @@
       "id": "zzwong.stage"
     }
   ],
-  "version": 1,
-  "disabledPlugins": [
-    "omarchy.lock"
-  ],
-  "cloneSourceRestores": [
-    "shmall.lock"
-  ]
+  "version": 1
 }

@@ -1,0 +1,13 @@
+[Unit]
+Description=DAWG Slay 50 battery notifications
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/slay50-battery watch
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

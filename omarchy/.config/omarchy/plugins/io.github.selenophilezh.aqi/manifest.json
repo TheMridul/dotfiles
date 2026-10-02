@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.selenophilezh.aqi",
+  "name": "Air Quality",
+  "version": "1.0.0",
+  "author": "selenophilezh",
+  "license": "MIT",
+  "description": "US AQI pill in the bar with a pollutant breakdown popup, powered by Open-Meteo's free air quality API.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Air Quality",
+    "description": "US AQI pill with pollutant breakdown popup",
+    "category": "Info",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "refreshMinutes": 15
+    },
+    "schema": [
+      {
+        "key": "refreshMinutes",
+        "type": "integer",
+        "label": "Refresh interval (minutes)",
+        "min": 5,
+        "max": 180,
+        "step": 5,
+        "defaultValue": 15
+      }
+    ]
+  }
+}

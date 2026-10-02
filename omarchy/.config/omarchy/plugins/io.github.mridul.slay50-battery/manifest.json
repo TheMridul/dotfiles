@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.mridul.slay50-battery",
+  "name": "Slay 50 Battery",
+  "version": "1.0.0",
+  "author": "Mridul",
+  "description": "Live battery level for the DAWG Slay 50 mouse",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Slay 50 Battery",
+    "description": "Live battery level for the DAWG Slay 50 mouse",
+    "category": "System",
+    "allowMultiple": false
+  }
+}

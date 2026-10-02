@@ -1,0 +1,214 @@
+#!/usr/bin/bash
+# Fleet — VPS manager for Omarchy.
+# Starts the server on first run; afterwards focuses the window that is already open.
+set -u
+
+PYTHON=/usr/bin/python3
+TAIL=/usr/bin/tail
+CURL=/usr/bin/curl
+LAUNCH_WEBAPP=/usr/share/omarchy/bin/omarchy-launch-or-focus-webapp
+DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
+APP="$DATA_HOME/fleet/fleet.py"
+VERSION_FILE="$DATA_HOME/fleet/VERSION"
+RUNTIME="$STATE_HOME/fleet/runtime.json"
+export PYTHONDONTWRITEBYTECODE=1
+
+running_url() {
+  [ -f "$RUNTIME" ] || return 1
+  "$PYTHON" - "$RUNTIME" "$APP" <<'PY' 2>/dev/null
+import json, os, stat, sys
+try:
+    fd = os.open(sys.argv[1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    st = os.fstat(fd)
+    if not stat.S_ISREG(st.st_mode) or st.st_uid != os.getuid() or st.st_nlink != 1:
+        raise ValueError("unsafe runtime file")
+    if st.st_mode & 0o077 or st.st_size > 4096:
+        raise ValueError("unsafe runtime metadata")
+    with os.fdopen(fd) as fh:
+        d = json.load(fh)
+    pid, port, token = int(d["pid"]), int(d["port"]), str(d["token"])
+    if not 1 <= port <= 65535 or not 16 <= len(token) <= 128:
+        raise ValueError("invalid runtime values")
+    os.kill(pid, 0)
+    cmdline = open("/proc/%d/cmdline" % pid, "rb").read(8192).split(b"\0")
+    if os.fsencode(sys.argv[2]) not in cmdline:
+        raise ValueError("runtime PID is not Fleet")
+    print("http://fleet.localhost:%d/?t=%s" % (port, token))
+except Exception:
+    sys.exit(1)
+PY
+}
+
+case "${1:-}" in
+  stop)
+    pid=$("$PYTHON" - "$RUNTIME" "$APP" <<'PY' 2>/dev/null
+import json, os, stat, sys
+try:
+    fd = os.open(sys.argv[1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    st = os.fstat(fd)
+    if not stat.S_ISREG(st.st_mode) or st.st_uid != os.getuid() or st.st_nlink != 1 or st.st_mode & 0o077 or st.st_size > 4096:
+        raise ValueError
+    with os.fdopen(fd) as fh:
+        pid = int(json.load(fh)["pid"])
+    if os.stat("/proc/%d" % pid).st_uid != os.getuid():
+        raise ValueError
+    cmdline = open("/proc/%d/cmdline" % pid, "rb").read(8192).split(b"\0")
+    if os.fsencode(sys.argv[2]) not in cmdline:
+        raise ValueError
+    print(pid)
+except Exception:
+    sys.exit(1)
+PY
+    ) && kill "$pid" 2>/dev/null && echo "Fleet stopped" || echo "Fleet is not running"
+    exit 0 ;;
+  url)
+    running_url || { echo "Fleet is not running"; exit 1; }; exit 0 ;;
+  test)
+    running_url >/dev/null || { echo "Fleet is not running. Start it first."; exit 1; }
+    "$PYTHON" "$DATA_HOME/fleet/tests/theme_matrix.py" || exit
+    exec "$PYTHON" "$DATA_HOME/fleet/tests/regress.py" ;;
+  log)
+    lines=${2:-40}
+    [[ $lines =~ ^[0-9]+$ ]] && (( lines <= 1000 )) || { echo "log count must be 0..1000" >&2; exit 2; }
+    exec "$TAIL" -n "$lines" "$STATE_HOME/fleet/fleet.log" ;;
+  health)
+    u=$(running_url) || { echo "Fleet is not running"; exit 1; }
+    exec "$CURL" --fail --silent --show-error --max-time 5 --max-filesize 1048576 \
+      "${u/\/?t=/\/api\/health?t=}" ;;
+  --version)
+    if [[ -r $VERSION_FILE ]]; then IFS= read -r version <"$VERSION_FILE"; else version=0.0.0; fi
+    printf 'Fleet %s\n' "$version"
+    exit 0 ;;
+  bar)
+    # Compact status for the Omarchy bar widget. The app owns the state; the
+    # widget just polls this, so nothing about the fleet lives in QML.
+    exec "$PYTHON" - "$RUNTIME" "$APP" <<'PY' ;;
+import json, os, stat, sys, urllib.parse, urllib.request
+
+MAX_JSON = 1024 * 1024
+
+def load_file(path, default):
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode) or st.st_uid != os.getuid() or st.st_nlink != 1:
+            raise ValueError
+        if st.st_mode & 0o022 or st.st_size > MAX_JSON:
+            raise ValueError
+        with os.fdopen(fd, "rb") as fh:
+            raw = fh.read(MAX_JSON + 1)
+        if len(raw) > MAX_JSON:
+            raise ValueError
+        return json.loads(raw)
+    except Exception:
+        return default
+
+def out(**kw):
+    print(json.dumps(kw)); sys.exit(0)
+
+config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+hosts = load_file(os.path.join(config_home, "fleet", "hosts.json"), [])
+if not isinstance(hosts, list) or len(hosts) > 64:
+    hosts = []
+hosts = [h for h in hosts if isinstance(h, dict)][:64]
+if not hosts:
+    out(text="", tooltip="No hosts configured", state="empty", hosts=[])
+
+try:
+    d = load_file(sys.argv[1], None)
+    pid, port, tok = int(d["pid"]), int(d["port"]), str(d["token"])
+    if not 1 <= port <= 65535 or not 16 <= len(tok) <= 128:
+        raise ValueError
+    os.kill(pid, 0)
+    with open("/proc/%d/cmdline" % pid, "rb") as proc:
+        cmdline = proc.read(8192).split(b"\0")
+    if os.fsencode(sys.argv[2]) not in cmdline:
+        raise ValueError("runtime PID is not Fleet")
+    base = "http://127.0.0.1:%d/api" % port
+except Exception:
+    out(text="\u00b7", state="stopped",
+        hosts=[{"name": h.get("name") or "Host", "status": "stopped",
+                "detail": "Fleet is stopped"} for h in hosts],
+        tooltip="Fleet is not running \u2014 click to start\n%d host%s configured"
+                % (len(hosts), "" if len(hosts) == 1 else "s"))
+
+def api(path):
+    url = "%s/%s?t=%s" % (base, path, urllib.parse.quote(tok, safe=""))
+    with urllib.request.urlopen(url, timeout=4) as response:
+        raw = response.read(MAX_JSON + 1)
+    if len(raw) > MAX_JSON:
+        raise ValueError("response exceeds 1 MiB")
+    return json.loads(raw)
+
+try:
+    hs = api("hosts")
+except Exception as e:
+    out(text="!", state="error", tooltip="Fleet server unreachable: %s" % e)
+if not isinstance(hs, list) or len(hs) > 64 or any(not isinstance(h, dict) for h in hs):
+    out(text="!", state="error", tooltip="Fleet returned an invalid host list")
+
+online = [h for h in hs if isinstance(h.get("state"), dict) and
+          h["state"].get("status") == "online"]
+down = [h for h in hs if not isinstance(h.get("state"), dict) or
+        h["state"].get("status") not in ("online", "connecting")]
+
+lines, rows, worst = [], [], 0
+for h in hs:
+    m = h.get("metrics") or {}
+    st = (h.get("state") or {}).get("status", "idle")
+    if st == "online":
+        disk = m.get("disk_worst") or 0
+        cpu = round(m.get("cpu_pct") or 0)
+        mem = round((m.get("mem") or {}).get("pct") or 0)
+        worst = max(worst, disk)
+        lines.append("%s  cpu %s%%  mem %s%%  disk %s%%" % (
+            h["name"],
+            cpu,
+            mem,
+            round(disk)))
+        rows.append({"name": h["name"], "status": st,
+                     "detail": "CPU %d%%  MEM %d%%  DISK %d%%" %
+                               (cpu, mem, round(disk))})
+    else:
+        err = (h.get("state") or {}).get("error") or st
+        lines.append("%s  %s" % (h["name"], err[:48]))
+        rows.append({"name": h["name"], "status": st,
+                     "detail": err[:48]})
+
+state = "ok"
+if down:
+    state = "down"
+elif worst >= 90:
+    state = "warn"
+
+out(text="%d/%d" % (len(online), len(hs)),
+    state=state,
+    down=len(down),
+    worstDisk=round(worst),
+    hosts=rows,
+    tooltip="\n".join(lines))
+PY
+  -h|--help)
+    echo "Usage: fleet [stop|url|test|log [n]|health|--version|--help]"
+    echo "  (any other flags pass through to fleet.py)"
+    echo
+    exec "$PYTHON" "$APP" --help ;;
+esac
+
+if url=$(running_url); then
+  # Server is already up: reuse Omarchy's launch-or-focus so window matching and
+  # the Hyprland dispatch syntax stay correct across Hyprland releases.
+  #
+  # Match the browser app window by its own class rather than the bare word
+  # "Fleet": launch-or-focus tests the pattern against window titles too, so
+  # "Fleet" also matches an editor, terminal or tab that merely has the word in
+  # its title, and focuses that instead of the app. The class is derived from
+  # the URL host only -- no port, no token -- so it survives a server restart,
+  # and leaving the browser prefix off the front keeps it correct whether the
+  # webapp launcher picks chromium, brave or another chromium-family browser.
+  [[ -x $LAUNCH_WEBAPP ]] || { echo "Missing Omarchy webapp launcher: $LAUNCH_WEBAPP" >&2; exit 1; }
+  exec "$LAUNCH_WEBAPP" "fleet.localhost__-Default" "$url"
+fi
+
+exec "$PYTHON" "$APP" "$@"

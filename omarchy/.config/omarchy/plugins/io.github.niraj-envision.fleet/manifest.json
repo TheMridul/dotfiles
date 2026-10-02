@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.niraj-envision.fleet",
+  "name": "Fleet",
+  "version": "1.2.0",
+  "author": "niraj-envision",
+  "description": "VPS manager for Omarchy: live metrics, SSH terminals, cross-host file transfer and a bar pill showing which servers are up",
+  "homepage": "https://github.com/niraj-envision/Fleet",
+  "license": "MIT",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "BarWidget.qml" },
+  "barWidget": {
+    "displayName": "Fleet",
+    "description": "How many servers are reachable; click for a compact network panel",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "pollInterval": 20,
+      "showIcon": true,
+      "onlyWhenTrouble": false
+    },
+    "schema": [
+      { "key": "pollInterval", "type": "int", "label": "Refresh interval (s)" },
+      { "key": "showIcon", "type": "bool", "label": "Show server icon" },
+      { "key": "onlyWhenTrouble", "type": "bool", "label": "Only show when something is wrong" }
+    ]
+  }
+}

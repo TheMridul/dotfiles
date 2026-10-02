@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#1a1b26">
+<title>Fleet</title>
+<link rel="stylesheet" href="/vendor/xterm.css">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ─────────────────────────────── sidebar ─────────────────────────────── -->
+  <aside id="sidebar">
+    <header class="side-head">
+      <span class="brand">▚ Fleet</span>
+      <button id="btn-search" class="icon-btn" title="Search everything  (/ or Ctrl+K)">⌕</button>
+      <button id="btn-keys" class="icon-btn" title="Keyboard shortcuts  (?)">?</button>
+    </header>
+
+    <div id="host-list" class="host-list"></div>
+
+    <div class="side-foot">
+      <!-- Live tunnels, not a launcher: it is only here when something is up. -->
+      <div id="vpn-strip" class="vpn-strip" hidden></div>
+      <button id="btn-add" class="ghost-btn">+ Add host</button>
+      <button id="btn-import" class="ghost-btn" title="Import from ~/.ssh/config">⇤ Import</button>
+      <button id="btn-vpn" class="ghost-btn" title="VPN tunnels  (V)">⇅ VPN</button>
+      <div class="side-meta">
+        <span id="theme-name">—</span>
+        <span id="conn-dot" class="dot dot-idle" title="Server link"></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ──────────────────────────────── main ───────────────────────────────── -->
+  <main id="main">
+
+    <div id="empty-state" class="empty">
+      <div class="empty-inner">
+        <div class="empty-glyph">▚</div>
+        <h1>No hosts yet</h1>
+        <p>Add a VPS, or import the ones already in <code>~/.ssh/config</code>.</p>
+        <div class="empty-actions">
+          <button id="empty-add" class="primary-btn">+ Add your first host</button>
+          <button id="empty-import" class="ghost-btn">Import ~/.ssh/config</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="host-view" hidden>
+      <header id="host-head">
+        <div class="hh-id">
+          <span id="hh-icon" class="hh-icon">⬢</span>
+          <div>
+            <div class="hh-name"><span id="hh-name">—</span>
+              <span id="hh-status" class="pill">—</span></div>
+            <div class="hh-sub"><span id="hh-target">—</span><span id="hh-os"></span>
+              <span id="hh-vpn" class="hh-vpn" hidden></span></div>
+          </div>
+        </div>
+        <div id="hh-stats" class="hh-stats"></div>
+        <div class="hh-actions">
+          <button id="btn-reconnect" class="icon-btn" title="Reconnect (Ctrl+R)"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.9-4.2"/><path d="M13.6 1.6v3.2h-3.2"/></svg></button>
+          <button id="btn-edit" class="icon-btn" title="Edit host">⚙</button>
+        </div>
+      </header>
+
+      <nav id="tabs" class="tabs">
+        <button data-tab="overview"  class="tab active">Overview</button>
+        <button data-tab="terminal"  class="tab">Terminal</button>
+        <button data-tab="apps"      class="tab">Apps <span class="tab-n" id="n-apps"></span></button>
+        <button data-tab="files"     class="tab">Files</button>
+        <button data-tab="commands"  class="tab">Commands</button>
+        <button data-tab="blueprint" class="tab">Blueprints</button>
+        <button data-tab="events"    class="tab">Activity</button>
+      </nav>
+
+      <section class="panels">
+        <div class="panel" data-panel="overview"></div>
+        <div class="panel" data-panel="terminal" hidden>
+          <div class="term-bar">
+            <div id="term-tabs" class="term-tabs"></div>
+            <button id="term-new" class="ghost-btn sm" title="New shell (Ctrl+Shift+T)">+ shell</button>
+          </div>
+          <div id="term-host" class="term-host"></div>
+        </div>
+        <div class="panel" data-panel="apps"      hidden></div>
+        <div class="panel" data-panel="files"     hidden></div>
+        <div class="panel" data-panel="commands"  hidden></div>
+        <div class="panel" data-panel="blueprint" hidden></div>
+        <div class="panel" data-panel="events"    hidden></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ───────────────────────────── command palette ─────────────────────────── -->
+<div id="palette" class="overlay" hidden>
+  <div class="palette-box">
+    <div class="palette-input">
+      <span class="palette-caret">›</span>
+      <input id="palette-q" type="text" spellcheck="false" autocomplete="off"
+             placeholder="Search packages, services, ports, hosts — or type &gt; to run a command">
+    </div>
+    <div id="palette-results" class="palette-results"></div>
+    <div class="palette-foot">
+      <span><kbd>↑↓</kbd> move</span><span><kbd>↵</kbd> open</span>
+      <span><kbd>⇥</kbd> run on host</span><span><kbd>esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────── modal ────────────────────────────────── -->
+<div id="modal" class="overlay" hidden>
+  <div class="modal-box">
+    <header class="modal-head"><span id="modal-title">—</span>
+      <button id="modal-close" class="icon-btn">✕</button></header>
+    <div id="modal-body" class="modal-body"></div>
+    <footer id="modal-foot" class="modal-foot"></footer>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="/vendor/xterm.js"></script>
+<script src="/vendor/addon-fit.js"></script>
+<script src="/vendor/addon-web-links.js"></script>
+<script src="/vendor/addon-search.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

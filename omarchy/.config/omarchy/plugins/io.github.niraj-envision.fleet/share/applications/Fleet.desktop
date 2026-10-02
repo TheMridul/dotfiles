@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Fleet
+GenericName=VPS Manager
+Comment=Manage, monitor and replicate your SSH servers
+Exec=fleet
+Icon=fleet
+Terminal=false
+Categories=System;Network;RemoteAccess;
+Keywords=ssh;vps;server;terminal;remote;fleet;
+StartupNotify=true
+StartupWMClass=Fleet

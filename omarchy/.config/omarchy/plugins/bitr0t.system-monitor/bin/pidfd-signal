@@ -1,0 +1,208 @@
+#!/usr/bin/python3
+"""pidfd-signal — race-free process termination helper for the system
+monitor's "End Process" action.
+
+Usage: pidfd-signal PID EXPECTED_LSTART
+
+The residual race in a validate-then-kill design is the gap between
+reading a PID's identity and signalling it: the process can exit, be
+reaped, and its PID handed to a different program. This helper closes
+that gap by pinning the process with a pidfd *first* — from that moment
+the kernel guarantees the file description refers to exactly one process
+and no reuse can swap it. Only then is the process's birth time
+re-derived from kernel truth (/proc/PID/stat field 22 + /proc/stat btime,
+CLK_TCK ticks) and compared with the caller's expected lstart token
+(captured when the user selected the row, in ps's locale-C
+"%a %b %e %H:%M:%S %Y" shape). A mismatch means the PID now names a
+different process and is never signalled.
+
+Exit codes:
+  0  signalled the confirmed process
+  1  internal error (unreadable /proc/stat, unset CLK_TCK, bad clock)
+  2  invalid arguments (non-numeric PID, empty identity token)
+  3  process vanished (pidfd_open failed, /proc/PID/stat unreadable)
+  4  identity mismatch — the PID now names a different process
+  5  signal delivery failed (e.g. EPERM)
+
+argv-only invocation; never interprets a shell, and a leading "-" in any
+argument is rejected outright so the helper cannot be turned into an
+option injection. Standard library only (Linux 5.3+, Python 3.9+): no
+packages, no installer, no build step.
+"""
+
+import errno
+import os
+import re
+import signal
+import sys
+import time
+
+EXIT_INTERNAL = 1
+EXIT_ARGS = 2
+EXIT_VANISHED = 3
+EXIT_MISMATCH = 4
+EXIT_SIGNAL = 5
+
+# Bounds on untrusted input: argv tokens and /proc files are tiny by
+# contract, so anything past these caps is refused instead of parsed.
+TOKEN_MAX = 256        # longest accepted identity token (characters)
+PID_DIGITS_MAX = 32    # longest accepted PID spelling (digits)
+PROC_READ_MAX = 65536  # cap on a single /proc file read (bytes)
+PID_MAX = 2 ** 31 - 1  # pid_t range this contract was cut for
+
+# ps's fixed English (locale-C) abbreviations — never the helper's locale.
+# Indexed for Python's struct_time: tm_wday counts Monday = 0 and tm_mon
+# counts January = 1 (C's tm_wday/tm_mon conventions differ).
+WDAY = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+MON = ("", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+_WS_RUN = re.compile(r"[ \t\n\r\v\f]+")
+
+
+def die(code, message):
+    """Emit the prefixed error line and exit with `code`."""
+    sys.stderr.write("pidfd-signal: %s\n" % message)
+    sys.exit(code)
+
+
+def read_small_file(path):
+    """Read a small /proc file as decoded text. OSError propagates."""
+    with open(path, "r", encoding="utf-8", errors="replace") as fh:
+        return fh.read(PROC_READ_MAX)
+
+
+def parse_starttime(stat_text):
+    """Return field 22 of a /proc/PID/stat line (starttime, clock ticks).
+
+    Field 2 (comm) may contain spaces and parentheses, so parsing starts
+    after the final ')'; starttime is then the 20th token that follows
+    (field 3 is state). Raises ValueError when the line is malformed.
+    """
+    close = stat_text.rfind(")")
+    if close < 0:
+        raise ValueError("no ')' in stat line")
+    fields = stat_text[close + 1:].split()
+    if len(fields) <= 19:
+        raise ValueError("no starttime field")
+    ticks = fields[19]
+    if not (ticks.isascii() and ticks.isdigit()):
+        raise ValueError("starttime is not numeric")
+    return int(ticks)
+
+
+def parse_btime(proc_stat_text):
+    """Return boot time (btime, wall-clock seconds) from /proc/stat
+    content, exactly as ps derives process start times."""
+    for line in proc_stat_text.splitlines():
+        if line.startswith("btime "):
+            value = line[len("btime "):].strip()
+            if value.isascii() and value.isdigit():
+                return int(value)
+            raise ValueError("malformed btime line")
+    raise ValueError("no btime line")
+
+
+def format_lstart(epoch):
+    """Format an epoch time like `LC_ALL=C ps -o lstart=`: "%a %b %e
+    %H:%M:%S %Y" in the caller's timezone (ps prints local time; the
+    helper inherits the same TZ as the ps that produced the expected
+    token). %e is the space-padded day of month, hence the width-2 day."""
+    t = time.localtime(epoch)
+    return "%s %s %2d %02d:%02d:%02d %d" % (
+        WDAY[t.tm_wday], MON[t.tm_mon], t.tm_mday,
+        t.tm_hour, t.tm_min, t.tm_sec, t.tm_year)
+
+
+def normalize_ws(text):
+    """Trim and collapse whitespace runs to single spaces, mirroring the
+    model's normalizeStartToken, so "Mon Aug  5 ..." (ps pads single-digit
+    days) compares equal to "Mon Aug 5 ..."."""
+    return " ".join(part for part in _WS_RUN.split(text) if part)
+
+
+def main(argv):
+    if len(argv) != 3:
+        die(EXIT_ARGS, "usage: pidfd-signal PID EXPECTED_LSTART")
+
+    # PID: decimal digits only. Rejects signs, whitespace, and any leading
+    # "-" so arguments can never be read as options.
+    pid_s = argv[1]
+    if not pid_s:
+        die(EXIT_ARGS, "PID must be a positive integer")
+    if not (pid_s.isascii() and pid_s.isdigit()):
+        die(EXIT_ARGS, "PID must be a positive integer, got '%s'" % pid_s)
+    if len(pid_s) > PID_DIGITS_MAX:
+        die(EXIT_ARGS, "PID out of range: %s" % pid_s)
+    pid = int(pid_s)
+    if not 1 <= pid <= PID_MAX:
+        die(EXIT_ARGS, "PID out of range: %s" % pid_s)
+
+    # Expected lstart token: bounded, and nonempty after normalization.
+    # An empty identity can never confirm anything, so it is refused
+    # before any pidfd is opened.
+    if len(argv[2]) > TOKEN_MAX:
+        die(EXIT_ARGS, "expected lstart token exceeds %d characters" % TOKEN_MAX)
+    expected = normalize_ws(argv[2])
+    if not expected:
+        die(EXIT_ARGS, "expected lstart token must not be empty")
+    if expected.startswith("-"):
+        die(EXIT_ARGS, "expected lstart token must not begin with '-'")
+
+    # Pin the process identity FIRST: the pidfd refers to exactly the
+    # process owning this PID right now, and reuse cannot swap it
+    # afterwards.
+    try:
+        pidfd = os.pidfd_open(pid, 0)
+    except OSError as err:
+        if err.errno == errno.ESRCH:
+            die(EXIT_VANISHED, "PID %d no longer exists" % pid)
+        die(EXIT_VANISHED, "could not open pidfd for PID %d: %s"
+            % (pid, err.strerror or str(err)))
+
+    try:
+        # Derive the pinned process's actual birth token from kernel truth.
+        try:
+            ticks = parse_starttime(read_small_file("/proc/%d/stat" % pid))
+        except (OSError, ValueError):
+            die(EXIT_VANISHED, "could not read /proc/%d/stat" % pid)
+        try:
+            btime = parse_btime(read_small_file("/proc/stat"))
+        except (OSError, ValueError):
+            die(EXIT_INTERNAL, "could not read btime from /proc/stat")
+        try:
+            hz = os.sysconf("SC_CLK_TCK")
+        except (OSError, ValueError):
+            hz = 0
+        if hz <= 0:
+            die(EXIT_INTERNAL, "CLK_TCK unavailable")
+        start_epoch = btime + ticks // hz
+
+        try:
+            actual = normalize_ws(format_lstart(start_epoch))
+        except (OverflowError, OSError, ValueError):
+            die(EXIT_INTERNAL, "could not format start time")
+
+        if actual != expected:
+            die(EXIT_MISMATCH, 'PID %d is now "%s", expected "%s"'
+                % (pid, actual, expected))
+
+        # Signal the pinned process. Even if the numeric PID is handed to a
+        # new program between the comparison and this call, the pidfd still
+        # names the confirmed process — a replacement can never receive
+        # this signal.
+        try:
+            signal.pidfd_send_signal(pidfd, signal.SIGTERM)
+        except OSError as err:
+            die(EXIT_SIGNAL, "could not signal PID %d: %s"
+                % (pid, err.strerror or str(err)))
+        return 0
+    finally:
+        os.close(pidfd)
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main(sys.argv))
+    except Exception as err:  # a bug must still honor the prefixed contract
+        die(EXIT_INTERNAL, "internal error: %r" % (err,))
