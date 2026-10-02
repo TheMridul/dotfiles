@@ -64,3 +64,17 @@ hl.animation({ leaf = "border", enabled = true, speed = 3.6, bezier = "easeOutQu
 hl.animation({ leaf = "fadeIn", enabled = true, speed = 1.2, bezier = "almostLinear" })
 hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.0, bezier = "almostLinear" })
 hl.animation({ leaf = "fade", enabled = true, speed = 2.1, bezier = "quick" })
+
+-- Frosted-glass blur behind translucent windows (foot uses alpha=0.8 + blur=yes).
+hl.config({
+  decoration = {
+    blur = {
+      enabled = true,
+      size = 8,
+      passes = 3,
+      noise = 0.02,
+      brightness = 1.0,
+      contrast = 1.0,
+    },
+  },
+})

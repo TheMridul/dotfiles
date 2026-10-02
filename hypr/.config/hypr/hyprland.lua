@@ -42,3 +42,9 @@ local FLEET = { class = "^chrome-.*$", title = "^Fleet$" }
 o.window(FLEET, { tag = "-chromium-based-browser" })
 o.window(FLEET, { tag = "-default-opacity" })
 o.window(FLEET, { opacity = "1.0 1.0" })
+
+-- Brave (class brave-origin) is not matched by Omarchy's browser regex, so it fell
+-- through to the 0.985/0.96 default opacity. Keep it fully opaque.
+local BRAVE = { class = "^brave-origin$" }
+o.window(BRAVE, { tag = "-default-opacity" })
+o.window(BRAVE, { opacity = "1.0 1.0" })

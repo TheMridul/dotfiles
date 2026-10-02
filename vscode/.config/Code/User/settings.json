@@ -12,7 +12,7 @@
     "/tmp/postman-http-request-post-response.instructions.md": true,
     "/tmp/postman-http-request-pre-request.instructions.md": true
 },
-"workbench.iconTheme": "vira-icons-teal",
+"workbench.iconTheme": "material-icon-theme",
 "files.autoSave": "afterDelay",
 "code-runner.clearPreviousOutput": true,
 "code-runner.fileDirectoryAsCwd": true,
@@ -39,5 +39,6 @@
 "workbench.productIconTheme": "viraUIIcons",
 "viraTheme.accent": "",
 "claudeCode.preferredLocation": "panel",
-"claudeCode.hideOnboarding": true
+"claudeCode.hideOnboarding": true,
+"editor.fontVariations": false
 }
