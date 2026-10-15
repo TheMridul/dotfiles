@@ -54,3 +54,8 @@ o.bind("SUPER + SHIFT + ALT + RETURN", "Browser (private)", { omarchy = "browser
 -- Read the selection aloud (piper-tts). Reads PRIMARY via wl-paste rather than
 -- faking Ctrl+C, so it works in native Wayland windows. Press again to stop.
 o.bind("SUPER + ALT + R", "Read aloud", os.getenv("HOME") .. "/.local/bin/read-aloud")
+
+hl.unbind("SUPER + SHIFT + F")
+o.bind("SUPER + SHIFT + F", "File manager", { launch = "nemo" })
+hl.unbind("SUPER + ALT + SHIFT + F")
+o.bind("SUPER + ALT + SHIFT + F", "File manager (cwd)", [[setsid uwsm-app -- nemo "$(omarchy-cmd-terminal-cwd)"]])

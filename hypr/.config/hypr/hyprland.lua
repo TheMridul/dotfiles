@@ -48,3 +48,44 @@ o.window(FLEET, { opacity = "1.0 1.0" })
 local BRAVE = { class = "^brave-origin$" }
 o.window(BRAVE, { tag = "-default-opacity" })
 o.window(BRAVE, { opacity = "1.0 1.0" })
+
+
+-- Preserve Foot translucency when Hyprland enters fullscreen.
+local FROSTED_TERMINAL = { class = "^(foot|footclient)$" }
+o.window(FROSTED_TERMINAL, { opacity = "1.0 override 1.0 override 0.8 override" })
+
+
+-- Keep utility windows readable while revealing the blurred backdrop.
+local FROSTED_UTILITIES = { class = "^(org\\.pulseaudio\\.pavucontrol|[Pp]avucontrol)$" }
+o.window(FROSTED_UTILITIES, { tag = "-default-opacity" })
+o.window(FROSTED_UTILITIES, { opacity = "0.92 override 0.88 override 1.0 override" })
+
+hl.layer_rule({
+  match = { namespace = "^(omarchy-menu|omarchy-emojis|omarchy-clipboard|omarchy-keyboard-panel|omarchy-notifications|omarchy-osd|omarchy-reminders|omarchy-network-qr)$" },
+  blur = true,
+  blur_popups = true,
+  ignore_alpha = 0.55,
+})
+
+
+local FROSTED_CODE = { class = "^([Cc]ode|[Cc]ode - [Ii]nsiders|com[.]microsoft[.]VSCode)$" }
+o.window(FROSTED_CODE, { tag = "-default-opacity" })
+o.window(FROSTED_CODE, {
+  opacity = "0.80 override 0.80 override 1.0 override",
+  no_blur = false,
+})
+
+
+hl.layer_rule({
+  match = { namespace = "^omarchy-bar$" },
+  blur = true,
+  blur_popups = true,
+  ignore_alpha = 0.55,
+})
+
+local FROSTED_NEMO = { class = "^([Nn]emo)$" }
+o.window(FROSTED_NEMO, { tag = "-default-opacity" })
+o.window(FROSTED_NEMO, {
+  opacity = "0.80 override 0.80 override 0.80 override",
+  no_blur = false,
+})
