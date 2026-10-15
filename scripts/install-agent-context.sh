@@ -12,7 +12,7 @@ link_if_missing() {
   local target=$2
 
   if [[ -L $target ]]; then
-    [[ $(readlink -f "$target") == "$source" ]] && return
+    [[ $(readlink -f "$target") == "$(readlink -f "$source")" ]] && return
     printf 'Refusing to replace existing symlink: %s\n' "$target" >&2
     exit 1
   fi
