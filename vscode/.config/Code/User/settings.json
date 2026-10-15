@@ -25,12 +25,6 @@
 "workbench.startupEditor": "none",
 "github.copilot.nextEditSuggestions.eagerness": "low",
 "github.copilot.nextEditSuggestions.enabled": false,
-"github.copilot.enable": {
-    "*": false,
-    "plaintext": false,
-    "markdown": false,
-    "scminput": false
-},
 "terminal.integrated.stickyScroll.enabled": false,
 "git.autofetch": true,
 "workbench.browser.showInTitleBar": false,
@@ -40,5 +34,13 @@
 "viraTheme.accent": "",
 "claudeCode.preferredLocation": "panel",
 "claudeCode.hideOnboarding": true,
-"editor.fontVariations": false
+"editor.fontVariations": false,
+"chat.mcp.gallery.enabled": true,
+"github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+},
+"redhat.telemetry.enabled": false
 }
