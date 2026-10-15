@@ -19,7 +19,7 @@ import of that base, with my own changes on top.
 - 📊 btop and fastfetch
 - 📦 Lazygit config
 - 🔎 Ripgrep config
-- 🔤 Fontconfig (JetBrainsMono Nerd Font)
+- 🔤 Fontconfig (Iosevka Nerd Font for monospace)
 - 🛠️ Tmux configuration with plugins and custom keybindings
 - 📋 Git configuration
 - 💻 VS Code settings and keybindings
