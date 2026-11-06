@@ -37,6 +37,14 @@ require("default.hypr.toggles")
 -- Revisit if an external display ever moves the compositor onto the dGPU.
 hl.env("LIBVA_DRIVER_NAME", "iHD")
 
+-- Omarchy 4.5.0's startup-cursor.lua disables hyprcursor at login and re-enables
+-- it later, but only reloads a theme when HYPRCURSOR_THEME is set. It is unset
+-- here, so Hyprland crashed in setCursorFromName on every login (2026-11-06) and
+-- fell back to --safe-mode. Plain Xcursor avoids that path. Remove once fixed upstream.
+hl.config({ cursor = { enable_hyprcursor = false } })
+-- Bibata-Modern-Ice is what hyprcursor auto-picked before; its Xcursor build looks the same.
+hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
+
 -- Fleet's SSH terminals remain opaque inside its Chromium webapp.
 local FLEET = { class = "^chrome-.*$", title = "^Fleet$" }
 o.window(FLEET, { tag = "-chromium-based-browser" })
