@@ -100,6 +100,7 @@ jq --arg hook '$HOME/.claude/hooks/load-agent-context.sh' '
   .autoMemoryEnabled = false |
   .includeCoAuthoredBy = false |
   .attribution = {"commit": "", "pr": ""} |
+  .env.CLAUDE_CODE_ENABLE_CFC = "1" |
   .hooks //= {} |
   .hooks.SessionStart //= [] |
   .hooks.SubagentStart //= [] |
@@ -110,6 +111,8 @@ chmod --reference="$settings_path" "$temporary_settings"
 mv "$temporary_settings" "$settings_path"
 
 printf 'Agent context wired: rules %s, skills %s/skills.\n' "$rules" "$shared"
+# Claude in Chrome: T3 starts Claude without --chrome, so settings.json sets
+# CLAUDE_CODE_ENABLE_CFC=1 (undocumented; checked 2026-11-08) to load the tools.
 # Claude in Chrome: Claude Code registers its native host for Chrome and
 # regular Brave but not Brave Origin (Omarchy's browser since 2026-11). Link
 # Brave Origin's registration to the one Claude Code maintains.
