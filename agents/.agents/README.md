@@ -13,10 +13,11 @@ resources those rules point at.
   and servers, each linked to the memory with the detail. Keep it short and
   current; it is what an agent reads instead of probing the system.
 
-`memory/` and `MACHINE.md` are real local files and are not stowed from the
-dotfiles repository. That repository is public, and they carry hostnames, key
-fingerprints, account names, and hardware details. Back them up separately if
-you want them to survive a reinstall.
+`memory/` and `MACHINE.md` are real local files, never stowed from the public
+dotfiles repository, because they carry hostnames, account names and hardware
+details. `~/.agents` is instead a private Git repository of its own that tracks
+only those two. `agents-private-sync.timer` commits and pushes it daily, and
+`install-agent-context.sh` clones it on a fresh machine.
 
 Project-specific context belongs in the project root's `AGENTS.md`, and that
 project's own resources, memories included, belong in its `.agents/` directory.

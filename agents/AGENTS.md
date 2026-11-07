@@ -61,8 +61,10 @@ with **Why:** and **How to apply:** lines. Write absolute dates. Update an
 existing memory rather than adding a near-duplicate, and do not record what the
 code, the README or the Git history already says.
 
-`~/.agents/memory/` and `MACHINE.md` are local and untracked on purpose: the
-dotfiles repository is public, and they name hosts, keys, accounts and hardware.
+`~/.agents/memory/` and `MACHINE.md` never go in the public dotfiles repository,
+because they name hosts, keys, accounts and hardware. `~/.agents` is its own
+private Git repository, pushed daily by a systemd timer. Credentials (tokens,
+keys, auth files) go in neither repository, private or not.
 
 ## Working rules
 

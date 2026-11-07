@@ -28,7 +28,18 @@ link_if_missing() {
   ln -s "$source" "$target"
 }
 
-# Shared layer.
+# Shared layer. ~/.agents is a private repo holding memory/ and MACHINE.md;
+# on a fresh machine, check it out before linking the public parts in.
+private_repo=${AGENTS_PRIVATE_REPO:-TheMridul/agents-private}
+if [[ ! -d $shared/.git ]] && command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
+  mkdir -p "$shared"
+  git -C "$shared" init -q -b main
+  git -C "$shared" remote add origin "https://github.com/$private_repo.git"
+  if git -C "$shared" fetch -q origin main; then
+    git -C "$shared" checkout -q -t origin/main ||
+      printf 'Local files block checking out %s; merge them by hand\n' "$private_repo" >&2
+  fi
+fi
 mkdir -p "$shared/memory"
 link_if_missing "$dotfiles_root/agents/AGENTS.md" "$rules"
 link_if_missing "$dotfiles_root/agents/.agents/README.md" "$shared/README.md"
@@ -97,4 +108,7 @@ chmod --reference="$settings_path" "$temporary_settings"
 mv "$temporary_settings" "$settings_path"
 
 printf 'Agent context wired: rules %s, skills %s/skills.\n' "$rules" "$shared"
-printf 'Local facts in %s/memory and %s/MACHINE.md stay untracked.\n' "$shared" "$shared"
+if systemctl --user cat agents-private-sync.timer >/dev/null 2>&1; then
+  systemctl --user enable --now agents-private-sync.timer >/dev/null 2>&1 || true
+fi
+printf 'Private memory and machine card: %s (repo %s, daily push).\n' "$shared" "$private_repo"
