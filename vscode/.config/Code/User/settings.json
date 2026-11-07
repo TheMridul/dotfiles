@@ -42,5 +42,11 @@
     "markdown": false,
     "scminput": false
 },
-"redhat.telemetry.enabled": false
+"redhat.telemetry.enabled": false,
+"workbench.editor.empty.hint": "hidden",
+"workbench.layoutControl.enabled": false,
+"C_Cpp.default.cStandard" :"gnu17",
+"C_Cpp.default.compilerPath": "/usr/bin/gcc",
+"makefile.configureOnOpen": true
 }
+

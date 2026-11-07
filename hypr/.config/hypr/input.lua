@@ -47,8 +47,7 @@
 hl.config({
   input = {
     kb_layout = "us",
-    -- Right Alt acts as the Compose key.
-    kb_options = "compose:ralt",
+    kb_options = "",
 
     -- Keyboard repeat speed.
     repeat_rate = 30,

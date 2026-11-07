@@ -1,10 +1,11 @@
 git:
   overrideGpg: true
 gui:
-  authorColors:
-    "*": magenta
   showNumstatInFilesView: true
   skipRewordInEditorWarning: true
+  theme:
+    authorColors:
+      "*": magenta
 keybinding:
   files:
     viewResetOptions: <disabled>

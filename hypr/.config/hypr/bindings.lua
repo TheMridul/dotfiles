@@ -47,7 +47,12 @@ o.bind("SUPER + SHIFT + H", "Network (nmtui)", { tui = "nmtui", focus = true })
 -- Google Maps webapp removed; free its bind.
 hl.unbind("SUPER + SHIFT + S")
 
-o.bind("SUPER + GRAVE", "Stage", "omarchy-shell shell toggle zzwong.stage")
+-- Drop Omarchy's HEY binds; email goes to Gmail instead.
+hl.unbind("SUPER + SHIFT + C")
+hl.unbind("SUPER + SHIFT + ALT + E")
+hl.unbind("SUPER + SHIFT + E")
+o.bind("SUPER + SHIFT + E", "Email (Gmail)", { webapp = "https://mail.google.com", focus = true })
+
 o.bind("SUPER + SHIFT + V", "Fleet (VPS manager)", os.getenv("HOME") .. "/.local/bin/fleet")
 o.bind("SUPER + SHIFT + ALT + RETURN", "Browser (private)", { omarchy = "browser --private" })
 
