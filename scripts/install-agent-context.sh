@@ -41,10 +41,7 @@ declare -A rule_paths=(
   ["$HOME/.config/opencode"]="$HOME/.config/opencode/AGENTS.md"
   ["$HOME/.copilot"]="$HOME/.copilot/copilot-instructions.md"
   ["$HOME/.gemini"]="$HOME/.gemini/AGENTS.md"
-  ["$HOME/.kimi-code"]="$HOME/.kimi-code/AGENTS.md"
 )
-# cursor-agent reads ~/.agents/skills itself, but its user rules live in
-# Cursor's cloud settings, not in a file, so there is nothing to link.
 # Copilot only reads files under --add-dir paths; fish/conf.d/agent-copilot.fish
 # adds ~/.agents for every run.
 for dir in "${!rule_paths[@]}"; do
