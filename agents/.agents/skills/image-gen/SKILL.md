@@ -6,12 +6,20 @@ description: "Generate raster images (illustrations, photos, art, mockup images,
 # Image generation through Codex
 
 Claude does not draw images itself. Codex has a built-in image generation tool
-(GPT-Image-2), so hand the job to `codex exec` and read the file it writes.
+(GPT-Image-2), so delegate through T3 when available, or use `codex exec` outside T3, and read the result.
 
 Codex agents already have this tool. If you are Codex, call it directly and skip
 the command below.
 
-## Command
+## T3 Code
+
+In T3 Code, read [T3 execution](../claude-collab/references/t3-code.md) and use `delegate_task` targeting the available Codex instance with model `gpt-6.1-sol`. Give it the visual brief, accessible reference paths, and output requirements; require the actual image-generation tool, not a text description or a code-drawn substitute. Follow the returned completion instructions rather than polling. Do not run the shell command below inside T3. If Codex or its image tool is unavailable, report the limitation without silently changing providers or generating a substitute.
+
+For an image the user wants to save, post, or use elsewhere, require a saved PNG and its absolute path. Verify the returned artifact before presenting it. If the image tool only returns an inline artifact, do not invent a local path; report the export limitation. Claude remains responsible for returning the result to the user.
+
+Outside T3 Code, use the CLI route below.
+
+## Command outside T3 Code
 
 Run from the directory the image should land in:
 
