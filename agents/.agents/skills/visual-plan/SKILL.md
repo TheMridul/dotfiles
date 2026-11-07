@@ -12,3 +12,7 @@ Choose the smallest useful format: a concise Markdown document for phases and ch
 Save a standalone file when the user wants something to keep or share, and link it in the response. If an Artifact or publishing tool is unavailable, give the visual directly in chat or as a local file. Do not assume a particular tool, scratchpad directory, or deployment flow exists.
 
 Publishing to an external service is an outward action. Prepare the complete visual for review and follow the applicable authorization rules before publishing. Local rendering needs no extra approval.
+
+## Interactive output in T3 Code
+
+When an interactive visual would help, follow [T3 interactive output](../teach-me/t3-interactive.md). Preserve the lesson or plan scope and the learner checkpoints; use prose when controls add no value.

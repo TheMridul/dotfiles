@@ -40,3 +40,7 @@ Default to one concept at a time and wait for the learner after the check questi
 ## Model behavior
 
 GPT-6 Astra can stop after a first useful unit. For a requested full lesson, finish the selected scope before ending. Claude Sonnet 5 follows scope instructions literally, so keep the distinction between an interactive lesson and a complete lecture explicit. Claude Fable 5.1 benefits from crop or zoom tools for dense visual material. For any model, verify what is actually on the page and keep page citations tied to what was read, not to memory.
+
+## Interactive output in T3 Code
+
+When an interactive visual would help, follow [T3 interactive output](t3-interactive.md). Preserve the lesson or plan scope and the learner checkpoints; use prose when controls add no value.

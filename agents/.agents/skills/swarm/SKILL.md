@@ -7,6 +7,10 @@ description: "Coordinate independent workers on explicit parallel coverage, then
 
 Fan out workers across independent slices, then aggregate one report. Use **arena** when workers should solve the same task and their artifacts need comparison or synthesis.
 
+## Execution in T3 Code
+
+When running in T3 Code, read [T3 execution](../claude-collab/references/t3-code.md) before launching workers. That route replaces shell launch, manual worktree creation, polling, and session-resume instructions below; retain the task framing, review, synthesis, and verification requirements. Outside T3, keep the existing workflow.
+
 ## Start
 
 Track phases when the task is long enough to need it.

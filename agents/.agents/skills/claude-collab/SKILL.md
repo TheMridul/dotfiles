@@ -7,7 +7,11 @@ description: Orchestrate Claude Code agents from Codex to divide substantial wor
 
 Codex owns the task and final result. Use fresh Claude Code sessions as independent workers, then inspect and integrate their useful output. Do not return a pile of agent transcripts as the answer.
 
-Read [references/claude-cli.md](references/claude-cli.md) before launching workers. It defines the tested command shapes, prompt-file handling, session resumption, and isolation rules.
+Outside T3 Code, read [references/claude-cli.md](references/claude-cli.md) before launching workers. It defines the tested command shapes, prompt-file handling, session resumption, and isolation rules.
+
+## Execution in T3 Code
+
+When running in T3 Code, read [T3 execution](references/t3-code.md) before launching workers. That route replaces shell launch, manual worktree creation, polling, and session-resume instructions below; retain the task framing, review, synthesis, and verification requirements. Outside T3, keep the existing workflow.
 
 ## Frame the collaboration
 

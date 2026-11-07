@@ -7,6 +7,10 @@ description: "Compare independent candidates for the same substantial artifact, 
 
 Fan out N parallel attempts at the same task. Read every candidate end to end. Pick the strongest as the base. Graft the best ideas from the others into it. Verify the synthesized result.
 
+## Execution in T3 Code
+
+When running in T3 Code, read [T3 execution](../claude-collab/references/t3-code.md) before launching workers. That route replaces shell launch, manual worktree creation, polling, and session-resume instructions below; retain the task framing, review, synthesis, and verification requirements. Outside T3, keep the existing workflow.
+
 ## Start
 
 Track phases when the task is long enough to need it.

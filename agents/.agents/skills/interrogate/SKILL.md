@@ -9,6 +9,10 @@ Use independent reviewers to challenge a code change when the requested review b
 
 The deliverable is a synthesized verdict. Do NOT auto-apply changes.
 
+## Execution in T3 Code
+
+When running in T3 Code, read [T3 execution](../claude-collab/references/t3-code.md) before launching workers. That route replaces shell launch, manual worktree creation, polling, and session-resume instructions below; retain the task framing, review, synthesis, and verification requirements. Outside T3, keep the existing workflow.
+
 ## Step 1, Determine Scope
 
 Identify what to review from context:
