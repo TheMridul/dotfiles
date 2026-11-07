@@ -1,0 +1,6 @@
+[Unit]
+Description=Notify that the agent memory backup failed
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/notify-send -u critical -a 'Agent memory backup' 'Agent memory backup failed' 'The daily push of ~/.agents to GitHub failed. Check: journalctl --user -u agents-private-sync'
