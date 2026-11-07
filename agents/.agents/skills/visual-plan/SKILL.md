@@ -13,6 +13,10 @@ Save a standalone file when the user wants something to keep or share, and link 
 
 Publishing to an external service is an outward action. Prepare the complete visual for review and follow the applicable authorization rules before publishing. Local rendering needs no extra approval.
 
+## Model quirks
+
+For Astra, keep optional formatting choices from becoming a clarification gate. For Sonnet 5.5, preserve the existing plan without adding new work. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.
+
 ## Interactive output in T3 Code
 
 When an interactive visual would help, follow [T3 interactive output](../teach-me/t3-interactive.md). Preserve the lesson or plan scope and the learner checkpoints; use prose when controls add no value.

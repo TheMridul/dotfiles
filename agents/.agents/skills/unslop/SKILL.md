@@ -20,6 +20,6 @@ Use this as the default writing register for prose Mridul reads. Preserve the wr
 
 An explanation should be easy to read on the first pass. A report should distinguish findings from inference. Teaching can be warm and patient without filler or false reassurance. A commit message or PR description should state the actual change. Keep the user's own voice when editing their text; do not inject opinions, jokes, or roughness to seem human.
 
-For GPT-6 Astra, watch for unnecessary tables, nested lists, repeated phrases, and more detail than the question needs. For Claude Fable 5.1, watch for dense sentences and too few paragraph breaks; its prose often needs less vocabulary cleanup. Claude Sonnet 5 usually calibrates length itself, so adjust only when the draft is actually too long or too short. These are checks on observed output, not automatic rewrites by model name.
+For Astra, check for excess formatting, repeated phrases, and detail that does not serve the question. OpenAI's family guidance is a starting point for Sol; edit its actual output rather than assuming every Astra behavior applies. For Claude Opus 5.5, Sonnet 5.5, and Haiku 5.5, keep useful explanations and action summaries without asking for private internal reasoning. Model-specific notes are conditional checks, not automatic rewrites. See [model quirks](../claude-collab/references/model-quirks.md) when a prompt needs adjustment.
 
 Before sending, read the prose once for anything generic enough to fit another task unchanged. Replace it with the specific fact or cut it.

@@ -61,3 +61,7 @@ When revising, use what the implementation taught you, simplify the sketch, and 
 ## Outputs
 
 Show caller usage and the resulting interface. For larger work, include a module map, the decision that mattered, and how implementation validated or changed the sketch.
+
+## Model quirks
+
+For Astra, an optional design checkpoint must not become a default approval pause. For Sonnet 5.5, keep design and implementation within the requested scope and stop after the required validation. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

@@ -12,3 +12,7 @@ Identify the safety assumption each material risk depends on. Check it against c
 Report confirmed risks, important cleared risks, and unresolved assumptions with file and line evidence. Give the likely impact and the cheapest useful check before shipping. Keep the report proportional to the diff.
 
 Use **how** if the affected subsystem needs a walkthrough and **why** if an old decision constrains the change. For a wide change, independent review passes can help when different areas can be examined separately; do not require an arena for size alone.
+
+## Model quirks
+
+For Astra, focus verification on the material risks of this change. For Sonnet 5.5 and Haiku 5.5, require caller or contract evidence before accepting a cleared risk. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

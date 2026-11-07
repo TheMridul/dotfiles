@@ -72,3 +72,7 @@ If verification surfaces a problem the arena did not catch, either Phase A was w
 ## Outputs
 
 One synthesized artifact. One short synthesis note alongside, naming the base, the grafts (with source candidate), the rejections, the dropouts if any, and the verification result.
+
+## Model quirks
+
+For Astra, make the intended parallel attempts explicit. For Sonnet 5.5, constrain candidates to the artifact and required checks. For Haiku 5.5, keep each brief short and require an observable result. A progress-only turn does not complete an Opus 5.5 candidate. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

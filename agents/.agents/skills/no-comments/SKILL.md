@@ -12,3 +12,7 @@ Inspect lint and type suppressions separately. A suppression may encode a real l
 A direct review is enough for an ordinary diff. Use an independent reviewer when the comment set is large or the author needs a separate judgment. Judge each suggestion against current code rather than accepting an aggressive deletion verdict by default.
 
 Run the relevant checks after code changes. Report the meaningful deletions, comments kept for a reason, and any open constraint that could be encoded in code or tests. Do not require a separate approval for local, reversible fixes already covered by the user's request.
+
+## Model quirks
+
+For Sonnet 5.5, restrict edits to the requested comment cleanup. For Astra, avoid expanding a small cleanup into unrelated tests or refactors. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

@@ -18,3 +18,7 @@ Lead with the answer. Then show the path through the code, the relevant owners o
 When the user asks for architectural problems or placement advice, trace the current behavior first. Identify concrete problems, affected callers, and a feasible improvement. Use [critique-rubric.md](critique-rubric.md) to check a broad critique. Independent reviewers can help when several plausible boundaries need comparison; they are not a default step.
 
 Distinguish observed behavior from a proposed change. Use **why** only when historical motivation matters to the recommendation.
+
+## Model quirks
+
+For Sonnet 5.5 and Haiku 5.5, inspect the current files before making a runtime claim. For Astra, answer the requested scope before offering optional further exploration. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

@@ -1,17 +1,13 @@
 ---
 name: image-gen
-description: "Generate raster images (illustrations, photos, art, mockup images, non-trivial icons) by delegating to Codex with gpt-6.1-sol. Use whenever a task needs a generated image instead of drawing one yourself. Not for diagrams or charts built from structured data; draw those as SVG."
+description: "Generate or edit raster images using an available image-generation tool. When Claude needs Codex to provide that tool, delegate with gpt-6.1-sol. Use code or vector tools for structured charts, diagrams, and existing SVG assets."
 ---
 
-# Image generation through Codex
+# Image generation
 
-Claude does not draw images itself. Codex has a built-in image generation tool
-(GPT-Image-2), so delegate through T3 when available, or use `codex exec` outside T3, and read the result.
+Use the current environment's image-generation tool directly when available. When running in Claude without such a tool, delegate to Codex with gpt-6.1-sol as the coordinating model. The image-generation tool produces the image; choosing a stronger text coordinator does not by itself establish better image quality.
 
-Codex agents already have this tool. If you are Codex, call it directly and skip
-the command below.
-
-## T3 Code
+## Delegate when needed
 
 In T3 Code, read [T3 execution](../claude-collab/references/t3-code.md) and use `delegate_task` targeting the available Codex instance with model `gpt-6.1-sol`. Give it the visual brief, accessible reference paths, and output requirements; require the actual image-generation tool, not a text description or a code-drawn substitute. Follow the returned completion instructions rather than polling. Do not run the shell command below inside T3. If Codex or its image tool is unavailable, report the limitation without silently changing providers or generating a substitute.
 
@@ -19,43 +15,20 @@ For an image the user wants to save, post, or use elsewhere, require a saved PNG
 
 Outside T3 Code, use the CLI route below.
 
-## Command outside T3 Code
+Create a task-specific prompt file with the file-editing tool. Include the visual brief, exact output path, and any reference image paths. Keep untrusted prompt text out of shell command interpolation. From the intended output directory, run:
 
-Run from the directory the image should land in:
-
-```bash
-cd <output dir> && codex exec --skip-git-repo-check -s workspace-write -m gpt-6.1-sol \
-  "Generate an image with your image generation tool: <prompt>. Save it as <name>.png in the current directory. Reply with the saved file path only."
+```text
+codex exec --skip-git-repo-check -s workspace-write -m gpt-6.1-sol - < /tmp/<task>/image-brief.md
 ```
 
-- Always pass `-m gpt-6.1-sol`. The Codex default is `gpt-6-astra`, which costs
-  five times as much per token and gives no better image, because the image
-  itself comes from GPT-Image-2 either way.
-- `-s workspace-write` lets Codex copy the image into the current directory.
-- One image takes a few minutes. Give the Bash call a timeout of at least
-  400000 ms.
-- Codex keeps the original under `~/.codex/generated_images/<session>/`.
+Use an authorized writable output directory. Preserve the explicit Sol choice; if unavailable, report the limitation rather than silently switching models. For edits, inspect the reference and use the image tool's reference mechanism. If a required image is inaccessible, request it again instead of inventing it.
 
-## Prompt
+Specify subject, setting, lighting, composition, style, and any required dimensions or transparency. Ask Codex to save the result at the named path and return that path. For multiple images, give every output a distinct name. Allow several minutes for generation while monitoring the process and keeping the user informed.
 
-Write the prompt as a full scene: subject, setting, lighting, composition and
-style ("soft painterly", "watercolor", "flat vector", "product photo"). Name
-the aspect ratio or size if it matters. For several images, run one
-`codex exec` per image so each file name is predictable.
+## Verify
 
-## Check the result
+Confirm the file exists and inspect it with an available image viewer. Check the brief, dimensions, and transparency where relevant. Refine the prompt or edit through the image tool when needed. Return the image or link the saved artifact; do not treat a worker's claimed path as proof that a file was saved.
 
-Open the PNG with the Read tool and look at it before reporting. If it misses
-the brief, rerun with a sharper prompt instead of editing it yourself.
+## Model quirks and cost
 
-## Cost
-
-Codex credits per million tokens (standard speed): gpt-6.1-sol 50 input,
-2.5 cached, 250 output; gpt-6-astra 250, 25, 1,250. GPT-Image-2 is billed
-on top, the same whichever model drives Codex. Image generation draws from
-the plan's included Codex limits first, then credits. Source:
-https://learn.chatgpt.com/docs/pricing
-
-The "tokens used" figure that `codex exec` prints leaves out cached input. For
-a real count, read the last `token_count` event in the session log under
-`~/.codex/sessions/`.
+Keep the delegation brief focused on producing and saving the image. Use [model quirks](../claude-collab/references/model-quirks.md) only when the coordinator needs tuning. Check [current pricing](https://learn.chatgpt.com/docs/pricing) when cost matters rather than relying on a fixed token-price ratio or assuming the user's configured default. Do not report usage telemetry as proof of a separate charge.

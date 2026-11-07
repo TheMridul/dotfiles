@@ -46,7 +46,7 @@ Use `--permission-mode acceptEdits` only inside an isolated writable workspace a
 
 ## Launch and drain
 
-Run independent agents concurrently using separate shell-tool calls rather than shell job-control syntax. Use JSON noninteractive output so Codex captures both the result and session ID. Give sessions descriptive names. Pass `--model` only when a model choice is intentional, and record the selected model for reproducibility. Match effort to the role instead of defaulting every worker to maximum effort.
+Run independent agents concurrently using separate shell-tool calls rather than shell job-control syntax. Use JSON noninteractive output so Codex captures both the result and session ID. Give sessions descriptive names. Pass `--model` only when a model choice is intentional, and record the selected model for reproducibility. Match effort to the role instead of defaulting every worker to maximum effort. Use the relevant [model quirk note](references/model-quirks.md) when framing its brief. A progress-only final message is not completion when required work remains; check the done condition before accepting it.
 
 Declare a task-appropriate deadline before launch and monitor long-running calls. Stop a worker that passes the deadline. If an agent needs a follow-up, resume that session with its captured session ID rather than starting over. Wait for all useful workers before synthesis. A failed or timed-out worker is a dropout; continue when the remaining coverage is sufficient, otherwise retry once with a narrower brief.
 

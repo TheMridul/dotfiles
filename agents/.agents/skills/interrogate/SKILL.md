@@ -102,3 +102,7 @@ Present the verdict in this structure:
 
 ### Agreement Map
 [Where did reviewers agree, where did they diverge, and what does the pattern of agreement/disagreement tell us?]
+
+## Model quirks
+
+For Astra, request the independent review passes explicitly. For Sonnet 5.5, keep the review read-only and scoped to the diff. For Haiku 5.5, keep the brief bounded and require source evidence for each finding. Do not demand a minimum finding count. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

@@ -45,3 +45,7 @@ Keep a compact result table, one-line evidenced issues, and explicit gaps or dro
 ## Phase D: Report
 
 Return one consolidated in-chat report with the table, issue one-liners, and gaps or dropouts.
+
+## Model quirks
+
+For Astra, state the independent slices to delegate. For Sonnet 5.5 and Haiku 5.5, specify the required evidence and completion condition to avoid early handbacks. Check Opus 5.5 progress-only results against that condition before accepting a slice. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

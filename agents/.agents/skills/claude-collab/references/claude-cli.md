@@ -38,13 +38,9 @@ These commands intentionally use the normal installed Claude Code session and it
 
 Use the session's configured model by default. If a deliberate split helps, check the installed CLI and current official Claude Code model guidance, then pass `--model <supported-alias-or-id>` for that worker. Prefer a faster available model for bounded extraction and a stronger one for genuinely difficult synthesis or judgment. Model names, defaults, and account availability change; the skill should not freeze a roster. Keep effort proportional to the task.
 
-When choosing a specific current model, adjust the worker brief only for a behavior that matters to this task:
+Use [model-quirks.md](model-quirks.md) for the selected model when the task needs a tailored brief. It covers Opus 5.5, Sonnet 5.5, Haiku 5.5, Astra, and Sol, including the difference between API and Claude Code effort defaults. Do not load every model section or copy API parameters into CLI commands.
 
-- [Claude Sonnet 5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-sonnet-5) already uses tools and verifies more readily. Skip boilerplate that forces repeated self-checks or status updates; specify the actual completion check instead. Raise effort for hard reasoning before adding elaborate thinking prompts.
-- [Claude Opus 5.5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5) defaults to medium effort. Do not carry a high-effort default from an older Opus model into every worker; increase it only where the role justifies the extra latency.
-- [Claude Fable 5.1](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1) can underuse search at low effort. For evidence-heavy work, use an effort level or an explicit source-verification instruction that reliably gets the needed retrieval. Give long-running workers a clear done condition so they do not stop after a first pass.
-
-Recheck these pages when changing the model roster. They describe current behavior, not permanent rules for every Claude model.
+The installed CLI supports explicit overrides such as `--model claude-sonnet-5-5 --effort medium`. Keep the existing authentication and permission boundary when adding either flag. Verify availability before launch; if the requested model is unavailable, report that limitation instead of silently substituting one.
 
 ## Parallel execution and deadlines
 

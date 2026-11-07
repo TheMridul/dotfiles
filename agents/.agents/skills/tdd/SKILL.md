@@ -41,3 +41,7 @@ Report the evidence, not just the outcome:
 - Name the failing-before test or executable check and the failure it produced.
 - Name the passing-after test run and any nearby validation performed.
 - If failing-before evidence could not be demonstrated, state why and describe the closest regression check used instead.
+
+## Model quirks
+
+For Astra, stop once the relevant regression and required adjacent checks pass. For Sonnet 5.5 at low effort and Haiku 5.5 at low or medium, require actual check output before accepting completion; a command that failed to start is not passing evidence. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.

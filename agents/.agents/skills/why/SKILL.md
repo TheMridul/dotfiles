@@ -19,3 +19,7 @@ Separate direct evidence from inference. Code shows what happens; it rarely prov
 ## Answer
 
 Lead with the most supported explanation and cite it. Then distinguish what the record explicitly says, what you infer, and what remains unknown. Include competing explanations only when the evidence really supports more than one. For a change request, turn discovered constraints into a short list of what the implementation must preserve.
+
+## Model quirks
+
+For Haiku 5.5, give retrieval a bounded evidence question and a date range. For Sonnet 5.5, explicitly retrieve records when current facts matter. For Astra, stop once the relevant evidence supports the answer, without inventing more investigation phases. See [model quirks](../claude-collab/references/model-quirks.md) only when adapting the workflow for that model.
