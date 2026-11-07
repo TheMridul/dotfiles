@@ -116,13 +116,15 @@ printf 'Agent context wired: rules %s, skills %s/skills.\n' "$rules" "$shared"
 # Claude in Chrome: Claude Code registers its native host for Chrome and
 # regular Brave but not Brave Origin (Omarchy's browser since 2026-11). Link
 # Brave Origin's registration to the one Claude Code maintains.
-claude_host="$HOME/.config/google-chrome/NativeMessagingHosts/com.anthropic.claude_code_browser_extension.json"
-if [[ -f $claude_host ]]; then
+# Codex's ChatGPT browser extension has the same gap, so link both.
+for host in com.anthropic.claude_code_browser_extension.json com.openai.codexextension.json; do
+  src="$HOME/.config/google-chrome/NativeMessagingHosts/$host"
+  [[ -f $src ]] || continue
   for profile in "$HOME"/.config/BraveSoftware/Brave-Origin*/; do
     mkdir -p "$profile/NativeMessagingHosts"
-    ln -sfn "$claude_host" "$profile/NativeMessagingHosts/${claude_host##*/}"
+    ln -sfn "$src" "$profile/NativeMessagingHosts/$host"
   done
-fi
+done
 
 # Copilot: no private memory, no Co-authored-by trailer (its default is on).
 if command -v copilot >/dev/null; then

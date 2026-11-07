@@ -13,6 +13,10 @@ Outside T3 Code, read [references/claude-cli.md](references/claude-cli.md) befor
 
 When running in T3 Code, read [T3 execution](references/t3-code.md) before launching workers. That route replaces shell launch, manual worktree creation, polling, and session-resume instructions below; retain the task framing, review, synthesis, and verification requirements. Outside T3, keep the existing workflow.
 
+## Browser tasks in the user's logged-in browser
+
+Prefer Codex's own `chrome` plugin when its ChatGPT extension is installed in Brave Origin. Otherwise hand the browser step to Claude, whose Claude in Chrome extension is set up there. In T3 Code, use `delegate_task` with a Claude provider: T3 starts that child outside the Codex sandbox, and every Claude session on this machine loads the `mcp__claude-in-chrome__*` tools. Outside T3, `claude -p --chrome ...` needs network access, which the Codex sandbox blocks (`EAI_AGAIN`), so request an unsandboxed run for that one command. Have the Claude worker stop and report any password, passkey or 2FA prompt instead of handling credentials.
+
 ## Frame the collaboration
 
 Before launching agents:
