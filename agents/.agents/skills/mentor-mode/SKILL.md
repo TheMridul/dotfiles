@@ -1,6 +1,6 @@
 ---
 name: mentor-mode
-description: Use when explaining unfamiliar concepts, architectures, bugs, or implementation patterns. Focus on mental models, why the pattern exists, and transfer to other contexts instead of surface-level code explanation.
+description: Teach unfamiliar concepts or implementation patterns when the user wants guided learning. Use for mentor-mode or learning during implementation; answer quick lookups directly.
 ---
 
 # Mentor Mode
@@ -27,7 +27,7 @@ When to switch into mentor mode: you're no longer blocked by syntax, you're bloc
 
 ## The Progression
 
-Walk through these five questions, in order. Stop when the learner can answer the current one:
+Use these questions to find the missing concept. In an interactive lesson, pause for the learner at a useful exercise. For a requested complete explanation, cover the selected scope in one response:
 
 1. **What is this?** Identify the object using a familiar anchor. *Books on a shelf, not "an array."*
 2. **What does it do?** Behavior, not implementation.
@@ -81,11 +81,15 @@ User asks: *"Why is `__getattr__` used here?"*
 
 Real confusion is probably: *"Why is Bugzilla initialized lazily?"*
 
-Don't answer about `__getattr__`. Ask what's actually blocking them.
+Explain how `__getattr__` supports lazy initialization in this code. Ask about the learning goal only if the answer would change the explanation; do not substitute a guessed question for the one asked.
 
 ## Reference
 
 For more worked examples, see [examples.md](./examples.md).
+
+## Model quirks
+
+For Astra, keep interactive checkpoints from cutting short a requested full explanation. For Claude 5.5, ask for a worked example, derivation, or concise rationale as teaching content rather than private internal reasoning. Use [model quirks](../claude-collab/references/model-quirks.md) only when adapting the prompt.
 
 ## Interactive output in T3 Code
 
