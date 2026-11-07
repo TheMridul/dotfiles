@@ -110,6 +110,17 @@ chmod --reference="$settings_path" "$temporary_settings"
 mv "$temporary_settings" "$settings_path"
 
 printf 'Agent context wired: rules %s, skills %s/skills.\n' "$rules" "$shared"
+# Claude in Chrome: Claude Code registers its native host for Chrome and
+# regular Brave but not Brave Origin (Omarchy's browser since 2026-11). Link
+# Brave Origin's registration to the one Claude Code maintains.
+claude_host="$HOME/.config/google-chrome/NativeMessagingHosts/com.anthropic.claude_code_browser_extension.json"
+if [[ -f $claude_host ]]; then
+  for profile in "$HOME"/.config/BraveSoftware/Brave-Origin*/; do
+    mkdir -p "$profile/NativeMessagingHosts"
+    ln -sfn "$claude_host" "$profile/NativeMessagingHosts/${claude_host##*/}"
+  done
+fi
+
 # Copilot: no private memory, no Co-authored-by trailer (its default is on).
 if command -v copilot >/dev/null; then
   copilot config memory false >/dev/null
