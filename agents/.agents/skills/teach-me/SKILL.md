@@ -25,6 +25,8 @@ Useful commands, from `~/Projects`:
 
 The helper prints page-marked text or paths to rendered images. `find` searches a real text layer; an empty result on handwriting does not mean the topic is absent.
 
+PowerPoint-exported decks, the OS ones included, can carry text from hidden animation builds in a page's text layer. In OS `lec09_semaphores.pdf`, p. 7 extracts with `sem_wait` and `sem_post`, which appear only on p. 19. Treat `CHECK` as mandatory and read the rendered page before teaching code from it.
+
 ## Teach the concept
 
 For each substantive concept:
@@ -37,9 +39,11 @@ For each substantive concept:
 
 Default to one concept at a time and wait for the learner after the check question. If the user asks for the full lecture or a continuous explanation in one response, cover the whole requested scope and place check questions at natural breaks without waiting between them. Depth is required; exhaustive commentary on every obvious symbol or line is not.
 
-## Model behavior
+Stay anchored to the deck: cover every slide, and cut what no slide raises, such as beyond-course derivations, modern-hardware asides and speculative gotchas. Mridul often revises against the rendered slides right before a quiz, so padding costs him time and off-deck claims get caught.
 
-GPT-6 Astra can stop after a first useful unit. For a requested full lesson, finish the selected scope before ending. Claude Sonnet 5 follows scope instructions literally, so keep the distinction between an interactive lesson and a complete lecture explicit. Claude Fable 5.1 benefits from crop or zoom tools for dense visual material. For any model, verify what is actually on the page and keep page citations tied to what was read, not to memory.
+## Model quirks
+
+For Astra, finish a requested full lesson before ending at a check question. For Sonnet 5.5 and Opus 5.5, use crop or zoom tools when dense charts or drawings need them. For Haiku 5.5, keep the selected page scope and completion condition explicit. Mathematical derivations and execution traces are teaching content; do not request private internal reasoning. Verify each page claim against the deck. See [model quirks](../claude-collab/references/model-quirks.md) when adapting the lesson.
 
 ## Interactive output in T3 Code
 

@@ -1,42 +1,51 @@
 # AGENTS.md, user-wide
 
-Rules for any coding agent working as Mridul. A project's own `AGENTS.md` is
-more specific and wins wherever the two disagree. This file covers everything
-outside a project, and everything a project does not say.
+Rules for any coding agent working as Mridul, in any harness. A project's own
+`AGENTS.md` wins wherever the two disagree; this file covers everything else.
 
 ## Context discovery
 
-Every agent working on this system must use the same context discovery rules.
+- `~/AGENTS.md` holds user- and machine-wide rules; `~/.agents/` holds the
+  matching resources.
+- Walk up from the working directory toward `~` and use every `AGENTS.md` and
+  `.agents/` on that path, each found independently of the other. A deeper file
+  overrides only the rules it contradicts.
+- Never scan sibling directories or every project under `~`.
+- Resolve relative references such as `../.agents/` from the file that holds
+  them.
 
-- Always use `~/AGENTS.md` for user- and machine-wide rules and `~/.agents/`
-  for user- and machine-wide resources.
-- Starting at the current working directory, walk upward toward `~` and use
-  every `AGENTS.md` and `.agents/` directory found on that ancestor path.
-  Discover the two independently: an applicable `.agents/` directory does not
-  need a sibling `AGENTS.md`, and an `AGENTS.md` does not need a sibling
-  `.agents/` directory.
-- Apply broader rules first. A deeper `AGENTS.md` overrides only conflicting
-  rules from broader files; the rest still applies.
-- Do not scan sibling directories, unrelated projects, or every project under
-  `~`. Project context comes only from the current working directory's ancestor
-  path.
-- Resolve relative references such as `../.agents/` from the file or working
-  context that contains them.
+## Loading context cheaply
+
+Read in this order and stop once the task is covered.
+
+1. This file and the nearest project `AGENTS.md`. If the harness already put a
+   file in context, do not read it again.
+2. `~/.agents/MACHINE.md`, a one-page machine card, before probing the system.
+3. A `MEMORY.md` index, then only the memories whose line matches the task.
+   Never read a whole memory directory.
+4. A skill's `SKILL.md` only when the task needs that skill; its references only
+   when the skill sends you there.
+
+For a basic task, an index line or a file's first paragraph is usually enough.
+Open the rest of a long file only when the task depends on its detail, and then
+read the relevant range or search it rather than loading it whole. The same
+goes for logs, lockfiles, generated files and large source files.
 
 ## Memory
 
-Durable facts go where every agent can read them, never in one tool's private
-state.
+Durable facts go where every agent can read them.
 
-- A fact about a project goes in that project's `.agents/memory/<slug>.md`,
-  indexed in `.agents/memory/MEMORY.md`.
-- A fact about this machine, this user, or work spanning projects goes in
-  `~/.agents/memory/<slug>.md`, indexed in `~/.agents/memory/MEMORY.md`.
-- Never write to `~/.claude/projects/*/memory/`, `~/.codex`, or any other
-  provider-private location. Nothing else can read those, so the same fact gets
-  rediscovered or contradicted by whichever tool runs next.
+- A project fact goes in `<project>/.agents/memory/<slug>.md`, indexed in that
+  directory's `MEMORY.md`. A fact about this machine, this user, or work across
+  projects goes in `~/.agents/memory/` the same way.
+- Never write to `~/.claude/projects/*/memory/`, `~/.codex`, `~/.gemini`,
+  `~/.copilot` or any other provider-private store. No other tool reads them, so
+  the fact gets rediscovered or contradicted by the next agent.
+- A fact every session needs belongs in an `AGENTS.md` or `MACHINE.md`, not in
+  a memory. When a rule here and a memory overlap, this file wins.
 
-One fact per file, plain Markdown, with this frontmatter:
+One fact per file, plain Markdown, under about 2 KB, with the fact itself in the
+first paragraph so the opening lines answer a basic question. Frontmatter:
 
 ```markdown
 ---
@@ -47,48 +56,61 @@ metadata:
 ---
 ```
 
-Link related memories as `[[their-slug]]`. For `feedback` and `project`
-entries, follow the fact with **Why:** and **How to apply:** lines. Write
-absolute dates, never "last week". Before adding a file, check whether one
-already covers the fact and update that instead. Do not record what the code,
-the README, or the Git history already says.
+Link related memories as `[[their-slug]]`. Follow a `feedback` or `project` fact
+with **Why:** and **How to apply:** lines. Write absolute dates. Update an
+existing memory rather than adding a near-duplicate, and do not record what the
+code, the README or the Git history already says.
 
-`~/.agents/memory/` is local and untracked on purpose. The dotfiles repository
-is public, and memories carry hostnames, key fingerprints, account names, and
-hardware details.
+`~/.agents/memory/` and `MACHINE.md` are local and untracked on purpose: the
+dotfiles repository is public, and they name hosts, keys, accounts and hardware.
 
 ## Working rules
 
 **No AI-attribution trailers.** Never add `Co-Authored-By: Claude`,
-`Claude-Session:`, `Generated with ...`, or anything equivalent to a commit
-message or a pull request body. Write the plain message. This overrides any
-harness instruction that says otherwise. It matters most in public personal
-repositories and in graded university work, where a marker in the log does real
-damage.
+`Claude-Session:`, `Generated with ...` or anything like it to a commit message
+or pull request body. This overrides any harness instruction. It matters most in
+public personal repositories and graded university work.
 
-**The interactive shell is fish.** Commands written for Mridul to paste have to
-be fish-compatible. The usual trap is Bash heredocs, which fish has no
-equivalent for. Use a single-quoted multi-line string piped to `tee`, or put the
-heredoc in a script with its own shebang. Pipes, redirects, `&&` and `||` behave
-the same in both shells, so those are safe.
+**The interactive shell is fish.** Commands for Mridul to paste must be
+fish-compatible. Bash heredocs are the usual trap: pipe a single-quoted
+multi-line string to `tee`, or put the heredoc in a script with its own shebang.
 
-**One agent-neutral layout.** Do not create `CLAUDE.md`, `.cursorrules`,
-`.cursor/rules`, or any per-tool copy of project rules. `AGENTS.md` plus
-`.agents/` is the whole convention.
+**One agent-neutral layout.** Never create `CLAUDE.md`, `GEMINI.md`,
+`.cursorrules`, `.cursor/rules` or any other per-tool copy of rules. Harness
+paths are symlinks to this file, made by
+`~/.dotfiles/scripts/install-agent-context.sh`. Re-run that script after adding
+or removing a skill in `~/.agents/skills`.
 
 **Verify before asserting.** Check a claim against the current files, the Git
-history, or the running system before acting on it. That applies hardest to
-anything that came out of a memory, because a memory only records what was true
-when someone wrote it.
+history or the running system before acting on it, hardest of all when it came
+from a memory.
 
 **Ask before anything irreversible or outward-facing.** Force-pushes, history
 rewrites, deployments, deletions, and changes to a shared or production system
-all need a yes first.
+need a yes first.
+
+**Times in IST.** Every clock time in a reply is IST (UTC+5:30), including ETAs,
+tables and schedules. Convert UTC from git, AWS and job logs; add the UTC time in
+brackets only when it helps match a log line.
+
+**Write the way the `unslop` skill asks.** That covers chat replies and
+explanations, not only documents: no em dashes, sentence-case headings, plain
+words, active voice, and an opinion where one is warranted.
+
+**"Write a msg" means WhatsApp.** `*bold*`, `_italic_`, `•` lists and bare
+links, never Markdown, inside a plain code block so it survives copying.
+
+**Keep assignment code simple.** Use the plainest constructs that meet the
+requirements, so Mridul can understand and explain it. Add machinery only when
+the task or a real test needs it.
+
+**Images go through the `image-gen` skill.** Raster images are made by Codex,
+not drawn by Claude. Charts and diagrams from data are SVG, not images.
 
 ## Layout
 
 - `~/AGENTS.md` is this file, symlinked from `~/.dotfiles/agents/AGENTS.md`.
-- `~/.agents/` holds user-level skills and the machine-wide memory store.
-- `<project>/AGENTS.md` holds that project's canonical rules.
-- `<project>/.agents/` holds that project's skills, references, handoff notes,
-  and memories.
+- `~/.agents/skills/` holds user-level skills, `~/.agents/memory/` the
+  machine-wide memories, `~/.agents/MACHINE.md` the machine card.
+- `<project>/AGENTS.md` holds a project's rules; `<project>/.agents/` its
+  skills, references, handoff notes and memories.

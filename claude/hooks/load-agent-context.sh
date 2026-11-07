@@ -23,11 +23,17 @@ done
 lines=()
 
 if [[ -f $home/AGENTS.md ]]; then
-  lines+=("Machine- and user-wide rules are at $home/AGENTS.md. Read it before working.")
+  lines+=("Machine- and user-wide rules are at $home/AGENTS.md. Read it before working unless its contents are already in your context.")
+fi
+
+machine=$home/.agents/MACHINE.md
+if [[ -f $machine ]]; then
+  summary=$(sed -n 's/^description: //p' "$machine" | head -n1)
+  lines+=("This machine: ${summary:-see the card}. Full card at $machine; read it before probing the system.")
 fi
 
 if [[ -d $home/.agents ]]; then
-  lines+=("User-level agent resources are under $home/.agents/; machine-wide memories are in $home/.agents/memory/ (index: MEMORY.md).")
+  lines+=("User-level agent resources are under $home/.agents/; machine-wide memories are in $home/.agents/memory/. Read the MEMORY.md index first and open only the memories that match the task.")
 fi
 
 if [[ -n $project_root ]]; then

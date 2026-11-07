@@ -1,73 +1,98 @@
 #!/bin/bash
+# Wire every installed coding agent to the same rules and skills.
+#
+# One source of truth: ~/AGENTS.md for rules, ~/.agents/skills for skills,
+# ~/.agents/memory and ~/.agents/MACHINE.md for local facts. Each harness gets
+# a symlink at the path it reads, never a copy, so nothing can fall behind.
+# Safe to re-run; run it again after adding or removing a skill.
 set -euo pipefail
 
 dotfiles_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 claude_home=${CLAUDE_CONFIG_DIR:-"$HOME/.claude"}
-shared_agents_home="$HOME/.agents"
+shared="$HOME/.agents"
+rules="$HOME/AGENTS.md"
 hook_source="$dotfiles_root/claude/hooks/load-agent-context.sh"
-hook_target="$claude_home/hooks/load-agent-context.sh"
 
 link_if_missing() {
-  local source=$1
-  local target=$2
-
+  local source=$1 target=$2
   if [[ -L $target ]]; then
     [[ $(readlink -f "$target") == "$(readlink -f "$source")" ]] && return
     printf 'Refusing to replace existing symlink: %s\n' "$target" >&2
-    exit 1
+    return 1
   fi
-
   if [[ -e $target ]]; then
     printf 'Refusing to replace existing file: %s\n' "$target" >&2
-    exit 1
+    return 1
   fi
-
+  mkdir -p "$(dirname "$target")"
   ln -s "$source" "$target"
 }
 
-mkdir -p "$claude_home/hooks" "$claude_home/skills" "$shared_agents_home"
-mkdir -p "$shared_agents_home/memory"
-chmod +x "$hook_source"
-chmod +x "$dotfiles_root/claude/statusline.sh"
+# Shared layer.
+mkdir -p "$shared/memory"
+link_if_missing "$dotfiles_root/agents/AGENTS.md" "$rules"
+link_if_missing "$dotfiles_root/agents/.agents/README.md" "$shared/README.md"
+link_if_missing "$dotfiles_root/agents/.agents/skills" "$shared/skills"
 
-link_if_missing "$hook_source" "$hook_target"
-link_if_missing "$dotfiles_root/claude/statusline.sh" "$claude_home/statusline.sh"
-link_if_missing "$dotfiles_root/claude/skills/new-project" "$claude_home/skills/new-project"
-link_if_missing "$dotfiles_root/claude/skills/existing-project" "$claude_home/skills/existing-project"
-link_if_missing "$dotfiles_root/claude/skills/just-rules" "$claude_home/skills/just-rules"
-link_if_missing "$dotfiles_root/claude/skills/collaborator-tone" "$claude_home/skills/collaborator-tone"
-link_if_missing "$dotfiles_root/claude/skills/explain-code" "$claude_home/skills/explain-code"
-link_if_missing "$dotfiles_root/claude/skills/mentor-mode" "$claude_home/skills/mentor-mode"
-link_if_missing "$dotfiles_root/agents/.agents/skills/image-gen" "$claude_home/skills/image-gen"
-link_if_missing "$dotfiles_root/agents/.agents/README.md" "$shared_agents_home/README.md"
-link_if_missing "$dotfiles_root/agents/.agents/skills" "$shared_agents_home/skills"
-link_if_missing "$dotfiles_root/agents/AGENTS.md" "$HOME/AGENTS.md"
+# Global rules: each harness's own path points at ~/AGENTS.md. Only for
+# harnesses that are installed (their config directory exists).
+declare -A rule_paths=(
+  ["$HOME/.codex"]="$HOME/.codex/AGENTS.md"
+  ["$HOME/.config/opencode"]="$HOME/.config/opencode/AGENTS.md"
+  ["$HOME/.copilot"]="$HOME/.copilot/copilot-instructions.md"
+  ["$HOME/.gemini"]="$HOME/.gemini/AGENTS.md"
+)
+for dir in "${!rule_paths[@]}"; do
+  [[ -d $dir ]] && link_if_missing "$rules" "${rule_paths[$dir]}" || true
+done
 
-# Codex reads ~/.codex/AGENTS.md as its global instructions. Point it at the
-# same file rather than keeping a second copy of the rules.
-if [[ -d $HOME/.codex ]]; then
-  link_if_missing "$HOME/AGENTS.md" "$HOME/.codex/AGENTS.md"
+# Skills live only in ~/.agents/skills.
+# - Codex, opencode and Copilot read it natively.
+# - Antigravity's skills folder is one link to it.
+# - Claude Code has no setting for another skills folder, and it writes its own
+#   claude.ai skills into ~/.claude/skills/synced (19 MB, private), so that
+#   folder cannot be a link into the public repo. It gets one link per skill.
+[[ -d $HOME/.gemini ]] && link_if_missing "$shared/skills" "$HOME/.gemini/config/skills"
+
+mkdir -p "$claude_home/skills"
+for skill in "$shared"/skills/*/; do
+  skill=${skill%/}
+  [[ -f $skill/SKILL.md ]] || continue
+  link_if_missing "$shared/skills/${skill##*/}" "$claude_home/skills/${skill##*/}" || true
+done
+find "$claude_home/skills" -maxdepth 1 -xtype l -print -delete
+
+# Omarchy migrations add skill links to ~/.codex/skills, which Codex would list
+# a second time next to ~/.agents/skills. Drop those duplicate links.
+if [[ -d $HOME/.codex/skills ]]; then
+  for link in "$HOME"/.codex/skills/*; do
+    [[ -L $link && -e $shared/skills/${link##*/} ]] || continue
+    rm "$link"
+    printf 'Removed duplicate Codex skill link: %s\n' "${link##*/}"
+  done
 fi
+
+# Claude: context hook, and no provider-private auto memory.
+chmod +x "$hook_source" "$dotfiles_root/claude/statusline.sh"
+link_if_missing "$hook_source" "$claude_home/hooks/load-agent-context.sh"
+link_if_missing "$dotfiles_root/claude/statusline.sh" "$claude_home/statusline.sh"
 
 settings_path="$claude_home/settings.json"
-if [[ -e $settings_path ]]; then
-  jq empty "$settings_path"
-else
-  printf '{}\n' >"$settings_path"
-fi
-
+[[ -e $settings_path ]] || printf '{}\n' >"$settings_path"
+jq empty "$settings_path"
 temporary_settings=$(mktemp "$settings_path.XXXXXX")
 jq --arg hook '$HOME/.claude/hooks/load-agent-context.sh' '
   def has_context_hook:
     any(.[]?; any(.hooks[]?; .type == "command" and .command == $hook));
-
+  .autoMemoryEnabled = false |
   .hooks //= {} |
   .hooks.SessionStart //= [] |
   .hooks.SubagentStart //= [] |
   .hooks.SessionStart |= if has_context_hook then . else . + [{"hooks": [{"type": "command", "command": $hook}]}] end |
   .hooks.SubagentStart |= if has_context_hook then . else . + [{"hooks": [{"type": "command", "command": $hook}]}] end
 ' "$settings_path" >"$temporary_settings"
+chmod --reference="$settings_path" "$temporary_settings"
 mv "$temporary_settings" "$settings_path"
 
-printf 'Shared agent context installed. Projects use AGENTS.md and .agents/.\n'
-printf 'Machine-wide memories live in %s/memory/ and are deliberately untracked.\n' "$shared_agents_home"
+printf 'Agent context wired: rules %s, skills %s/skills.\n' "$rules" "$shared"
+printf 'Local facts in %s/memory and %s/MACHINE.md stay untracked.\n' "$shared" "$shared"

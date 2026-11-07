@@ -5,6 +5,7 @@
 agents/.agents/memory/
 **/.agents/memory/
 **/MEMORY.md
+**/MACHINE.md
 
 # fish runtime state, not authored config. `stow --no-folding fish` keeps
 # ~/.config/fish a real directory so these are never created inside the repo;
