@@ -45,7 +45,8 @@ Durable facts go where every agent can read them.
   a memory. When a rule here and a memory overlap, this file wins.
 
 One fact per file, plain Markdown, under about 2 KB, with the fact itself in the
-first paragraph so the opening lines answer a basic question. Frontmatter:
+first paragraph so the opening lines answer a basic question. A long plan goes
+in `~/.agents/plans/<slug>.md`, with a short memory that points to it. Frontmatter:
 
 ```markdown
 ---
@@ -61,7 +62,7 @@ with **Why:** and **How to apply:** lines. Write absolute dates. Update an
 existing memory rather than adding a near-duplicate, and do not record what the
 code, the README or the Git history already says.
 
-`~/.agents/memory/` and `MACHINE.md` never go in the public dotfiles repository,
+`~/.agents/memory/`, `plans/` and `MACHINE.md` never go in the public dotfiles repository,
 because they name hosts, keys, accounts and hardware. `~/.agents` is its own
 private Git repository, pushed daily by a systemd timer. Credentials (tokens,
 keys, auth files) go in neither repository, private or not.
@@ -113,6 +114,7 @@ not drawn by Claude. Charts and diagrams from data are SVG, not images.
 
 - `~/AGENTS.md` is this file, symlinked from `~/.dotfiles/agents/AGENTS.md`.
 - `~/.agents/skills/` holds user-level skills, `~/.agents/memory/` the
-  machine-wide memories, `~/.agents/MACHINE.md` the machine card.
+  machine-wide memories, `~/.agents/plans/` long deferred plans, and
+  `~/.agents/MACHINE.md` the machine card.
 - `<project>/AGENTS.md` holds a project's rules; `<project>/.agents/` its
   skills, references, handoff notes and memories.

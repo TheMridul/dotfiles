@@ -98,6 +98,8 @@ jq --arg hook '$HOME/.claude/hooks/load-agent-context.sh' '
   def has_context_hook:
     any(.[]?; any(.hooks[]?; .type == "command" and .command == $hook));
   .autoMemoryEnabled = false |
+  .includeCoAuthoredBy = false |
+  .attribution = {"commit": "", "pr": ""} |
   .hooks //= {} |
   .hooks.SessionStart //= [] |
   .hooks.SubagentStart //= [] |
@@ -108,6 +110,12 @@ chmod --reference="$settings_path" "$temporary_settings"
 mv "$temporary_settings" "$settings_path"
 
 printf 'Agent context wired: rules %s, skills %s/skills.\n' "$rules" "$shared"
+# Copilot: no private memory, no Co-authored-by trailer (its default is on).
+if command -v copilot >/dev/null; then
+  copilot config memory false >/dev/null
+  copilot config includeCoAuthoredBy false >/dev/null
+fi
+
 if systemctl --user cat agents-private-sync.timer >/dev/null 2>&1; then
   systemctl --user enable --now agents-private-sync.timer >/dev/null 2>&1 || true
 fi
