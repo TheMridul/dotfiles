@@ -97,3 +97,10 @@ o.window(FROSTED_NEMO, {
   opacity = "0.80 override 0.80 override 0.80 override",
   no_blur = false,
 })
+
+local FROSTED_T3 = { class = "^(com[.]t3tools[.]T3Code|t3code)$" }
+o.window(FROSTED_T3, { tag = "-default-opacity" })
+o.window(FROSTED_T3, {
+  opacity = "0.80 override 0.80 override 0.80 override",
+  no_blur = false,
+})

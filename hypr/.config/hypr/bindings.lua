@@ -64,3 +64,26 @@ hl.unbind("SUPER + SHIFT + F")
 o.bind("SUPER + SHIFT + F", "File manager", { launch = "nemo" })
 hl.unbind("SUPER + ALT + SHIFT + F")
 o.bind("SUPER + ALT + SHIFT + F", "File manager (cwd)", [[setsid uwsm-app -- nemo "$(omarchy-cmd-terminal-cwd)"]])
+
+-- Super+` drops T3 Code down as a popup instead of Omarchy's agent console.
+-- T3 is single-instance, so the bind pulls the one existing window into its own
+-- special workspace (wherever it was opened) and toggles that, launching T3
+-- straight into it when it is not running.
+local T3_CLASS = "com.t3tools.T3Code"
+local T3_APP = os.getenv("HOME") .. "/.local/share/t3code/T3-Code.AppImage"
+
+local function t3_popup()
+  for _, window in ipairs(hl.get_windows()) do
+    if window.class == T3_CLASS then
+      if not (window.workspace and window.workspace.name == "special:t3") then
+        hl.dispatch(hl.dsp.window.move({ workspace = "special:t3", follow = false, window = "address:" .. window.address }))
+      end
+      hl.dispatch(hl.dsp.workspace.toggle_special("t3"))
+      return
+    end
+  end
+  hl.exec_cmd(o.launch(T3_APP), { workspace = "special:t3" })
+end
+
+hl.unbind("SUPER + grave")
+o.bind("SUPER + grave", "T3 Code popup", t3_popup)
