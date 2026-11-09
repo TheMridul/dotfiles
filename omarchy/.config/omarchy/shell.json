@@ -1,25 +1,29 @@
 {
   "bar": {
-    "centerAnchor": "omarchy.clock",
-    "id": "mridul.bar",
+    "background": "opaque",
+    "id": "omarchy.bar",
     "layout": {
       "center": [
+        {
+          "birthYear": 0,
+          "format": "ddd d MMM HH:mm",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "id": "omarchy.clock",
+          "lifeExpectancy": 70,
+          "verticalFormat": "HH\n—\nmm"
+        }
+      ],
+      "centerBegin": [
         {
           "id": "omarchy.system-update"
         },
         {
           "id": "omarchy.indicators"
-        },
+        }
+      ],
+      "centerEnd": [
         {
-          "birthYear": 0,
-          "format": "HH:mm",
-          "formatAlt": "d MMMM 'W'ww yyyy",
-          "id": "omarchy.clock",
-          "lifeExpectancy": 75,
-          "verticalFormat": "HH\n—\nmm"
-        },
-        {
-          "id": "omarchy.weather"
+          "id": "mridul.weather"
         },
         {
           "id": "io.github.selenophilezh.aqi"
@@ -33,13 +37,7 @@
           "id": "omarchy.workspaces"
         },
         {
-          "chipMode": "instrument",
-          "id": "bitr0t.system-monitor",
-          "monitors": [
-            "cpu",
-            "memory",
-            "network"
-          ]
+          "id": "omarchy.active-window"
         },
         {
           "id": "com.leafbox.f1"
@@ -63,19 +61,22 @@
           "id": "omarchy.tailscale"
         },
         {
+          "id": "mridul.iiitd-vpn"
+        },
+        {
           "id": "omarchy.media"
         },
         {
           "id": "omarchy.agents"
         },
         {
-          "id": "omarchy.microphone"
+          "id": "omarchy.bluetooth"
         },
         {
           "id": "omarchy.audio"
         },
         {
-          "id": "omarchy.bluetooth"
+          "id": "omarchy.microphone"
         },
         {
           "id": "omarchy.network"
@@ -86,17 +87,28 @@
         {
           "id": "omarchy.power"
         }
-      ]
+      ],
+      "tray": []
     },
-    "position": "top",
-    "transparent": true
+    "position": "top"
   },
   "cloneSourceRestores": [
-    "shmall.lock"
+    "shmall.lock",
+    "mridul.osd"
   ],
   "disabledPlugins": [
-    "omarchy.lock"
+    "omarchy.lock",
+    "omarchy.osd"
   ],
+  "dock": {
+    "pinned": [
+      "org.gnome.Nautilus",
+      "foot",
+      "omacalc",
+      "omawrite",
+      "YouTube"
+    ]
+  },
   "idle": {
     "lock": 300,
     "screensaver": 150
@@ -107,6 +119,9 @@
     },
     {
       "id": "zzwong.stage"
+    },
+    {
+      "id": "mridul.osd"
     }
   ],
   "version": 1

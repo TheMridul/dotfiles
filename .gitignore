@@ -4,6 +4,7 @@
 # copy ever lands inside it.
 agents/.agents/memory/
 **/.agents/memory/
+**/.agents/plans/
 **/MEMORY.md
 **/MACHINE.md
 

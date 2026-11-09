@@ -1,2 +1,18 @@
 [font]
-base-size = 12
+base-size = 11
+
+
+[menu]
+background-alpha = 0.80
+
+[popups]
+background-alpha = 0.80
+
+[notifications]
+background-alpha = 0.85
+
+[tooltip]
+background-alpha = 0.90
+
+[bar]
+background-alpha = 0.80

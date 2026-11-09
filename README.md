@@ -11,7 +11,7 @@ import of that base, with my own changes on top.
 
 ## Features
 
-- 🖥️ Hyprland window manager (native Lua config, Omarchy 4.0 "Quattro")
+- 🖥️ Hyprland window manager (native Lua config, Omarchy 4.5)
 - 🐚 Omarchy shell: bar layout, custom branding, and a cloned monitor panel
 - ⚡ Neovim via the official [`omarchy-nvim`](https://github.com/LazyVim/LazyVim) package (package-managed, theme-synced automatically; run `omarchy update` then `omarchy-nvim-refresh` to update)
 - 🐟 Fish shell config with Starship setup and personal aliases
@@ -25,10 +25,13 @@ import of that base, with my own changes on top.
 - 💻 VS Code settings and keybindings
 - 🔊 `read-aloud`, speaks the current selection with Kokoro-82M on CPU
 - 🚀 Automated scripts for app installation and database setup
-- 🤖 Shared AI-agent context with `AGENTS.md` and `.agents/`
+- 🤖 Shared AI-agent rules and skills for Claude Code, Codex, opencode, Copilot
+  CLI and Antigravity, through `AGENTS.md` and `.agents/`
 
-The terminal is [foot](https://codeberg.org/dnkl/foot). Its current configuration
-is tracked in the `foot` package and includes the active Omarchy theme at runtime.
+The terminal is [foot](https://codeberg.org/dnkl/foot), the only one installed.
+Its configuration is tracked in the `foot` package and includes the active
+Omarchy theme at runtime. The `ghostty` package is an old copy kept for
+reference; Ghostty itself is no longer installed.
 
 ## Installation
 
@@ -90,20 +93,29 @@ One agent-neutral layout, in two layers:
 
 - `~/AGENTS.md` (symlinked from `agents/AGENTS.md` here) holds machine- and
   user-wide rules. `~/.agents/skills` points at the shared skills tracked here,
-  while `~/.agents/memory` is the local machine-wide memory store.
+  and `~/.agents/README.md` at `agents/.agents/README.md`.
 - `AGENTS.md` at a project root holds that project's context and rules, and
   wins wherever it disagrees with the user-wide file. `.agents/` holds that
   project's skills, references, templates, and memories.
-- Cursor reads `AGENTS.md` directly. Codex reads `~/.codex/AGENTS.md`, which is
-  a symlink to `~/AGENTS.md` rather than a second copy. Claude Code uses a small
-  local hook that points its main session and subagents at both layers.
+- Every harness reads the same rules file through a symlink at its own path:
+  `~/.codex/AGENTS.md`, `~/.config/opencode/AGENTS.md`,
+  `~/.copilot/copilot-instructions.md` and `~/.gemini/AGENTS.md`. Claude Code
+  uses a small hook, `claude/hooks/load-agent-context.sh`, that points its main
+  session and subagents at both layers.
+- Codex, opencode and Copilot read `~/.agents/skills` natively. Antigravity
+  gets one link to it, and Claude Code gets one link per skill in
+  `~/.claude/skills`, because Claude also keeps its synced claude.ai skills in
+  that folder.
 
 **Memories are not stored in an agent's private directory.** A project fact goes
 in that project's `.agents/memory/`; a machine or user fact goes in
 `~/.agents/memory/`. Both are plain Markdown with a `MEMORY.md` index, so every
-tool can read them. `~/.agents/memory/` is deliberately **not** tracked here —
-this repository is public and memories carry hostnames, key fingerprints, and
-hardware details. Back it up separately.
+tool can read them. `~/.agents/memory/`, `~/.agents/plans/` and
+`~/.agents/MACHINE.md` are deliberately **not** tracked here, because this
+repository is public and they carry hostnames, key fingerprints, and hardware
+details. `~/.agents` is a private Git repository of its own instead, and
+`agents-private-sync.timer` in the `systemd` package commits and pushes it
+daily, with a desktop notification if the push fails.
 
 After cloning this dotfiles repository on a new machine, install the bridge:
 
@@ -111,18 +123,27 @@ After cloning this dotfiles repository on a new machine, install the bridge:
 ./scripts/install-agent-context.sh
 ```
 
-The script links the hook, the statusline and all six skills into `~/.claude`,
-adds the required hook entries without replacing other Claude settings, links
-`~/AGENTS.md`, `~/.agents/README.md`, and `~/.agents/skills`, points
-`~/.codex/AGENTS.md` at the same rules file, and creates an empty
-`~/.agents/memory/`. It requires `jq` and stops if a target file already exists
-rather than overwriting it.
+The script:
 
-Use the `new-project`, `existing-project`, or `just-rules` Claude skills to
-create the same `AGENTS.md` and `.agents/` layout in future repositories. No
-project-level `CLAUDE.md`, `.cursorrules`, or `.cursor/rules` is needed. The
-remaining skills — `collaborator-tone`, `explain-code`, `mentor-mode` — shape
-how an agent writes and explains rather than what it scaffolds.
+- clones the private `~/.agents` repository when `gh` is signed in;
+- links `~/AGENTS.md`, `~/.agents/README.md` and `~/.agents/skills`, and the
+  rules file into each installed harness;
+- links every skill, the hook and the statusline into `~/.claude`, and merges
+  the hook entries and a few settings (auto memory and attribution off, Claude
+  in Chrome on) into `~/.claude/settings.json` without replacing the rest;
+- links the Claude in Chrome and Codex browser native hosts into Brave Origin's
+  profile;
+- turns off Copilot's memory and co-author trailer;
+- enables the private sync timer once the `systemd` package is stowed.
+
+It requires `jq`, is safe to re-run, and refuses to replace a file or symlink
+it did not create. Re-run it after adding or removing a skill.
+
+Use the `new-project`, `existing-project`, or `just-rules` skills to create the
+same `AGENTS.md` and `.agents/` layout in future repositories. No project-level
+`CLAUDE.md`, `.cursorrules`, or `.cursor/rules` is needed. The other skills in
+`agents/.agents/skills/` cover writing style, explanation, review, research,
+and AWS and Cloudflare work; each one's `SKILL.md` says when it applies.
 
 ## Troubleshooting
 
@@ -132,11 +153,13 @@ standard Omarchy install.
 
 ## Config recovery copies
 
-The desktop configuration was refreshed from the live Omarchy setup on
-2026-10-03, before testing a Ryoku conversion. Added packages cover:
+The desktop configuration was first copied from the live Omarchy setup on
+2026-10-03, before testing a Ryoku conversion, and last refreshed on
+2026-11-10. Added packages cover:
 
-- `foot` and `ghostty`: terminal settings. The default Alacritty, Kitty, and
-  Neovim configs are not included.
+- `foot` and `ghostty`: terminal settings. Ghostty has since been
+  uninstalled. The default Alacritty, Kitty, and Neovim configs are not
+  included.
 - `desktop`: environment overrides, screenshot directory, GTK bookmarks,
   file associations, browser flags, user directories, and volume preferences.
 - `systemd` and `wireplumber`: custom user services and Bluetooth audio rules.
@@ -162,10 +185,12 @@ Restore custom service activation separately when needed:
 ```fish
 systemctl --user enable slay50-battery.service
 systemctl --user enable sunshine.service
+systemctl --user enable --now agents-private-sync.timer
 ```
 
 The `bin` package includes the installed `slay50-battery` executable required
 by its user service. The other Omarchy/PipeWire service activation links are
 managed by their packages and are not copied here. Browser profiles, API keys,
-Sunshine credentials, AI-agent private settings, and shared agent memories
-remain outside this public repository.
+Sunshine credentials and AI-agent private settings remain outside this public
+repository, and shared agent memories live in the private `~/.agents`
+repository.

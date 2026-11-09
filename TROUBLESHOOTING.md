@@ -6,6 +6,11 @@ mostly don't show up on a stock Omarchy ISO install because that image
 controls exactly which packages (Qt5 vs Qt6, pacman repos, etc.) are present.
 On a CachyOS base, assumptions Omarchy makes can be wrong.
 
+That install was retired on 2026-09-19. The current machine runs packaged
+Omarchy (under `/usr/share/omarchy`) on plain Arch. The SDDM, pacman and
+locale sections below are history only; do not apply them. The last two
+sections, on keybinds and the bar, still apply.
+
 ## SDDM login theme crashes / blank or unresponsive greeter
 
 **Symptom:** greeter flashes and shows nothing, or renders but keyboard/mouse
@@ -93,8 +98,8 @@ missing, restore from backup and re-append the `[omarchy]` block
 ## Keybind conflicts when adding personal Hyprland binds
 
 Omarchy ships a lot of default binds that aren't visible in
-`~/.config/hypr/bindings.lua` — they live under
-`~/.local/share/omarchy/default/hypr/bindings/*.lua`. Before adding a new
+`~/.config/hypr/bindings.lua`. They live under
+`/usr/share/omarchy/default/hypr/bindings/*.lua`. Before adding a new
 `o.bind(...)`, grep that whole directory (not just the top-level files) for
 the key combo, and cross-check with `hyprctl binds` for accidental duplicate
 registrations. Two bitten-us-before examples:
@@ -105,12 +110,12 @@ registrations. Two bitten-us-before examples:
 
 ## Quickshell bar is what people mean by "waybar" here
 
-This install runs Omarchy's Quickshell-based shell, not waybar — `pgrep -a`
-confirms no waybar process exists, only
-`quickshell -n -p $OMARCHY_PATH/shell`. Bar layout lives in
-`~/.config/omarchy/shell.json` (**not** `shell.toml`, which is unused/stale —
-the shell only ever reads the `.json` file). Manage widgets live, no reload
-needed:
+This install runs Omarchy's Quickshell-based shell, not waybar. `pgrep -a`
+shows no waybar process, only `quickshell -n -p /usr/share/omarchy/shell`
+(`$OMARCHY_PATH/shell`). Bar layout and widgets live in
+`~/.config/omarchy/shell.json`. `~/.config/omarchy/shell.toml` is read too, but
+only for style tokens such as font size and background opacity. Manage widgets
+live, no reload needed:
 
 ```bash
 omarchy bar plugin add/move/remove/set <id> [placement]

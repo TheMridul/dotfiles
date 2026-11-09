@@ -76,31 +76,11 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: ""
-    slotSize: Style.bar.iconSlot * (root.vertical ? 1 : 2)
-    iconComponent: Component {
-      Row {
-        anchors.centerIn: parent
-        spacing: 3
-
-        OpticalGlyph {
-          width: 16
-          height: 16
-          text: "󰍽"
-          fontFamily: "JetBrainsMono Nerd Font Mono"
-          fontSize: 17
-          color: button.foreground
-        }
-
-        Text {
-          visible: !root.vertical
-          text: root.label
-          font.family: root.bar ? root.bar.fontFamily : Style.font.family
-          font.pixelSize: Style.font.caption
-          color: button.foreground
-        }
-      }
-    }
+    text: "󰍽"
+    fontFamily: "JetBrainsMono Nerd Font Mono"
+    labelText: root.vertical ? "" : root.label
+    slotSize: root.vertical ? Style.bar.iconSlot : Math.max(Style.bar.iconSlot * 2,
+      labelWidth + Style.bar.iconCanvas + Style.space(12))
     active: root.critical
     dimmed: !root.available
     interactive: true

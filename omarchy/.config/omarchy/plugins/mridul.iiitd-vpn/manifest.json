@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.iiitd-vpn",
+  "name": "IIITD VPN",
+  "version": "1.0.0",
+  "author": "mridul",
+  "license": "MIT",
+  "description": "Toggle the IIITD FortiGate VPN (openfortivpn@iiitd.service) from the bar.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "BarWidget.qml" },
+  "barWidget": {
+    "displayName": "IIITD VPN",
+    "description": "Click to connect or disconnect the IIITD VPN.",
+    "category": "Network",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

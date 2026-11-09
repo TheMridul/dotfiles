@@ -1,10 +1,4 @@
-[tools]
-claude = "latest"
-codex = "latest"
-copilot = "latest"
-gh = "latest"
-node = "26.10.0"
-opencode = "latest"
+[settings]
+disable_tools = ["cursor-agent", "npm:@moonshot-ai/kimi-code", "amp", "muse", "pi", "oh-my-pi", "crush", "grok", "http:devin", "http:kiro-cli", "npm:@deepseek-ai/dsh", "npm:@kilocode/cli", "npm:@minimax-ai/code", "npm:command-code", "npm:freebuff", "qwen", "ori"]
 
 [settings.upgrade]
-auto_prune = false

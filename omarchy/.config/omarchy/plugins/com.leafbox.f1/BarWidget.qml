@@ -62,12 +62,11 @@ BarWidget {
     }
   }
 
-  BarIconButton {
+  WidgetButton {
     id: button
     anchors.fill: parent
     bar: root.bar
     text: panelLoader.item ? panelLoader.item.label : ""
-    slotSize: Style.bar.statusSlot
     tooltipText: panelLoader.item ? panelLoader.item.tooltip : "Formula 1"
     // During a live session tint the flag with the theme's attention color
     // instead of widening the pill with LIVE text.

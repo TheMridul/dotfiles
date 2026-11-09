@@ -249,11 +249,12 @@ BarWidget {
 
       OpticalGlyph {
         visible: root.showIcon
-        width: 16
-        height: 16
+        width: Style.bar.iconCanvas
+        height: Style.bar.iconCanvas
         text: root.icon
         fontFamily: "JetBrainsMono Nerd Font Mono"
-        fontSize: 17
+        fontSize: Style.bar.iconFont
+        paintedSize: Style.bar.iconSize
         color: button.active && button.useActiveColor ? button.activeColor : button.foreground
       }
 

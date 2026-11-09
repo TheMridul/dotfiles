@@ -65,12 +65,12 @@ BarWidget {
   }
 
   BarIconButton {
-    fontSize: 16
     id: button
     anchors.fill: parent
     bar: root.bar
     text: panelLoader.item ? panelLoader.item.label : ""
-    slotSize: Style.bar.statusSlot
+    fontFamily: "JetBrainsMono Nerd Font Mono"
+    slotSize: Style.bar.iconSlot
     // Tooltip suppressed because the panel is the detail view.
     tooltipText: ""
 
