@@ -1,9 +1,17 @@
 {
   "env": {
     "API_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "512000"
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "512000",
+    "CLAUDE_CODE_ENABLE_CFC": "1"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   },
   "includeCoAuthoredBy": false,
+  "permissions": {
+    "defaultMode": "auto"
+  },
   "model": "opus",
   "hooks": {
     "SessionStart": [
@@ -35,7 +43,8 @@
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
-    "rust-analyzer-lsp@claude-plugins-official": true
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "cloudflare@cloudflare": false
   },
   "extraKnownMarketplaces": {
     "chrome-devtools-plugins": {
@@ -49,6 +58,12 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
+    },
+    "cloudflare": {
+      "source": {
+        "source": "github",
+        "repo": "cloudflare/skills"
+      }
     }
   },
   "alwaysThinkingEnabled": true,
@@ -56,13 +71,37 @@
   "modelSettings": {
     "claude-opus-5": {
       "effortLevel": "high"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    },
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    },
+    "claude-sonnet-5-5": {
+      "effortLevel": "high"
     }
   },
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
+  "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "theme": "auto",
   "preferredNotifChannel": "notifications_disabled",
+  "autoCompactEnabled": true,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "skillOverrides": {
+    "anthropic-skills:architect": "off",
+    "anthropic-skills:big-p": "off",
+    "anthropic-skills:blast-radius": "off",
+    "anthropic-skills:how": "off",
+    "anthropic-skills:no-comments": "off",
+    "anthropic-skills:obsidian-notes": "off",
+    "anthropic-skills:tdd": "off",
+    "anthropic-skills:teach-me": "off",
+    "anthropic-skills:unslop": "off",
+    "anthropic-skills:visual-plan": "off",
+    "anthropic-skills:why": "off"
+  }
 }
