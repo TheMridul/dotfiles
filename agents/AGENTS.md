@@ -110,6 +110,9 @@ the task or a real test needs it.
 **Images go through the `image-gen` skill.** Raster images are made by Codex,
 not drawn by Claude. Charts and diagrams from data are SVG, not images.
 
+**Cloudflare work goes through the `cf` CLI.** Use `cf` unless the project has a
+Wrangler configuration file, in which case use Wrangler.
+
 ## Layout
 
 - `~/AGENTS.md` is this file, symlinked from `~/.dotfiles/agents/AGENTS.md`.
