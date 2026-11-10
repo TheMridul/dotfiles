@@ -24,14 +24,12 @@ import of that base, with my own changes on top.
 - 📋 Git configuration
 - 💻 VS Code settings and keybindings
 - 🔊 `read-aloud`, speaks the current selection with Kokoro-82M on CPU
-- 🚀 Automated scripts for app installation and database setup
 - 🤖 Shared AI-agent rules and skills for Claude Code, Codex, opencode, Copilot
   CLI and Antigravity, through `AGENTS.md` and `.agents/`
 
 The terminal is [foot](https://codeberg.org/dnkl/foot), the only one installed.
 Its configuration is tracked in the `foot` package and includes the active
-Omarchy theme at runtime. The `ghostty` package is an old copy kept for
-reference; Ghostty itself is no longer installed.
+Omarchy theme at runtime.
 
 ## Installation
 
@@ -145,21 +143,14 @@ same `AGENTS.md` and `.agents/` layout in future repositories. No project-level
 `agents/.agents/skills/` cover writing style, explanation, review, research,
 and AWS and Cloudflare work; each one's `SKILL.md` says when it applies.
 
-## Troubleshooting
-
-`TROUBLESHOOTING.md` is retained as history for the retired CachyOS-based
-installation. Do not apply its repository, kernel, SDDM, or boot fixes to a
-standard Omarchy install.
-
 ## Config recovery copies
 
 The desktop configuration was first copied from the live Omarchy setup on
 2026-10-03, before testing a Ryoku conversion, and last refreshed on
 2026-11-10. Added packages cover:
 
-- `foot` and `ghostty`: terminal settings. Ghostty has since been
-  uninstalled. The default Alacritty, Kitty, and Neovim configs are not
-  included.
+- `foot`: terminal settings. The default Alacritty, Kitty, and Neovim
+  configs are not included.
 - `desktop`: environment overrides, screenshot directory, GTK bookmarks,
   file associations, browser flags, user directories, and volume preferences.
 - `systemd` and `wireplumber`: custom user services and Bluetooth audio rules.
