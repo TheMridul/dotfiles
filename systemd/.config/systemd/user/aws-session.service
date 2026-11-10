@@ -1,0 +1,6 @@
+[Unit]
+Description=Warn before the aws login session ends
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/aws-session notify

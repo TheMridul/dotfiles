@@ -186,6 +186,7 @@ Restore custom service activation separately when needed:
 systemctl --user enable slay50-battery.service
 systemctl --user enable sunshine.service
 systemctl --user enable --now agents-private-sync.timer
+systemctl --user enable --now aws-session.timer
 ```
 
 The `bin` package includes the installed `slay50-battery` executable required

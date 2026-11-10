@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Run a local script on a remote host in a throwaway directory, bring its
+# outputs back, optionally push them to S3, and clean up both ends.
+#
+# It replaces the pasted chains of scp, ssh, scp back, aws s3 cp and rm. The
+# remote directory and any local copies are removed even when a step fails,
+# because these jobs often export data that must not be left lying around.
+#
+#   remote-run [-t] HOST SCRIPT [--put FILE]... [--get NAME]... [--to S3_PREFIX] [--out DIR]
+#
+#   -t           give the script a terminal (it asks for input, e.g. a salt)
+#   --put FILE   copy FILE next to the script before it runs
+#   --get NAME   copy NAME (relative to the remote directory) back afterwards
+#   --to PREFIX  upload every fetched file to this s3:// prefix, then delete
+#                the local copies
+#   --out DIR    where fetched files land (default .scratch/<script>-<time>)
+#
+# Example:
+#   remote-run -t db-host .scratch/export.sh --put lab/export.sql \
+#     --get loans.csv --get ledger.csv --to s3://my-bucket/exports/
+set -euo pipefail
+
+usage() { sed -n '9,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+
+tty=()
+[[ ${1:-} == -t ]] && { tty=(-t); shift; }
+[[ $# -ge 2 ]] || usage
+host=$1 script=$2; shift 2
+puts=() gets=() to='' out=''
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --put) puts+=("$2"); shift 2 ;;
+    --get) gets+=("$2"); shift 2 ;;
+    --to)  to=${2%/}/; shift 2 ;;
+    --out) out=$2; shift 2 ;;
+    *) usage ;;
+  esac
+done
+[[ -f $script ]] || { echo "remote-run: no such script: $script" >&2; exit 1; }
+for f in "${puts[@]}"; do [[ -f $f ]] || { echo "remote-run: no such file: $f" >&2; exit 1; }; done
+[[ -z $to || $to == s3://* ]] || { echo "remote-run: --to must be an s3:// prefix" >&2; exit 1; }
+
+# Hosts reached through SSM, and any S3 upload, need a live aws login. Say so
+# now instead of failing halfway with a half-copied export.
+if [[ -n $to ]] || ssh -G "$host" | grep -qi '^proxycommand aws '; then
+  if command -v aws-session >/dev/null && ! aws-session >/dev/null 2>&1; then
+    aws-session || true
+    exit 1
+  fi
+fi
+
+# One shared connection for every step, because each new SSM session takes
+# several seconds to open.
+sock=$(mktemp -u "${XDG_RUNTIME_DIR:-/tmp}/remote-run.XXXXXX")
+ssh_opts=(-o ControlMaster=auto -o "ControlPath=$sock" -o ControlPersist=120)
+name=$(basename "$script")
+out=${out:-.scratch/${name%.*}-$(date +%Y%m%d-%H%M%S)}
+remote=''
+fetched=()
+
+cleanup() {
+  status=$?
+  if [[ -n $remote ]]; then
+    ssh "${ssh_opts[@]}" "$host" "rm -rf -- '$remote'" || echo "remote-run: could not remove $host:$remote" >&2
+  fi
+  # Local copies only stay when there is no S3 destination, or the upload failed.
+  if [[ -n $to && $status -eq 0 ]]; then
+    rm -f -- "${fetched[@]}"
+    rmdir -- "$out" 2>/dev/null || true
+  fi
+  ssh "${ssh_opts[@]}" -O exit "$host" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+remote=$(ssh "${ssh_opts[@]}" "$host" 'mktemp -d "$HOME/remote-run.XXXXXX"')
+echo "remote-run: $host:$remote" >&2
+scp -q "${ssh_opts[@]}" "$script" "${puts[@]}" "$host:$remote/"
+ssh "${ssh_opts[@]}" "${tty[@]}" "$host" "cd '$remote' && bash './$name'"
+
+if [[ ${#gets[@]} -gt 0 ]]; then
+  mkdir -p "$out"
+  for g in "${gets[@]}"; do
+    scp -q "${ssh_opts[@]}" "$host:$remote/$g" "$out/"
+    fetched+=("$out/$(basename "$g")")
+  done
+  echo "remote-run: fetched ${#fetched[@]} file(s) to $out" >&2
+fi
+
+if [[ -n $to ]]; then
+  for f in "${fetched[@]}"; do aws s3 cp --only-show-errors "$f" "$to"; done
+  echo "remote-run: uploaded to $to and removed the local copies" >&2
+fi

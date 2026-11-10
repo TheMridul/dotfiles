@@ -1,0 +1,109 @@
+#!/usr/bin/env -S python3 -I
+"""How long the current `aws login` session has left.
+
+`aws login` hands out 15-minute keys and refreshes them on its own until the
+sign-in session ends, 12 hours after login by default. Nothing records that
+end time, so a long job or an agent only finds out when a call fails. The ID
+token in the login cache keeps the original login time (`iat`) across
+refreshes, so the end time is that plus the session length.
+
+    aws-session            print the state for people
+    aws-session --json     print it for agents and deadbeat
+    aws-session notify     desktop notification when it is about to end
+                           (run by aws-session.timer)
+
+Exits 0 while the session is active, 1 when it has ended or there is none.
+Set AWS_LOGIN_SESSION_HOURS if the account's limit is not 12 hours.
+"""
+
+import base64
+import configparser
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+HOURS = float(os.environ.get("AWS_LOGIN_SESSION_HOURS", "12"))
+WARN_MINUTES = 45
+STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "aws-session-notified"
+
+
+def profile_login_session():
+    profile = os.environ.get("AWS_PROFILE", "default")
+    config = configparser.ConfigParser()
+    config.read(Path(os.environ.get("AWS_CONFIG_FILE", Path.home() / ".aws/config")))
+    section = profile if profile == "default" else f"profile {profile}"
+    return profile, config.get(section, "login_session", fallback=None)
+
+
+def jwt_claims(token):
+    payload = token.split(".")[1]
+    payload += "=" * (-len(payload) % 4)
+    return json.loads(base64.urlsafe_b64decode(payload))
+
+
+def state():
+    profile, arn = profile_login_session()
+    result = {"profile": profile, "identity": arn, "active": False}
+    if not arn:
+        result["error"] = f"profile {profile} has no login_session; run aws login"
+        return result
+    cache = Path.home() / ".aws/login/cache" / (hashlib.sha256(arn.encode()).hexdigest() + ".json")
+    try:
+        login_at = jwt_claims(json.loads(cache.read_text())["idToken"])["iat"]
+    except (OSError, KeyError, IndexError, ValueError) as error:
+        result["error"] = f"cannot read the login cache ({error.__class__.__name__}); run aws login"
+        return result
+    ends_at = login_at + HOURS * 3600
+    left = int(ends_at - time.time())
+    result.update(login_at=int(login_at), ends_at=int(ends_at), seconds_left=max(left, 0), active=left > 0)
+    return result
+
+
+def ist(epoch):
+    return time.strftime("%H:%M", time.gmtime(epoch + 5.5 * 3600)) + " IST"
+
+
+def describe(s):
+    if "error" in s:
+        return s["error"]
+    if not s["active"]:
+        return f"{s['identity']}: session ended at {ist(s['ends_at'])}; run aws login"
+    h, m = divmod(s["seconds_left"] // 60, 60)
+    return f"{s['identity']}: {h}h {m:02d}m left, ends {ist(s['ends_at'])}"
+
+
+def notify(s):
+    # Notify once per login per stage, so the timer does not repeat itself.
+    if "error" in s:
+        return
+    stage = "ended" if not s["active"] else "soon" if s["seconds_left"] < WARN_MINUTES * 60 else None
+    if stage is None:
+        return
+    key = f"{s['login_at']}:{stage}"
+    if STATE.exists() and STATE.read_text() == key:
+        return
+    title = "AWS session ended" if stage == "ended" else "AWS session ends soon"
+    subprocess.run(["notify-send", "-a", "aws-session", "-u", "critical" if stage == "ended" else "normal",
+                    title, describe(s)], check=False)
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(key)
+
+
+def main(args):
+    s = state()
+    if args[:1] == ["notify"]:
+        notify(s)
+        return 0
+    if "--json" in args:
+        print(json.dumps(s))
+    else:
+        print(describe(s), file=sys.stdout if s["active"] else sys.stderr)
+    return 0 if s["active"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

@@ -110,6 +110,10 @@ the task or a real test needs it.
 **Images go through the `image-gen` skill.** Raster images are made by Codex,
 not drawn by Claude. Charts and diagrams from data are SVG, not images.
 
+**Fan out small.** For ideas or competing drafts use three models, and two for
+a review or interrogation, unless Mridul names more. Past three, answers mostly
+repeat each other, and every answer still has to be read.
+
 **Cloudflare work goes through the `cf` CLI.** Use `cf` unless the project has a
 Wrangler configuration file, in which case use Wrangler.
 
