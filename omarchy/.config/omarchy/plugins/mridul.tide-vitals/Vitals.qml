@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs.Commons
 import qs.Commons as Commons
 import qs.Ui
@@ -25,6 +26,7 @@ BarWidget {
     }
     if (bluetoothLoader.item) { bluetoothLoader.item.bar = root.bar; bluetoothLoader.item.settings = root.setting("bluetooth", {}) }
     if (monitorLoader.item) { monitorLoader.item.bar = root.bar; monitorLoader.item.settings = root.setting("monitor", {}) }
+    root.shareMedia()
     var q = quickLoader.item
     if (q) {
       q.bar = root.bar
@@ -33,6 +35,30 @@ BarWidget {
       q.bluetoothWidget = bluetoothLoader.item
     }
   }
+  // Widgets hosted here get a bar handle without shell services, so the audio
+  // clone's now-playing section has no media service of its own. The stock
+  // media widget in the lane has one; find it in the bar and lend it over.
+  function findMediaService(item, depth) {
+    if (!item || depth > 14) return null
+    if (item.moduleName === "omarchy.media" && item.mediaService) return item.mediaService
+    var kids = item.children || []
+    for (var i = 0; i < kids.length; i++) {
+      var found = root.findMediaService(kids[i], depth + 1)
+      if (found) return found
+    }
+    return null
+  }
+  function shareMedia() {
+    var win = root.QsWindow.window
+    var service = win ? root.findMediaService(win.contentItem, 0) : null
+    for (var i = 0; i < hosts.count; i++) {
+      var l = hosts.itemAt(i)
+      if (l && l.item && l.item.mediaServiceOverride !== undefined && l.item.mediaServiceOverride !== service)
+l.item.mediaServiceOverride = service
+    }
+  }
+  Timer { interval: 3000; running: true; repeat: true; triggeredOnStart: true; onTriggered: root.shareMedia() }
+
   onBarChanged: inject()
   onSettingsChanged: inject()
 

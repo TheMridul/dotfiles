@@ -66,9 +66,7 @@
           "widgetSource": "../io.github.niraj-envision.fleet/BarWidget.qml"
         },
         {
-          "id": "mridul.tide-host",
-          "key": "media",
-          "widgetSource": "qs:///usr/share/omarchy/shell/plugins/services/media/BarWidget.qml"
+          "id": "omarchy.media"
         },
         {
           "id": "mridul.tide-host",

@@ -60,6 +60,26 @@ use() {
 # purpose: it carries personal changes.
 clones=(network audio power bluetooth tailscale agents)
 
+# Widgets hosted inside Tide get no shell services, so the audio clone cannot
+# reach the media service for its now-playing section. mridul.tide-vitals
+# lends it one through mediaServiceOverride, which a fresh clone lacks.
+patch_audio_clone() {
+  local panel="$config/plugins/$USER.audio/Panel.qml"
+  [[ -f "$panel" ]] || return 0
+  grep -q mediaServiceOverride "$panel" && return 0
+  python3 - "$panel" <<'PY'
+import sys
+p = sys.argv[1]; s = open(p).read()
+old = '  readonly property var mediaService: bar?.shell?.firstPartyServiceFor("omarchy.media")\n'
+new = ('  property var mediaServiceOverride: null  // tide: lent by mridul.tide-vitals\n'
+       '  readonly property var mediaService: mediaServiceOverride || bar?.shell?.firstPartyServiceFor("omarchy.media")\n')
+if old in s:
+    open(p, "w").write(s.replace(old, new, 1))
+else:
+    print("bar-profile: audio clone changed shape; now playing in its panel needs a manual patch", file=sys.stderr)
+PY
+}
+
 refresh_clones() {
   local plugins="$config/plugins" retired="$config/plugins-retired"
   local stamp; stamp="$(date +%Y%m%d-%H%M%S)"
@@ -70,6 +90,7 @@ refresh_clones() {
     omarchy plugin clone "omarchy.$name" >/dev/null
     echo "re-cloned omarchy.$name"
   done
+  patch_audio_clone
   # Cloning also drops each clone into the bar; put the profile back.
   local current; current="$(active)"
   if [[ -n "$current" ]]; then use "$current"; fi

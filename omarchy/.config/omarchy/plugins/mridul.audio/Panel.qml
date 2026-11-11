@@ -18,7 +18,8 @@ Panel {
   readonly property var source: Pipewire.defaultAudioSource
   readonly property var nodes: Pipewire.nodes ? Pipewire.nodes.values : []
   readonly property var mprisPlayers: Mpris.players ? Mpris.players.values : []
-  readonly property var mediaService: bar?.shell?.firstPartyServiceFor("omarchy.media")
+  property var mediaServiceOverride: null  // tide: lent by mridul.tide-vitals
+  readonly property var mediaService: mediaServiceOverride || bar?.shell?.firstPartyServiceFor("omarchy.media")
   readonly property var activeMediaPlayer: mediaService ? mediaService.activePlayer : null
 
   // Nodes of a platform's audio processing, which are neither devices nor apps,
