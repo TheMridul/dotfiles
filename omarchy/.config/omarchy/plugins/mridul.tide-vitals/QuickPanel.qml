@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.SystemTray
 import qs.Commons
 import qs.Commons as Commons
 import qs.Ui
@@ -172,13 +173,16 @@ Panel {
             width: column.width
             spacing: Style.space(10)
             visible: modelData.value >= 0
-            Text {
-              textFormat: Text.PlainText
+            // Optically centred, so the glyph's ink (not its line box) sits
+            // on the slider track's axis.
+            OpticalGlyph {
+              Layout.preferredWidth: Style.space(22)
+              Layout.preferredHeight: Style.space(22)
+              Layout.alignment: Qt.AlignVCenter
               text: modelData.glyph
+              fontFamily: "JetBrainsMono Nerd Font Mono"
+              fontSize: Style.font.heading
               color: root.fg
-              font.family: "JetBrainsMono Nerd Font Mono"
-              font.pixelSize: Style.font.icon
-              Layout.preferredWidth: Style.space(18)
               MouseArea {
                 anchors.fill: parent
                 enabled: modelData.key === "volume"
@@ -188,6 +192,7 @@ Panel {
             }
             PanelSlider {
               Layout.fillWidth: true
+              Layout.alignment: Qt.AlignVCenter
               bar: root.bar
               minimum: 0
               maximum: 100
@@ -209,6 +214,62 @@ Panel {
               font.pixelSize: Style.font.caption
               horizontalAlignment: Text.AlignRight
               Layout.preferredWidth: Style.space(26)
+            }
+          }
+        }
+
+        // The system tray, folded in here so it takes no bar space. Left
+        // click activates, right click opens the app's menu, middle click is
+        // the app's secondary action.
+        Flow {
+          id: trayRow
+          width: column.width
+          spacing: Style.space(6)
+          visible: SystemTray.items.values.length > 0
+
+          Repeater {
+            model: SystemTray.items
+            Rectangle {
+              id: trayTile
+              required property var modelData
+              width: Style.space(34)
+              height: Style.space(34)
+              radius: Style.cornerRadius > 0 ? Style.space(9) : 0
+              color: Qt.tint(Commons.Color.background, Util.alpha(Commons.Color.accent, trayMouse.containsMouse ? 0.2 : 0.12))
+              Behavior on color { ColorAnimation { duration: Style.duration(160) } }
+
+              Image {
+                anchors.centerIn: parent
+                width: Style.space(18)
+                height: width
+                fillMode: Image.PreserveAspectFit
+                sourceSize.width: Math.round(width * Screen.devicePixelRatio)
+                sourceSize.height: Math.round(height * Screen.devicePixelRatio)
+                source: String(trayTile.modelData.icon || "")
+              }
+
+              function showMenu(mouse) {
+                var win = trayTile.QsWindow.window
+                var p = trayTile.QsWindow.contentItem.mapFromItem(trayTile, mouse.x, mouse.y)
+                trayTile.modelData.display(win, p.x, p.y)
+              }
+
+              MouseArea {
+                id: trayMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                cursorShape: Qt.PointingHandCursor
+                onClicked: function(mouse) {
+                  var it = trayTile.modelData
+                  if (mouse.button === Qt.RightButton || (mouse.button === Qt.LeftButton && it.onlyMenu)) trayTile.showMenu(mouse)
+                  else if (mouse.button === Qt.MiddleButton) it.secondaryActivate()
+                  else it.activate()
+                }
+                onEntered: if (root.bar) root.bar.showTooltip(trayTile, it_title(trayTile.modelData))
+                onExited: if (root.bar) root.bar.hideTooltip(trayTile)
+                function it_title(it) { return it.tooltipTitle || it.title || it.id || "" }
+              }
             }
           }
         }

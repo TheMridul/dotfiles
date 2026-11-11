@@ -29,7 +29,11 @@
     "centerEnd": [],
     "right": [
       {
-        "id": "io.github.themridul.deadbeat"
+        "id": "mridul.tide-host",
+        "key": "deadbeat",
+        "widgetSource": "../io.github.themridul.deadbeat/Panel.qml",
+        "pinIf": "item.summary && item.summary.attention > 0",
+        "foldAfter": 0
       },
       {
         "id": "omarchy.system-update"
@@ -49,11 +53,19 @@
         "showIf": "item.alarming === true"
       },
       {
-        "id": "io.github.niraj-envision.fleet",
-        "onlyWhenTrouble": true
+        "id": "mridul.tide-host",
+        "key": "fleet",
+        "widgetSource": "../io.github.niraj-envision.fleet/BarWidget.qml",
+        "widget": {
+          "onlyWhenTrouble": true
+        },
+        "foldAfter": 0,
+        "showIf": "item.alert === true"
       },
       {
-        "id": "omarchy.media"
+        "id": "mridul.tide-host",
+        "key": "media",
+        "widgetSource": "qs:///usr/share/omarchy/shell/plugins/services/media/BarWidget.qml"
       },
       {
         "id": "mridul.tide-host",
@@ -62,25 +74,26 @@
         "showIf": "String(item.iconColor) === String(item.foreground)"
       },
       {
-        "id": "mridul.iiitd-vpn",
-        "onlyWhenActive": true
+        "id": "mridul.tide-host",
+        "key": "vpn",
+        "widgetSource": "../mridul.iiitd-vpn/BarWidget.qml",
+        "widget": {
+          "onlyWhenActive": true
+        }
       },
       {
-        "id": "io.github.mridul.slay50-battery",
-        "onlyBelow": 20
+        "id": "mridul.tide-host",
+        "key": "slay50",
+        "widgetSource": "../io.github.mridul.slay50-battery/BarWidget.qml",
+        "widget": {
+          "onlyBelow": 20
+        }
       },
       {
         "id": "mridul.tide-host",
         "key": "f1",
         "widgetSource": "../com.leafbox.f1/BarWidget.qml",
         "showIf": "label !== \"\" && (!/(\\d+)d\\b/.test(label) || parseInt(/(\\d+)d\\b/.exec(label)[1], 10) <= 3)"
-      },
-      {
-        "hidden": [],
-        "id": "omarchy.tray",
-        "pinned": [
-          "Fcitx"
-        ]
       },
       {
         "id": "mridul.tide-vitals"

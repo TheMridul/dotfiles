@@ -223,6 +223,10 @@ BarWidget {
     height: root.barSize - 2 * root.inset
     color: root.surface
     radius: height / 2
+    // A hairline lifts the pill off busy, light wallpapers. (A shadow would
+    // be cut off: the bar window is only as tall as the bar.)
+    border.width: 1
+    border.color: Util.alpha(Commons.Color.foreground, 0.08)
     opacity: shown ? 1 : 0
     Behavior on opacity { NumberAnimation { duration: Style.duration(160); easing.type: Easing.OutCubic } }
     Behavior on color { ColorAnimation { duration: Style.duration(250); easing.type: Easing.OutCubic } }

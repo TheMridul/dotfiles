@@ -87,3 +87,21 @@ end
 
 hl.unbind("SUPER + grave")
 o.bind("SUPER + grave", "T3 Code popup", t3_popup)
+
+-- Tide bar: the network, audio, power, Bluetooth and display panels live
+-- inside the vitals pill, where `shell toggle` cannot find them. Their own IPC
+-- targets work there and on the classic bar alike.
+for _, panel in ipairs({
+  { "SUPER + CTRL + A", "Audio", "omarchy.audio" },
+  { "SUPER + CTRL + B", "Bluetooth", "omarchy.bluetooth" },
+  { "SUPER + CTRL + N", "Network", "omarchy.network" },
+  { "SUPER + CTRL + P", "Power", "omarchy.power" },
+  { "SUPER + CTRL + D", "Display", "omarchy.monitor" },
+  { "SUPER + CTRL + ALT + D", "Calendar", "omarchy.clock" },
+}) do
+  hl.unbind(panel[1])
+  o.bind(panel[1], panel[2], "omarchy-shell " .. panel[3] .. " toggle")
+end
+
+-- Flip the bar between the Tide and classic layouts.
+o.bind("SUPER + ALT + B", "Toggle bar layout", "bar-profile toggle")

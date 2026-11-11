@@ -5,6 +5,8 @@
 #   bar-profile save <name>     save the current bar.layout as <name>
 #   bar-profile use <name>      load <name> into shell.json (hot-reloads)
 #   bar-profile toggle          flip between "tide" and "classic"
+#   bar-profile refresh-clones  re-clone the stock widgets Tide hosts, after
+#                               an Omarchy update (old copies are kept)
 #
 # A profile is `{ "layout": <bar.layout>, "background": <bar.background> }`
 # from ~/.config/omarchy/shell.json, kept in
@@ -53,6 +55,27 @@ use() {
   echo "using $name"
 }
 
+# Stock widgets the Tide pill and lane host. Omarchy updates do not reach
+# these clones, so refresh them now and then. mridul.monitor is left alone on
+# purpose: it carries personal changes.
+clones=(network audio power bluetooth tailscale agents)
+
+refresh_clones() {
+  local plugins="$config/plugins" retired="$config/plugins-retired"
+  local stamp; stamp="$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$retired"
+  for name in "${clones[@]}"; do
+    local clone_dir="$plugins/$USER.$name"
+    if [[ -e "$clone_dir" ]]; then mv "$clone_dir" "$retired/$USER.$name-$stamp"; fi
+    omarchy plugin clone "omarchy.$name" >/dev/null
+    echo "re-cloned omarchy.$name"
+  done
+  # Cloning also drops each clone into the bar; put the profile back.
+  local current; current="$(active)"
+  if [[ -n "$current" ]]; then use "$current"; fi
+  echo "old copies are in $retired"
+}
+
 case "${1:-list}" in
   list)
     mkdir -p "$dir"
@@ -66,5 +89,6 @@ case "${1:-list}" in
   save) [[ $# -eq 2 ]] || die "usage: bar-profile save <name>"; save "$2" ;;
   use) [[ $# -eq 2 ]] || die "usage: bar-profile use <name>"; use "$2" ;;
   toggle) if [[ "$(active)" == "tide" ]]; then use classic; else use tide; fi ;;
-  *) die "usage: bar-profile list | save <name> | use <name> | toggle" ;;
+  refresh-clones) refresh_clones ;;
+  *) die "usage: bar-profile list | save <name> | use <name> | toggle | refresh-clones" ;;
 esac

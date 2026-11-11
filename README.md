@@ -36,9 +36,10 @@ Omarchy theme at runtime.
 The bar has two layouts, switched with `bar-profile` (in the `bin` package):
 
 ```fish
-bar-profile list      # * marks the active one
-bar-profile toggle    # tide <-> classic
+bar-profile list            # * marks the active one
+bar-profile toggle          # tide <-> classic, also Super+Alt+B
 bar-profile use classic
+bar-profile refresh-clones  # after an Omarchy update, see below
 ```
 
 **Tide** keeps five things fixed: menu, workspaces (numbers for occupied ones,
@@ -47,7 +48,10 @@ time, and one vitals pill (network, volume, battery, quick settings). Hovering
 the time grows it into date, weather and AQI. Everything else sits in the
 right-hand lane and appears only when it has something to say: deadbeat jobs,
 updates, recording, agent limits, fleet trouble, media, Tailscale and the
-IIITD VPN while connected, a low mouse battery, F1 on race weekends.
+IIITD VPN while connected, a low mouse battery, F1 on race weekends. A lane
+chip arrives with its label, folds to its icon after a few seconds and unfolds
+on hover; a failed deadbeat job keeps its label. The quick-settings panel
+holds the sliders, the toggles you set yourself and the system tray.
 
 The bar is drawn as three floating pills (left, centre, right) by
 `mridul.tide-islands`, which hides the full strip and tints the pills and
@@ -63,9 +67,14 @@ full layout.
 Tide hosts some stock widgets from clones (`mridul.network`, `mridul.audio`,
 `mridul.power`, `mridul.bluetooth`, `mridul.tailscale`, `mridul.agents`),
 because widgets loaded straight from `/usr/share/omarchy` cannot resolve their
-inline components from a user plugin. The clones drift as Omarchy updates.
-To refresh one, move it aside and run `omarchy plugin clone omarchy.<name>`,
-then `bar-profile use tide`, since cloning also drops the clone into the bar.
+inline components from a user plugin. The clones drift as Omarchy updates, so
+run `bar-profile refresh-clones` after one: it keeps the old copies in
+`~/.config/omarchy/plugins-retired/`, re-clones, and puts the profile back.
+`mridul.monitor` is left alone because it carries personal changes.
+
+The panels inside the vitals pill cannot be reached by `omarchy-shell shell
+toggle`, so `hypr/.config/hypr/bindings.lua` rebinds Super+Ctrl+A/B/N/P/D and
+Super+Ctrl+Alt+D to each panel's own IPC target, which works on both layouts.
 
 ## Installation
 

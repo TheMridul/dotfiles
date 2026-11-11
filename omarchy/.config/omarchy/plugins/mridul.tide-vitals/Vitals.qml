@@ -24,6 +24,7 @@ BarWidget {
       if (l && l.item) { l.item.bar = root.bar; l.item.settings = root.setting(l.name, {}) }
     }
     if (bluetoothLoader.item) { bluetoothLoader.item.bar = root.bar; bluetoothLoader.item.settings = root.setting("bluetooth", {}) }
+    if (monitorLoader.item) { monitorLoader.item.bar = root.bar; monitorLoader.item.settings = root.setting("monitor", {}) }
     var q = quickLoader.item
     if (q) {
       q.bar = root.bar
@@ -99,6 +100,17 @@ BarWidget {
     height: row.height
     opacity: 0
     source: root.base + "bluetooth/Panel.qml"
+    onLoaded: { root.inject(); Qt.callLater(root.inject) }
+  }
+
+  // Also out of sight: the display panel, so Super+Ctrl+D still opens it.
+  Loader {
+    id: monitorLoader
+    x: quickButton.x + root.padX
+    width: 1
+    height: row.height
+    opacity: 0
+    source: root.base + "monitor/Panel.qml"
     onLoaded: { root.inject(); Qt.callLater(root.inject) }
   }
 
