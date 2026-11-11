@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-clock",
+  "name": "Tide clock",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "Time only; hover grows it into date, weather and air quality",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Clock.qml" },
+  "barWidget": {
+    "displayName": "Tide clock",
+    "description": "Time that expands on hover into date, weather and AQI",
+    "category": "Time",
+    "allowMultiple": false
+  }
+}

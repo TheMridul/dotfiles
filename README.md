@@ -12,7 +12,7 @@ import of that base, with my own changes on top.
 ## Features
 
 - 🖥️ Hyprland window manager (native Lua config, Omarchy 4.5)
-- 🐚 Omarchy shell: bar layout, custom branding, and a cloned monitor panel
+- 🐚 Omarchy shell: the Tide bar (see below), custom branding, and a cloned monitor panel
 - ⚡ Neovim via the official [`omarchy-nvim`](https://github.com/LazyVim/LazyVim) package (package-managed, theme-synced automatically; run `omarchy update` then `omarchy-nvim-refresh` to update)
 - 🐟 Fish shell config with Starship setup and personal aliases
 - ✨ Starship prompt
@@ -30,6 +30,42 @@ import of that base, with my own changes on top.
 The terminal is [foot](https://codeberg.org/dnkl/foot), the only one installed.
 Its configuration is tracked in the `foot` package and includes the active
 Omarchy theme at runtime.
+
+## Tide bar
+
+The bar has two layouts, switched with `bar-profile` (in the `bin` package):
+
+```fish
+bar-profile list      # * marks the active one
+bar-profile toggle    # tide <-> classic
+bar-profile use classic
+```
+
+**Tide** keeps five things fixed: menu, workspaces (numbers for occupied ones,
+dots for empty ones, a sliding accent pill), the focused app and title, the
+time, and one vitals pill (network, volume, battery, quick settings). Hovering
+the time grows it into date, weather and AQI. Everything else sits in the
+right-hand lane and appears only when it has something to say: deadbeat jobs,
+updates, recording, agent limits, fleet trouble, media, Tailscale and the
+IIITD VPN while connected, a low mouse battery, F1 on race weekends.
+
+The bar is drawn as three floating pills (left, centre, right) by
+`mridul.tide-islands`, which hides the full strip and tints the pills and
+popups toward the accent, Caelestia style. `mridul.tide-round` rounds every
+shell popup, tooltip and control while windows stay square. Both undo their
+changes when they are not loaded.
+
+All colours come from the active Omarchy or Aether theme. The pieces are
+plugins under `omarchy/.config/omarchy/plugins/mridul.tide-*`, and the layouts
+live in `omarchy/.config/omarchy/bar-profiles/`. **Classic** is the earlier
+full layout.
+
+Tide hosts some stock widgets from clones (`mridul.network`, `mridul.audio`,
+`mridul.power`, `mridul.bluetooth`, `mridul.tailscale`, `mridul.agents`),
+because widgets loaded straight from `/usr/share/omarchy` cannot resolve their
+inline components from a user plugin. The clones drift as Omarchy updates.
+To refresh one, move it aside and run `omarchy plugin clone omarchy.<name>`,
+then `bar-profile use tide`, since cloning also drops the clone into the bar.
 
 ## Installation
 

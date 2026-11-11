@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Switch the Omarchy bar between saved layouts.
+#
+#   bar-profile list            show saved profiles, marking the active one
+#   bar-profile save <name>     save the current bar.layout as <name>
+#   bar-profile use <name>      load <name> into shell.json (hot-reloads)
+#   bar-profile toggle          flip between "tide" and "classic"
+#
+# A profile is `{ "layout": <bar.layout>, "background": <bar.background> }`
+# from ~/.config/omarchy/shell.json, kept in
+# ~/.config/omarchy/bar-profiles/<name>.json. A file holding a bare layout
+# object (the older format) still loads. Everything else in shell.json
+# (plugins, idle, dock) is left alone.
+set -euo pipefail
+
+config="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy"
+shell_json="$config/shell.json"
+dir="$config/bar-profiles"
+active_file="$dir/.active"
+
+die() { echo "bar-profile: $*" >&2; exit 1; }
+
+valid_name() { [[ "$1" =~ ^[A-Za-z0-9._-]+$ ]] || die "bad profile name: $1"; }
+
+active() { cat "$active_file" 2>/dev/null || true; }
+
+save() {
+  local name="$1"; valid_name "$name"
+  mkdir -p "$dir"
+  jq -e '{layout: .bar.layout, background: (.bar.background // "opaque")}' "$shell_json" > "$dir/$name.json.tmp" || die "no bar.layout in $shell_json"
+  mv "$dir/$name.json.tmp" "$dir/$name.json"
+  echo "saved $name"
+}
+
+use() {
+  local name="$1"; valid_name "$name"
+  local file="$dir/$name.json"
+  [[ -f "$file" ]] || die "no profile named $name (try: bar-profile list)"
+  jq -e 'type == "object"' "$file" >/dev/null || die "$file is not a profile object"
+
+  # Keep the outgoing layout so edits made through the bar are not lost.
+  local current; current="$(active)"
+  if [[ -n "$current" && "$current" != "$name" ]]; then save "$current" >/dev/null; fi
+
+  local tmp; tmp="$(mktemp "$shell_json.XXXXXX")"
+  jq --slurpfile p "$file" '
+    if ($p[0] | has("layout"))
+    then .bar.layout = $p[0].layout | .bar.background = ($p[0].background // .bar.background)
+    else .bar.layout = $p[0] end' "$shell_json" > "$tmp"
+  chmod --reference="$shell_json" "$tmp"
+  mv "$tmp" "$shell_json"
+  echo "$name" > "$active_file"
+  echo "using $name"
+}
+
+case "${1:-list}" in
+  list)
+    mkdir -p "$dir"
+    current="$(active)"
+    for f in "$dir"/*.json; do
+      [[ -e "$f" ]] || { echo "(no profiles yet)"; break; }
+      n="$(basename "$f" .json)"
+      if [[ "$n" == "$current" ]]; then echo "* $n"; else echo "  $n"; fi
+    done
+    ;;
+  save) [[ $# -eq 2 ]] || die "usage: bar-profile save <name>"; save "$2" ;;
+  use) [[ $# -eq 2 ]] || die "usage: bar-profile use <name>"; use "$2" ;;
+  toggle) if [[ "$(active)" == "tide" ]]; then use classic; else use tide; fi ;;
+  *) die "usage: bar-profile list | save <name> | use <name> | toggle" ;;
+esac

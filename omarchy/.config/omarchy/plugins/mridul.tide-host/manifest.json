@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-host",
+  "name": "Tide host",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "Hosts another bar widget and shows it only while a condition holds",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Host.qml" },
+  "barWidget": {
+    "displayName": "Tide host",
+    "description": "Show a hosted widget only when it has something to say",
+    "category": "Layout",
+    "allowMultiple": true
+  }
+}

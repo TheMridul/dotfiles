@@ -46,7 +46,11 @@ BarWidget {
     }
   }
 
-  implicitWidth: button.implicitWidth
+  // "onlyBelow": N shows the widget only while the mouse battery is at or
+  // under N percent (or unknown is hidden). Unset keeps it always visible.
+  readonly property int onlyBelow: Number(setting("onlyBelow", -1))
+  visible: onlyBelow < 0 || (available && percentage <= onlyBelow)
+  implicitWidth: visible ? button.implicitWidth : 0
   implicitHeight: button.implicitHeight
 
   Process {

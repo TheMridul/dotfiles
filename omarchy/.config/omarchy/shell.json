@@ -3,47 +3,81 @@
     "background": "opaque",
     "id": "omarchy.bar",
     "layout": {
-      "center": [
-        {
-          "birthYear": 0,
-          "format": "ddd d MMM HH:mm",
-          "formatAlt": "d MMMM 'W'ww yyyy",
-          "id": "omarchy.clock",
-          "lifeExpectancy": 70,
-          "verticalFormat": "HH\n—\nmm"
-        }
-      ],
-      "centerBegin": [
-        {
-          "id": "omarchy.system-update"
-        },
-        {
-          "id": "omarchy.indicators"
-        }
-      ],
-      "centerEnd": [
-        {
-          "id": "mridul.weather"
-        },
-        {
-          "id": "io.github.selenophilezh.aqi"
-        }
-      ],
       "left": [
+        {
+          "id": "mridul.tide-islands"
+        },
         {
           "id": "omarchy.menu"
         },
         {
-          "id": "omarchy.workspaces"
+          "id": "mridul.tide-workspaces"
         },
         {
-          "id": "omarchy.active-window"
-        },
-        {
-          "id": "com.leafbox.f1"
+          "id": "mridul.tide-window",
+          "maxWidth": 380
         }
       ],
+      "centerBegin": [],
+      "center": [
+        {
+          "id": "mridul.tide-clock",
+          "dateFormat": "ddd d MMM",
+          "clock": {
+            "format": "HH:mm",
+            "formatAlt": "ddd d MMM HH:mm"
+          }
+        }
+      ],
+      "centerEnd": [],
       "right": [
+        {
+          "id": "io.github.themridul.deadbeat"
+        },
+        {
+          "id": "omarchy.system-update"
+        },
+        {
+          "id": "omarchy.indicators",
+          "items": [
+            "ScreenRecording",
+            "Reminder",
+            "RemoteSession"
+          ]
+        },
+        {
+          "id": "mridul.tide-host",
+          "key": "agents",
+          "widgetSource": "../mridul.agents/Panel.qml",
+          "showIf": "item.alarming === true"
+        },
+        {
+          "id": "io.github.niraj-envision.fleet",
+          "onlyWhenTrouble": true
+        },
+        {
+          "id": "omarchy.media"
+        },
+        {
+          "id": "mridul.tide-host",
+          "key": "tailscale",
+          "widgetSource": "../mridul.tailscale/Panel.qml",
+          "showIf": "String(item.iconColor) === String(item.foreground)"
+        },
+        {
+          "id": "mridul.iiitd-vpn",
+          "onlyWhenActive": true
+        },
+        {
+          "id": "io.github.mridul.slay50-battery",
+          "onlyBelow": 20
+        },
+        {
+          "id": "mridul.tide-host",
+          "key": "f1",
+          "widgetSource": "../com.leafbox.f1/BarWidget.qml",
+          "showIf": "label !== \"\" && (!/(\\d+)d\\b/.test(label) || parseInt(/(\\d+)d\\b/.exec(label)[1], 10) <= 3)"
+        },
         {
           "hidden": [],
           "id": "omarchy.tray",
@@ -52,43 +86,7 @@
           ]
         },
         {
-          "id": "io.github.themridul.deadbeat"
-        },
-        {
-          "id": "io.github.mridul.slay50-battery"
-        },
-        {
-          "id": "io.github.niraj-envision.fleet"
-        },
-        {
-          "id": "omarchy.tailscale"
-        },
-        {
-          "id": "mridul.iiitd-vpn"
-        },
-        {
-          "id": "omarchy.media"
-        },
-        {
-          "id": "omarchy.agents"
-        },
-        {
-          "id": "omarchy.bluetooth"
-        },
-        {
-          "id": "omarchy.audio"
-        },
-        {
-          "id": "omarchy.microphone"
-        },
-        {
-          "id": "omarchy.network"
-        },
-        {
-          "id": "mridul.monitor"
-        },
-        {
-          "id": "omarchy.power"
+          "id": "mridul.tide-vitals"
         }
       ],
       "tray": []
@@ -118,13 +116,16 @@
   },
   "plugins": [
     {
+      "id": "mridul.osd"
+    },
+    {
+      "id": "mridul.tide-round"
+    },
+    {
       "id": "shmall.lock"
     },
     {
       "id": "zzwong.stage"
-    },
-    {
-      "id": "mridul.osd"
     }
   ],
   "version": 1

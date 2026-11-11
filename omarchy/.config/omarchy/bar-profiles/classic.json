@@ -1,0 +1,94 @@
+{
+  "layout": {
+    "center": [
+      {
+        "birthYear": 0,
+        "format": "ddd d MMM HH:mm",
+        "formatAlt": "d MMMM 'W'ww yyyy",
+        "id": "omarchy.clock",
+        "lifeExpectancy": 70,
+        "verticalFormat": "HH\n—\nmm"
+      }
+    ],
+    "centerBegin": [
+      {
+        "id": "omarchy.system-update"
+      },
+      {
+        "id": "omarchy.indicators"
+      }
+    ],
+    "centerEnd": [
+      {
+        "id": "mridul.weather"
+      },
+      {
+        "id": "io.github.selenophilezh.aqi"
+      }
+    ],
+    "left": [
+      {
+        "id": "omarchy.menu"
+      },
+      {
+        "id": "omarchy.workspaces"
+      },
+      {
+        "id": "omarchy.active-window"
+      },
+      {
+        "id": "com.leafbox.f1"
+      }
+    ],
+    "right": [
+      {
+        "hidden": [],
+        "id": "omarchy.tray",
+        "pinned": [
+          "Fcitx"
+        ]
+      },
+      {
+        "id": "io.github.themridul.deadbeat"
+      },
+      {
+        "id": "io.github.mridul.slay50-battery"
+      },
+      {
+        "id": "io.github.niraj-envision.fleet"
+      },
+      {
+        "id": "omarchy.tailscale"
+      },
+      {
+        "id": "mridul.iiitd-vpn"
+      },
+      {
+        "id": "omarchy.media"
+      },
+      {
+        "id": "omarchy.agents"
+      },
+      {
+        "id": "omarchy.bluetooth"
+      },
+      {
+        "id": "omarchy.audio"
+      },
+      {
+        "id": "omarchy.microphone"
+      },
+      {
+        "id": "omarchy.network"
+      },
+      {
+        "id": "mridul.monitor"
+      },
+      {
+        "id": "omarchy.power"
+      }
+    ],
+    "tray": []
+  },
+  "background": "opaque"
+}

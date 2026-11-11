@@ -1,0 +1,92 @@
+{
+  "layout": {
+    "left": [
+      {
+        "id": "mridul.tide-islands"
+      },
+      {
+        "id": "omarchy.menu"
+      },
+      {
+        "id": "mridul.tide-workspaces"
+      },
+      {
+        "id": "mridul.tide-window",
+        "maxWidth": 380
+      }
+    ],
+    "centerBegin": [],
+    "center": [
+      {
+        "id": "mridul.tide-clock",
+        "dateFormat": "ddd d MMM",
+        "clock": {
+          "format": "HH:mm",
+          "formatAlt": "ddd d MMM HH:mm"
+        }
+      }
+    ],
+    "centerEnd": [],
+    "right": [
+      {
+        "id": "io.github.themridul.deadbeat"
+      },
+      {
+        "id": "omarchy.system-update"
+      },
+      {
+        "id": "omarchy.indicators",
+        "items": [
+          "ScreenRecording",
+          "Reminder",
+          "RemoteSession"
+        ]
+      },
+      {
+        "id": "mridul.tide-host",
+        "key": "agents",
+        "widgetSource": "../mridul.agents/Panel.qml",
+        "showIf": "item.alarming === true"
+      },
+      {
+        "id": "io.github.niraj-envision.fleet",
+        "onlyWhenTrouble": true
+      },
+      {
+        "id": "omarchy.media"
+      },
+      {
+        "id": "mridul.tide-host",
+        "key": "tailscale",
+        "widgetSource": "../mridul.tailscale/Panel.qml",
+        "showIf": "String(item.iconColor) === String(item.foreground)"
+      },
+      {
+        "id": "mridul.iiitd-vpn",
+        "onlyWhenActive": true
+      },
+      {
+        "id": "io.github.mridul.slay50-battery",
+        "onlyBelow": 20
+      },
+      {
+        "id": "mridul.tide-host",
+        "key": "f1",
+        "widgetSource": "../com.leafbox.f1/BarWidget.qml",
+        "showIf": "label !== \"\" && (!/(\\d+)d\\b/.test(label) || parseInt(/(\\d+)d\\b/.exec(label)[1], 10) <= 3)"
+      },
+      {
+        "hidden": [],
+        "id": "omarchy.tray",
+        "pinned": [
+          "Fcitx"
+        ]
+      },
+      {
+        "id": "mridul.tide-vitals"
+      }
+    ],
+    "tray": []
+  },
+  "background": "opaque"
+}

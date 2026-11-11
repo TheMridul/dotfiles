@@ -11,7 +11,11 @@ BarWidget {
   property string state: "off"
   property bool installed: true
 
-  implicitWidth: button.implicitWidth
+  // "onlyWhenActive": true hides the widget while the VPN is off, so it only
+  // takes bar space when there is something to say.
+  readonly property bool onlyWhenActive: setting("onlyWhenActive", false) === true
+  visible: !onlyWhenActive || (root.installed && root.state !== "off")
+  implicitWidth: visible ? button.implicitWidth : 0
   implicitHeight: button.implicitHeight
 
   function refresh() {

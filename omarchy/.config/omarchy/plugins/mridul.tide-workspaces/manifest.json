@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-workspaces",
+  "name": "Tide workspaces",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "Workspaces as numbers and dots, with a sliding accent pill",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Workspaces.qml" },
+  "barWidget": {
+    "displayName": "Tide workspaces",
+    "description": "Occupied workspaces show a number, empty ones a dot; the active one sits in a pill that slides",
+    "category": "Compositor",
+    "allowMultiple": false
+  },
+  "omarchy": { "clonedFrom": "omarchy.workspaces" }
+}

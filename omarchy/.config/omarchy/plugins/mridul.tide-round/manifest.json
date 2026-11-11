@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-round",
+  "name": "Tide rounding",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "Rounds the shell's popups, menus and controls while windows stay square",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": { "panel": "Round.qml" }
+}

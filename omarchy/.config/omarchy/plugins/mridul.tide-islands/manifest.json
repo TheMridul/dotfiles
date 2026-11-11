@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-islands",
+  "name": "Tide islands",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "Draws the left, centre and right of a clear bar as separate notches",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Islands.qml" },
+  "barWidget": {
+    "displayName": "Tide islands",
+    "description": "Separate notch surfaces behind the bar's sections; use with a clear bar background",
+    "category": "Layout",
+    "allowMultiple": false
+  }
+}

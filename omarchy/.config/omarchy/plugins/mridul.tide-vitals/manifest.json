@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-vitals",
+  "name": "Tide vitals",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "Network, volume and battery in one pill, plus a quick-settings panel",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Vitals.qml" },
+  "barWidget": {
+    "displayName": "Tide vitals",
+    "description": "One pill for network, volume and battery, with quick settings",
+    "category": "System",
+    "allowMultiple": false
+  }
+}

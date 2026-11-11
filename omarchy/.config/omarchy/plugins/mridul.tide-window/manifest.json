@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-window",
+  "name": "Tide window",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "Focused app name, dimmed, followed by its window title",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Window.qml" },
+  "barWidget": {
+    "displayName": "Tide window",
+    "description": "Focused app name and window title",
+    "category": "Compositor",
+    "allowMultiple": false
+  }
+}
