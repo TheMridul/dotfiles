@@ -122,6 +122,14 @@ def _block(h):
         # hand may set them deliberately, but they never come from the UI, so
         # the value still has to survive validation to be written.
         key, val = str(k).strip(), cfg_value(v, allow_spaces=True)
+        # ProxyCommand takes the rest of its line verbatim, so quoting it (as
+        # cfg_value does for spaces) makes the shell run the whole quoted
+        # string as one program name. Write it bare instead, with the same
+        # newline, quote and backslash rejection. Needed for AWS SSM hops:
+        #   aws ssm start-session --target %h --document-name ...
+        if key.lower() == "proxycommand":
+            raw = str(v if v is not None else "").strip()
+            val = raw if raw and not any(c in raw for c in '"\\\n\r') else None
         if _CFG_KEY.match(key) and val:
             lines.append("  %s %s" % (key, val))
     return "\n".join(lines)
