@@ -249,8 +249,9 @@ BarWidget {
   readonly property int activeIndex: ids.indexOf(activeId)
 
   readonly property real cell: Style.space(18)
-  readonly property real dotCell: Style.space(12)
-  readonly property real pillHeight: Math.round(barSize * 0.66)
+  readonly property real activeCell: Style.space(28)
+  readonly property real dotCell: Style.space(11)
+  readonly property real pillHeight: Math.round(barSize * 0.6)
   readonly property real trailingGap: Style.spaceReal(1.5)
   readonly property bool animate: Style.duration(100) > 0
 
@@ -273,7 +274,8 @@ BarWidget {
 
   // Cells are laid out by hand so the pill can track an exact x.
   function cellWidth(id) {
-    return (id === root.activeId || root.occupiedAt(id)) ? root.cell : root.dotCell
+    if (id === root.activeId) return root.activeCell
+    return root.occupiedAt(id) ? root.cell : root.dotCell
   }
   function cellX(index) {
     var x = 0
@@ -297,7 +299,7 @@ BarWidget {
       radius: height / 2
       color: root.pillColor
       anchors.verticalCenter: parent.verticalCenter
-      width: root.cell
+      width: root.activeCell
       x: root.activeIndex >= 0 ? root.cellX(root.activeIndex) : 0
 
       Behavior on x {

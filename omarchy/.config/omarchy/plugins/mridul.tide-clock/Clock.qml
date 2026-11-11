@@ -21,6 +21,22 @@ BarWidget {
 
   readonly property color fg: root.bar ? root.bar.barForeground : Color.foreground
 
+  // The stock bar shows every inactive indicator (screen record, reminders and
+  // so on) whenever the pointer is near the centre. Tide keeps those in quick
+  // settings, so the clock holds that reveal off. Stock panels clear the flag
+  // when they close, so it is put back each time.
+  readonly property bool revealSuppressed: root.bar ? root.bar.centerHoverRevealSuppressed === true : true
+  function suppressReveal() {
+    if (root.bar && typeof root.bar.setCenterHoverRevealSuppressed === "function")
+      root.bar.setCenterHoverRevealSuppressed(true)
+  }
+  onRevealSuppressedChanged: if (!revealSuppressed) Qt.callLater(root.suppressReveal)
+  Component.onCompleted: Qt.callLater(root.suppressReveal)
+  Component.onDestruction: {
+    if (root.bar && typeof root.bar.setCenterHoverRevealSuppressed === "function")
+      root.bar.setCenterHoverRevealSuppressed(false)
+  }
+
   // Held open while hovered, while any hosted panel is open, and briefly
   // after the pointer leaves so it can travel between the pieces.
   readonly property bool panelOpen: [clockLoader, weatherLoader, aqiLoader].some(function(l) {
@@ -47,7 +63,7 @@ BarWidget {
     root.injectInto(weatherLoader.item, root.setting("weather", {}))
     root.injectInto(aqiLoader.item, root.setting("aqi", {}))
   }
-  onBarChanged: inject()
+  onBarChanged: { inject(); Qt.callLater(root.suppressReveal) }
   onSettingsChanged: inject()
 
   // Same contract as the stock clock, so `shell toggle` style IPC and the
@@ -124,6 +140,21 @@ BarWidget {
         width: item && item.visible ? item.implicitWidth : 0
         source: root.weatherSource
         onLoaded: { root.inject(); Qt.callLater(root.inject) }
+      }
+      // The AQI widget prints a bare number, which reads as a temperature
+      // next to the weather glyph, so it gets a quiet label.
+      Text {
+        visible: aqiLoader.item !== null && aqiLoader.item.visible
+        height: parent.height
+        verticalAlignment: Text.AlignVCenter
+        leftPadding: Style.space(4)
+        renderType: Text.NativeRendering
+        textFormat: Text.PlainText
+        text: "AQI"
+        color: root.fg
+        opacity: 0.5
+        font.family: root.bar ? root.bar.fontFamily : Style.font.family
+        font.pixelSize: Style.font.caption
       }
       Loader {
         id: aqiLoader

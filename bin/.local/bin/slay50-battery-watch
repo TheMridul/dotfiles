@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# slay50-battery only listens, so after a restart the level is unknown until
+# the mouse next reports, which can take minutes. This replays the last good
+# report from a cache, then streams live ones and keeps the cache current.
+# Same output and exit codes as `slay50-battery watch --json`.
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/slay50-battery.json"
+mkdir -p "${cache%/*}"
+[ -s "$cache" ] && cat "$cache"
+
+"$HOME/.local/bin/slay50-battery" watch --json "$@" | while IFS= read -r line; do
+  printf '%s\n' "$line"
+  if printf '%s' "$line" | grep -Eq '"available": *true'; then
+    printf '%s\n' "$line" > "$cache.tmp" && mv "$cache.tmp" "$cache"
+  fi
+done
+exit "${PIPESTATUS[0]}"

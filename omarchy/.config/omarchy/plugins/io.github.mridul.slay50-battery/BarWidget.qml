@@ -13,7 +13,7 @@ BarWidget {
   property int powerCode: -1
   property string statusText: "Waiting for mouse battery data"
 
-  readonly property string watcherPath: Quickshell.env("HOME") + "/.local/bin/slay50-battery"
+  readonly property string watcherPath: Quickshell.env("HOME") + "/.local/bin/slay50-battery-watch"
   readonly property bool critical: available && percentage <= 15
   readonly property string label: available ? percentage + "%" : "—"
   readonly property string tooltip: available
@@ -56,7 +56,7 @@ BarWidget {
   Process {
     id: watcher
     running: true
-    command: [root.watcherPath, "watch", "--json"]
+    command: [root.watcherPath]
     onExited: function(exitCode) {
       root.available = false
       root.statusText = exitCode === 3

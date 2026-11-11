@@ -48,10 +48,18 @@ time, and one vitals pill (network, volume, battery, quick settings). Hovering
 the time grows it into date, weather and AQI. Everything else sits in the
 right-hand lane and appears only when it has something to say: deadbeat jobs,
 updates, recording, agent limits, fleet trouble, media, Tailscale and the
-IIITD VPN while connected, a low mouse battery, F1 on race weekends. A lane
+IIITD VPN while connected, F1 on race weekends. A lane
 chip arrives with its label, folds to its icon after a few seconds and unfolds
 on hover; a failed deadbeat job keeps its label. The quick-settings panel
-holds the sliders, the toggles you set yourself and the system tray.
+(the gear) holds the sliders, the system tray, and tiles for Bluetooth, the
+microphone, DND, night light, stay awake, Tailscale, the VPN, screen
+recording, reminders and the Slay 50 mouse battery. Inactive indicators no
+longer pop up when the pointer nears the centre; the menu button is the
+themridul.in favicon (`mridul.tide-menu`).
+
+`slay50-battery-watch` (in `bin`) wraps the mouse reader and replays the last
+report from `~/.cache/slay50-battery.json`, because the reader only listens
+and the mouse can go minutes between reports.
 
 The bar is drawn as three floating pills (left, centre, right) by
 `mridul.tide-islands`, which hides the full strip and tints the pills and

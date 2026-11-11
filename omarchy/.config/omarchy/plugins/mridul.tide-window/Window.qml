@@ -37,16 +37,26 @@ BarWidget {
   readonly property color fg: root.bar ? root.bar.barForeground : Color.foreground
 
   visible: toplevel !== null && (title !== "" || appName !== "") && !vertical
-  implicitWidth: visible ? Math.min(maxLabelWidth, content.implicitWidth) + Style.space(16) : 0
+  implicitWidth: visible ? Math.min(maxLabelWidth, content.implicitWidth) + Style.space(18) : 0
   implicitHeight: barSize
 
   Behavior on implicitWidth {
     NumberAnimation { duration: Style.duration(200); easing.type: Easing.OutCubic }
   }
 
+  // A hairline between the workspaces and the title.
+  Rectangle {
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    width: 1
+    height: Math.round(root.barSize * 0.4)
+    color: root.fg
+    opacity: root.visible ? 0.18 : 0
+  }
+
   Item {
     anchors.fill: parent
-    anchors.leftMargin: Style.space(8)
+    anchors.leftMargin: Style.space(10)
     anchors.rightMargin: Style.space(8)
     clip: true
 

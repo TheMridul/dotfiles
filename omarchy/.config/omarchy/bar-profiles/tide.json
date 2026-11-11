@@ -5,7 +5,7 @@
         "id": "mridul.tide-islands"
       },
       {
-        "id": "omarchy.menu"
+        "id": "mridul.tide-menu"
       },
       {
         "id": "mridul.tide-workspaces"
@@ -79,14 +79,6 @@
         "widgetSource": "../mridul.iiitd-vpn/BarWidget.qml",
         "widget": {
           "onlyWhenActive": true
-        }
-      },
-      {
-        "id": "mridul.tide-host",
-        "key": "slay50",
-        "widgetSource": "../io.github.mridul.slay50-battery/BarWidget.qml",
-        "widget": {
-          "onlyBelow": 20
         }
       },
       {

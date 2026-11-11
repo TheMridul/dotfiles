@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "mridul.tide-menu",
+  "name": "Tide menu",
+  "version": "1.0.0",
+  "author": "mridul",
+  "description": "The Omarchy menu button, drawn as the themridul.in favicon",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Menu.qml" },
+  "barWidget": {
+    "displayName": "Tide menu",
+    "description": "Opens the Omarchy menu",
+    "category": "Compositor",
+    "allowMultiple": false
+  }
+}

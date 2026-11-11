@@ -3,12 +3,24 @@
     "background": "opaque",
     "id": "omarchy.bar",
     "layout": {
+      "center": [
+        {
+          "clock": {
+            "format": "HH:mm",
+            "formatAlt": "ddd d MMM HH:mm"
+          },
+          "dateFormat": "ddd d MMM",
+          "id": "mridul.tide-clock"
+        }
+      ],
+      "centerBegin": [],
+      "centerEnd": [],
       "left": [
         {
           "id": "mridul.tide-islands"
         },
         {
-          "id": "omarchy.menu"
+          "id": "mridul.tide-menu"
         },
         {
           "id": "mridul.tide-workspaces"
@@ -18,25 +30,13 @@
           "maxWidth": 380
         }
       ],
-      "centerBegin": [],
-      "center": [
-        {
-          "id": "mridul.tide-clock",
-          "dateFormat": "ddd d MMM",
-          "clock": {
-            "format": "HH:mm",
-            "formatAlt": "ddd d MMM HH:mm"
-          }
-        }
-      ],
-      "centerEnd": [],
       "right": [
         {
+          "foldAfter": 0,
           "id": "mridul.tide-host",
           "key": "deadbeat",
-          "widgetSource": "../io.github.themridul.deadbeat/Panel.qml",
           "pinIf": "item.summary && item.summary.attention > 0",
-          "foldAfter": 0
+          "widgetSource": "../io.github.themridul.deadbeat/Panel.qml"
         },
         {
           "id": "omarchy.system-update"
@@ -52,18 +52,18 @@
         {
           "id": "mridul.tide-host",
           "key": "agents",
-          "widgetSource": "../mridul.agents/Panel.qml",
-          "showIf": "item.alarming === true"
+          "showIf": "item.alarming === true",
+          "widgetSource": "../mridul.agents/Panel.qml"
         },
         {
+          "foldAfter": 0,
           "id": "mridul.tide-host",
           "key": "fleet",
-          "widgetSource": "../io.github.niraj-envision.fleet/BarWidget.qml",
+          "showIf": "item.alert === true",
           "widget": {
             "onlyWhenTrouble": true
           },
-          "foldAfter": 0,
-          "showIf": "item.alert === true"
+          "widgetSource": "../io.github.niraj-envision.fleet/BarWidget.qml"
         },
         {
           "id": "mridul.tide-host",
@@ -73,30 +73,22 @@
         {
           "id": "mridul.tide-host",
           "key": "tailscale",
-          "widgetSource": "../mridul.tailscale/Panel.qml",
-          "showIf": "String(item.iconColor) === String(item.foreground)"
+          "showIf": "String(item.iconColor) === String(item.foreground)",
+          "widgetSource": "../mridul.tailscale/Panel.qml"
         },
         {
           "id": "mridul.tide-host",
           "key": "vpn",
-          "widgetSource": "../mridul.iiitd-vpn/BarWidget.qml",
           "widget": {
             "onlyWhenActive": true
-          }
-        },
-        {
-          "id": "mridul.tide-host",
-          "key": "slay50",
-          "widgetSource": "../io.github.mridul.slay50-battery/BarWidget.qml",
-          "widget": {
-            "onlyBelow": 20
-          }
+          },
+          "widgetSource": "../mridul.iiitd-vpn/BarWidget.qml"
         },
         {
           "id": "mridul.tide-host",
           "key": "f1",
-          "widgetSource": "../com.leafbox.f1/BarWidget.qml",
-          "showIf": "label !== \"\" && (!/(\\d+)d\\b/.test(label) || parseInt(/(\\d+)d\\b/.exec(label)[1], 10) <= 3)"
+          "showIf": "label !== \"\" && (!/(\\d+)d\\b/.test(label) || parseInt(/(\\d+)d\\b/.exec(label)[1], 10) <= 3)",
+          "widgetSource": "../com.leafbox.f1/BarWidget.qml"
         },
         {
           "id": "mridul.tide-vitals"

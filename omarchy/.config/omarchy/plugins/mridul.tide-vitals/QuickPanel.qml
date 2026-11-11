@@ -24,9 +24,6 @@ Panel {
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
 
   readonly property var shellApi: bar ? bar.shell : null
-  readonly property var notifications: shellApi && shellApi.firstPartyServiceFor ? shellApi.firstPartyServiceFor("omarchy.notifications") : null
-  readonly property var nightlight: shellApi && shellApi.firstPartyServiceFor ? shellApi.firstPartyServiceFor("omarchy.nightlight") : null
-  readonly property var idle: shellApi && shellApi.firstPartyServiceFor ? shellApi.firstPartyServiceFor("omarchy.idle") : null
 
   // ---- State read by polling a small shell script while the panel is open.
   property int volume: -1
@@ -38,6 +35,16 @@ Panel {
   property bool tailscaleInstalled: false
   property string vpnState: "off"
   property bool vpnInstalled: false
+  property bool recording: false
+  // DND, night light and stay awake are read and flipped through Omarchy's
+  // own commands: the shell only hands its services to the bar itself, not
+  // to bar widgets, so the service objects come back null here.
+  property bool dndOn: false
+  property bool nightOn: false
+  property bool awakeOn: false
+  property int reminderCount: 0
+  property string reminderTip: ""
+  property int mousePercent: -1
 
   readonly property string vpnUnit: "openfortivpn@iiitd.service"
 
@@ -56,7 +63,12 @@ Panel {
       "echo \"bri $(brightnessctl -m 2>/dev/null | head -1 | cut -d, -f4)\"; " +
       "bluetoothctl show 2>/dev/null | grep -q 'Powered: yes' && echo bt on || echo bt off; " +
       "if command -v tailscale >/dev/null; then s=$(tailscale status --json 2>/dev/null | jq -r .BackendState 2>/dev/null); echo \"ts $s\"; else echo ts missing; fi; " +
-      "if systemctl cat " + root.vpnUnit + " >/dev/null 2>&1; then echo \"vpn $(systemctl is-active " + root.vpnUnit + ")\"; else echo vpn missing; fi"]
+      "if systemctl cat " + root.vpnUnit + " >/dev/null 2>&1; then echo \"vpn $(systemctl is-active " + root.vpnUnit + ")\"; else echo vpn missing; fi; " +
+      "pgrep --quiet -f '^gpu-screen-recorder' && echo rec on || echo rec off; " +
+      "echo \"dnd $(omarchy-shell notifications isDnd 2>/dev/null)\"; " +
+      "echo \"night $(omarchy-toggle-nightlight --status 2>/dev/null | jq -r .enabled)\"; " +
+      "[ -f \"$HOME/.local/state/omarchy/indicators/stay-awake\" ] && echo awake on || echo awake off; " +
+      "echo \"rem $(omarchy-reminder show --json 2>/dev/null | jq -c '{count,tooltip}' 2>/dev/null)\""]
     stdout: SplitParser {
       onRead: function(line) {
         var s = String(line).trim()
@@ -79,12 +91,45 @@ Panel {
         } else if (key === "vpn") {
           root.vpnInstalled = rest !== "missing"
           root.vpnState = rest === "active" ? "on" : (rest === "activating" ? "connecting" : "off")
+        } else if (key === "dnd") {
+          root.dndOn = rest === "on"
+        } else if (key === "night") {
+          root.nightOn = rest === "true"
+        } else if (key === "awake") {
+          root.awakeOn = rest === "on"
+        } else if (key === "rec") {
+          root.recording = rest === "on"
+        } else if (key === "rem") {
+          try {
+            var r = JSON.parse(rest)
+            root.reminderCount = Number(r.count || 0)
+            root.reminderTip = String(r.tooltip || "")
+          } catch (e) { root.reminderCount = 0 }
         }
       }
     }
   }
 
   Process { id: actionProc; onExited: root.refresh() }
+
+  // The Slay 50 mouse reports its battery every so often, so a watcher stays
+  // open rather than asking when the panel opens. Read-only, like the widget.
+  Process {
+    id: mouseWatcher
+    running: true
+    command: [Quickshell.env("HOME") + "/.local/bin/slay50-battery-watch"]
+    onExited: { root.mousePercent = -1; mouseRestart.restart() }
+    stdout: SplitParser {
+      onRead: function(line) {
+        try {
+          var u = JSON.parse(String(line).trim())
+          var pct = Number(u.percentage)
+          root.mousePercent = u.available === true && isFinite(pct) ? Math.round(pct) : -1
+        } catch (e) {}
+      }
+    }
+  }
+  Timer { id: mouseRestart; interval: 5000; onTriggered: mouseWatcher.running = true }
 
   Timer {
     interval: 2000
@@ -100,25 +145,36 @@ Panel {
       sub: root.bluetoothOn ? "on" : "off", more: root.bluetoothWidget !== null },
     { key: "mic", glyph: root.micMuted ? "󰍭" : "󰍬", label: "Microphone", on: !root.micMuted,
       sub: root.micMuted ? "muted" : "live" },
-    { key: "dnd", glyph: "󰂛", label: "Do not disturb", on: root.notifications ? root.notifications.doNotDisturb : false,
-      sub: (root.notifications && root.notifications.doNotDisturb) ? "on" : "off" },
-    { key: "night", glyph: "󰔎", label: "Night light", on: root.nightlight ? root.nightlight.enabled : false,
-      sub: (root.nightlight && root.nightlight.enabled) ? "on" : "off" },
-    { key: "awake", glyph: "󰅶", label: "Stay awake", on: root.idle ? root.idle.stayAwake : false,
-      sub: (root.idle && root.idle.stayAwake) ? "on" : "off" },
+    { key: "dnd", glyph: "󰂛", label: "Do not disturb", on: root.dndOn, sub: root.dndOn ? "on" : "off" },
+    { key: "night", glyph: "󰔎", label: "Night light", on: root.nightOn, sub: root.nightOn ? "on" : "off" },
+    { key: "awake", glyph: "󰅶", label: "Stay awake", on: root.awakeOn, sub: root.awakeOn ? "on" : "off" },
     { key: "tailscale", glyph: "󰖂", label: "Tailscale", on: root.tailscaleOn,
       sub: !root.tailscaleInstalled ? "not installed" : (root.tailscaleOn ? "connected" : "off") },
     { key: "vpn", glyph: "󰒃", label: "IIITD VPN", on: root.vpnState !== "off",
-      sub: !root.vpnInstalled ? "not set up" : (root.vpnState === "on" ? "connected" : root.vpnState) }
+      sub: !root.vpnInstalled ? "not set up" : (root.vpnState === "on" ? "connected" : root.vpnState) },
+    { key: "record", glyph: "󰻂", label: "Screen record", on: root.recording,
+      sub: root.recording ? "recording, click to stop" : "off" },
+    { key: "reminder", glyph: "󰢌", label: "Reminders", on: root.reminderCount > 0,
+      sub: root.reminderCount > 0 ? root.reminderCount + " set" : "none set" },
+    { key: "mouse", glyph: root.mousePercent >= 0 && root.mousePercent <= 20 ? "󰂃" : "󰍽", label: "Slay 50",
+      on: false, sub: root.mousePercent >= 0 ? root.mousePercent + "% battery" : "not connected" }
   ]
 
   function activate(key) {
     if (key === "bluetooth") { root.bluetoothOn = !root.bluetoothOn; run(["bluetoothctl", "power", root.bluetoothOn ? "on" : "off"]) }
     else if (key === "mic") { root.micMuted = !root.micMuted; run(["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle"]) }
-    else if (key === "dnd" && root.notifications) root.notifications.setDoNotDisturb(!root.notifications.doNotDisturb)
-    else if (key === "night" && root.nightlight) root.nightlight.setNightlight(!root.nightlight.enabled)
-    else if (key === "awake" && root.idle) root.idle.setIdleEnabled(root.idle.stayAwake)
+    else if (key === "dnd") { root.dndOn = !root.dndOn; run(["omarchy-toggle-notification-silencing"]) }
+    else if (key === "night") { root.nightOn = !root.nightOn; run(["omarchy-toggle-nightlight"]) }
+    else if (key === "awake") { root.awakeOn = !root.awakeOn; run(["omarchy-toggle-idle"]) }
     else if (key === "tailscale" && root.tailscaleInstalled) { root.tailscaleOn = !root.tailscaleOn; run(["tailscale", root.tailscaleOn ? "up" : "down"]) }
+    else if (key === "record") {
+      root.close()
+      Quickshell.execDetached(["sh", "-c", root.recording ? "omarchy-capture-screenrecording --stop-recording" : "omarchy-menu toggle trigger.capture.screenrecord"])
+    }
+    else if (key === "reminder") {
+      root.close()
+      Quickshell.execDetached(root.reminderCount > 0 ? ["omarchy-reminder", "show"] : ["omarchy-reminder", "-i"])
+    }
     else if (key === "vpn" && root.vpnInstalled) {
       var start = root.vpnState === "off"
       root.vpnState = start ? "connecting" : "off"
