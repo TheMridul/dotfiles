@@ -144,9 +144,12 @@ BarWidget {
       // The AQI widget prints a bare number, which reads as a temperature
       // next to the weather glyph, so it gets a quiet label.
       Text {
+        id: aqiTag
         visible: aqiLoader.item !== null && aqiLoader.item.visible
-        height: parent.height
-        verticalAlignment: Text.AlignVCenter
+        // Centred on its capitals, not its line box, like the date.
+        // Rounded in device pixels: rounding in logical ones left it a pixel high at 1.6x.
+        readonly property real dpr: Screen.devicePixelRatio > 0 ? Screen.devicePixelRatio : 1
+        y: Math.ceil(((parent.height - implicitHeight) / 2 + (aqiMetrics.descent - aqiMetrics.ascent + aqiMetrics.tightBoundingRect("A").height) / 2) * dpr + 1) / dpr
         leftPadding: Style.space(4)
         renderType: Text.NativeRendering
         textFormat: Text.PlainText
@@ -155,6 +158,7 @@ BarWidget {
         opacity: 0.5
         font.family: root.bar ? root.bar.fontFamily : Style.font.family
         font.pixelSize: Style.font.caption
+        FontMetrics { id: aqiMetrics; font: aqiTag.font }
       }
       Loader {
         id: aqiLoader
