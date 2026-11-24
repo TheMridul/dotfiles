@@ -1,0 +1,8 @@
+{
+  "title": "Hotspot",
+  "on": "Konoha \u00b7 5 GHz \u00b7 On",
+  "off": "Off \u00b7 Share Ethernet over Konoha (5 GHz)",
+  "changing": "Changing hotspot state\u2026",
+  "unavailable": "Saved Konoha hotspot unavailable",
+  "failed": "Could not change hotspot state. Try again."
+}

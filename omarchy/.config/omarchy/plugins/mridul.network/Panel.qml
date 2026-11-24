@@ -17,6 +17,52 @@ Panel {
   // permits — needed for the toggleNetwork method below.
   manageIpc: false
 
+
+  Commons.Translations { id: hotspotStrings; directory: Qt.resolvedUrl("i18n") }
+  readonly property string hotspotUuid: "dcdcc9ab-3413-4bc7-8e3c-2885668e0744"
+  property bool hotspotActive: false
+  property bool hotspotReady: false
+  property string hotspotError: ""
+  readonly property int hotspotHeaderIndex: headerActionCount - 1
+
+  function refreshHotspot() {
+    if (!hotspotStatus.running && !hotspotAction.running) hotspotStatus.running = true
+  }
+
+  function toggleHotspot() {
+    if (!hotspotReady || hotspotAction.running || hotspotStatus.running || busy) return
+    hotspotError = ""
+    hotspotAction.command = ["nmcli", "--wait", "30", "connection",
+      hotspotActive ? "down" : "up", "uuid", hotspotUuid]
+    hotspotAction.running = true
+  }
+
+  Process {
+    id: hotspotStatus
+    command: ["nmcli", "--wait", "5", "-g", "GENERAL.STATE", "connection", "show", "uuid", root.hotspotUuid]
+    stdout: StdioCollector { id: hotspotState; waitForEnd: true }
+    onExited: function(code, status) {
+      root.hotspotReady = code === 0 && status === 0
+      root.hotspotActive = root.hotspotReady && hotspotState.text.trim() === "activated"
+    }
+  }
+
+  Process {
+    id: hotspotAction
+    onExited: function(code, status) {
+      if (code !== 0 || status !== 0) root.hotspotError = hotspotStrings.t("failed")
+      root.refreshHotspot()
+      root.refresh(false)
+    }
+  }
+
+  Timer {
+    interval: 2000
+    repeat: true
+    running: root.opened
+    onTriggered: root.refreshHotspot()
+  }
+
   // Centralized close so callers can't forget to drop the passphrase prompt.
   function close() {
     root.controller.hide()
@@ -134,7 +180,7 @@ Panel {
   readonly property int qrHeaderIndex: canShareWifi ? 0 : -1
   readonly property int speedHeaderIndex: canRunSpeedTest ? (canShareWifi ? 1 : 0) : -1
   readonly property int toggleHeaderIndex: canToggleWifi ? (canShareWifi ? 1 : 0) + (canRunSpeedTest ? 1 : 0) : -1
-  readonly property int headerActionCount: (canShareWifi ? 1 : 0) + (canRunSpeedTest ? 1 : 0) + (canToggleWifi ? 1 : 0)
+  readonly property int headerActionCount: 1 + (canShareWifi ? 1 : 0) + (canRunSpeedTest ? 1 : 0) + (canToggleWifi ? 1 : 0)
   readonly property bool qrHeaderHasCursor: cursorActive && focusSection === "header" && headerIndex === qrHeaderIndex
   readonly property bool speedHeaderHasCursor: cursorActive && focusSection === "header" && headerIndex === speedHeaderIndex
   readonly property bool toggleHeaderHasCursor: cursorActive && focusSection === "header" && headerIndex === toggleHeaderIndex
@@ -205,7 +251,7 @@ Panel {
   }
 
   function toggleNetwork() {
-    if (!networkManagerAvailable) return
+    if (!networkManagerAvailable || hotspotAction.running) return
     Networking.wifiEnabled = !Networking.wifiEnabled
     Qt.callLater(function() { root.refresh(true) })
   }
@@ -219,6 +265,8 @@ Panel {
     function hide() { root.close() }
     function toggle() { root.toggle() }
     function toggleNetwork() { root.toggleNetwork() }
+    function toggleHotspot() { root.toggleHotspot() }
+    function hotspotState(): string { return root.hotspotActive ? "on" : "off" }
     // Compat routes for configs that summon the centered cards through the
     // network target; both cards are their own plugins now.
     function showQr() { root.summonWifiQr(true) }
@@ -231,6 +279,7 @@ Panel {
     if (headerIndex === qrHeaderIndex) summonWifiQr()
     else if (headerIndex === speedHeaderIndex) summonSpeedTest()
     else if (headerIndex === toggleHeaderIndex) toggleNetwork()
+    else if (headerIndex === hotspotHeaderIndex) toggleHotspot()
   }
 
   function setHeaderCursor(index) {
@@ -573,6 +622,7 @@ Panel {
   }
 
   function refresh(scanWifi) {
+    refreshHotspot()
     checkConnectivity()
     if (scanWifi === undefined) scanWifi = false
     if (!detailsProc.running) detailsProc.running = true
@@ -814,7 +864,7 @@ Panel {
   }
 
   function runNetworkAction(kind, network, callback) {
-    if (actionKind !== "" || !network) return
+    if (actionKind !== "" || hotspotAction.running || !network) return
     var ssid = network.name || ""
     actionSsid = ssid
     actionKind = kind
@@ -1360,6 +1410,45 @@ Panel {
           }
         }
 
+      }
+
+      RowLayout {
+        width: parent.width
+        spacing: Style.space(12)
+
+        ColumnLayout {
+          Layout.fillWidth: true
+          spacing: Style.space(2)
+          Text {
+            textFormat: Text.PlainText
+            text: hotspotStrings.t("title")
+            color: root.bar.foreground
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.body
+          }
+          Text {
+            Layout.fillWidth: true
+            textFormat: Text.PlainText
+            text: root.hotspotError || (hotspotAction.running ? hotspotStrings.t("changing")
+              : !root.hotspotReady ? hotspotStrings.t("unavailable")
+              : root.hotspotActive ? hotspotStrings.t("on") : hotspotStrings.t("off"))
+            color: root.hotspotError ? root.bar.urgent : root.bar.foreground
+            opacity: root.hotspotError ? 1 : 0.65
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+        }
+
+        ToggleSwitch {
+          checked: root.hotspotActive
+          busy: hotspotAction.running || hotspotStatus.running || root.busy
+          enabled: root.hotspotReady
+          foreground: root.bar.foreground
+          hasCursor: root.cursorActive && root.focusSection === "header" && root.headerIndex === root.hotspotHeaderIndex
+          onHovered: function(on) { if (on) root.setHeaderCursor(root.hotspotHeaderIndex) }
+          onToggled: root.toggleHotspot()
+        }
       }
 
       Button {
