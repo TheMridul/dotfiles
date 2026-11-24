@@ -1,16 +1,16 @@
 {
   "bar": {
-    "background": "opaque",
+    "background": "glassy",
     "id": "omarchy.bar",
     "layout": {
       "center": [
         {
+          "id": "mridul.tide-clock",
+          "dateFormat": "ddd d MMM",
           "clock": {
             "format": "HH:mm",
             "formatAlt": "ddd d MMM HH:mm"
-          },
-          "dateFormat": "ddd d MMM",
-          "id": "mridul.tide-clock"
+          }
         }
       ],
       "centerBegin": [],
